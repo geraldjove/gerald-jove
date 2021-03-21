@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/gerald-jove/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/gerald-jove/static/js/main.bf17bf26.chunk.js",
-    "main.js.map": "/gerald-jove/static/js/main.bf17bf26.chunk.js.map",
+    "main.js": "/gerald-jove/static/js/main.5ee8e0db.chunk.js",
+    "main.js.map": "/gerald-jove/static/js/main.5ee8e0db.chunk.js.map",
     "runtime-main.js": "/gerald-jove/static/js/runtime-main.92b109a6.js",
     "runtime-main.js.map": "/gerald-jove/static/js/runtime-main.92b109a6.js.map",
     "static/js/2.5955a741.chunk.js": "/gerald-jove/static/js/2.5955a741.chunk.js",
@@ -16,12 +16,13 @@
     "static/media/svg-1.6b71245a.svg": "/gerald-jove/static/media/svg-1.6b71245a.svg",
     "static/media/svg-2.550e5032.svg": "/gerald-jove/static/media/svg-2.550e5032.svg",
     "static/media/svg-3.292005ee.svg": "/gerald-jove/static/media/svg-3.292005ee.svg",
+    "static/media/svg-5.c955c40f.svg": "/gerald-jove/static/media/svg-5.c955c40f.svg",
     "static/media/video1.cbc4864e.mp4": "/gerald-jove/static/media/video1.cbc4864e.mp4"
   },
   "entrypoints": [
     "static/js/runtime-main.92b109a6.js",
     "static/js/2.5955a741.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.bf17bf26.chunk.js"
+    "static/js/main.5ee8e0db.chunk.js"
   ]
 }
