@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/gerald-jove/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/gerald-jove/static/js/main.392a6ea7.chunk.js",
-    "main.js.map": "/gerald-jove/static/js/main.392a6ea7.chunk.js.map",
-    "runtime-main.js": "/gerald-jove/static/js/runtime-main.354ba2c1.js",
-    "runtime-main.js.map": "/gerald-jove/static/js/runtime-main.354ba2c1.js.map",
-    "static/js/2.69e19899.chunk.js": "/gerald-jove/static/js/2.69e19899.chunk.js",
-    "static/js/2.69e19899.chunk.js.map": "/gerald-jove/static/js/2.69e19899.chunk.js.map",
-    "static/js/3.f234c87c.chunk.js": "/gerald-jove/static/js/3.f234c87c.chunk.js",
-    "static/js/3.f234c87c.chunk.js.map": "/gerald-jove/static/js/3.f234c87c.chunk.js.map",
+    "main.js": "/gerald-jove/static/js/main.bf17bf26.chunk.js",
+    "main.js.map": "/gerald-jove/static/js/main.bf17bf26.chunk.js.map",
+    "runtime-main.js": "/gerald-jove/static/js/runtime-main.92b109a6.js",
+    "runtime-main.js.map": "/gerald-jove/static/js/runtime-main.92b109a6.js.map",
+    "static/js/2.5955a741.chunk.js": "/gerald-jove/static/js/2.5955a741.chunk.js",
+    "static/js/2.5955a741.chunk.js.map": "/gerald-jove/static/js/2.5955a741.chunk.js.map",
+    "static/js/3.bb6973ff.chunk.js": "/gerald-jove/static/js/3.bb6973ff.chunk.js",
+    "static/js/3.bb6973ff.chunk.js.map": "/gerald-jove/static/js/3.bb6973ff.chunk.js.map",
     "index.html": "/gerald-jove/index.html",
     "static/css/main.6dea0f05.chunk.css.map": "/gerald-jove/static/css/main.6dea0f05.chunk.css.map",
-    "static/js/2.69e19899.chunk.js.LICENSE.txt": "/gerald-jove/static/js/2.69e19899.chunk.js.LICENSE.txt",
+    "static/js/2.5955a741.chunk.js.LICENSE.txt": "/gerald-jove/static/js/2.5955a741.chunk.js.LICENSE.txt",
     "static/media/profilepicture.8098633d.jpg": "/gerald-jove/static/media/profilepicture.8098633d.jpg",
     "static/media/svg-1.6b71245a.svg": "/gerald-jove/static/media/svg-1.6b71245a.svg",
     "static/media/svg-2.550e5032.svg": "/gerald-jove/static/media/svg-2.550e5032.svg",
@@ -19,9 +19,9 @@
     "static/media/video1.cbc4864e.mp4": "/gerald-jove/static/media/video1.cbc4864e.mp4"
   },
   "entrypoints": [
-    "static/js/runtime-main.354ba2c1.js",
-    "static/js/2.69e19899.chunk.js",
+    "static/js/runtime-main.92b109a6.js",
+    "static/js/2.5955a741.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.392a6ea7.chunk.js"
+    "static/js/main.bf17bf26.chunk.js"
   ]
 }
