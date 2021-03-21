@@ -6,7 +6,7 @@ export const HeroContainer = styled.div `
     align-items: center;
     height: 800px;
     position: relative;
-    background: red;
+    background: black;
     z-index: 1;
 
     :before {

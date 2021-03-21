@@ -11,7 +11,7 @@ import {
     SectionTextWrapper,
     SectionImgWrapper
  } from '../components/section/section.styles';
- import Image from '../images/svg-1.svg';
+ import Image from '../images/svg-5.svg';
 
 const Section = ({id, lightBg, lightTxt, imgStart, description, description2, img, alt}) => {
     return (
