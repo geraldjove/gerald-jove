@@ -4,6 +4,7 @@ import AboutMe from "@/components/AboutMe.vue";
 import Projects from "@/components/Projects.vue";
 import Skills from "@/components/Skills.vue";
 import Contact from "@/components/Contact.vue";
+import ScrollTop from "@/components/ScrollTop.vue";
 </script>
 
 <template>
@@ -12,4 +13,5 @@ import Contact from "@/components/Contact.vue";
   <Skills />
   <Projects />
   <Contact />
+  <ScrollTop />
 </template>

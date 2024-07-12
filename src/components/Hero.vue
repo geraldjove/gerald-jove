@@ -12,7 +12,7 @@ import profilePhoto from "@/assets/img/profile-photo.jpg";
           <span class="text-green-500">greetings</span
           ><span class="text-[#FB2458]">()</span>{
         </h3>
-        <h3><span class="text-red-500">return</span> { '</h3>
+        <h3><span class="text-red-500">return </span>'</h3>
         <h1 class="sm:text-7xl font-bold uppercase">Hello!</h1>
         <h1 class="sm:text-7xl text-5xl font-bold uppercase">
           I am
@@ -24,12 +24,13 @@ import profilePhoto from "@/assets/img/profile-photo.jpg";
           >
         </h1>
         <h3 class="mb-5">'};</h3>
-        <button
-          class="bg-[#009efa] max-w-[150px] p-2 rounded-full font-bold text-black flex justify-center items-center"
-        >
-          <a href="#contact">Get in Touch</a>
-          <i class="pi pi-arrow-circle-right ms-2"></i>
-        </button>
+        <a href="#contact">
+          <button
+            class="bg-[#009efa] hover:text-white hover:bg-[#4abdff] max-w-[150px] p-2 rounded-full font-bold text-black flex justify-center items-center"
+          >
+            Get in Touch
+            <i class="pi pi-arrow-circle-right ms-2"></i></button
+        ></a>
       </div>
       <div class="flex flex-col justify-center">
         <img

@@ -24,7 +24,7 @@
               Web <span class="text-[#009efa]">Developer</span> & Multimedia
               <span class="text-[#009efa]">Artist</span>
             </h1>
-            <p class="mb-5">
+            <p>
               With expertise in front-end, back-end, and full-stack web
               development, I offer a comprehensive skill set. Proficient in
               HTML5, CSS3, Bootstrap, and JavaScript, I create visually
@@ -36,19 +36,51 @@
               creativity and strategic thinking to projects, ensuring success
               across various domains.
             </p>
-            <button
-              class="me-auto text-black font-bold bg-[#009efa] p-5 rounded-full"
+            <div
+              class="min-h-[50px] sm:max-w-full my-5 flex justify-center items-center border rounded-xl border-[#009efa]"
             >
-              Download CV
-              <i class="pi pi-download ms-2" style="font-size: 1.25rem"></i>
-            </button>
+              <RouterLink href="/"
+                ><i class="pi pi-linkedin p-5 hover:text-[#009efa]"></i
+              ></RouterLink>
+              <RouterLink href="/"
+                ><i class="pi pi-github p-5 hover:text-[#009efa]"></i
+              ></RouterLink>
+              <RouterLink href="/"
+                ><i class="pi pi-facebook p-5 hover:text-[#009efa]"></i
+              ></RouterLink>
+              <RouterLink href="/"
+                ><i class="pi pi-instagram p-5 hover:text-[#009efa]"></i
+              ></RouterLink>
+            </div>
+            <a
+              href="https://drive.google.com/uc?export=download&id=19FSRCQP-5lCsknrKTliY38CvT2cpDGPFx63q3KuKCgs"
+              download="gerald-jove-web-developer-resume"
+              target="_blank"
+              class="mx-auto"
+              ><button
+                class="text-black font-bold bg-[#009efa] hover:bg-[#4abdff] hover:text-white p-5 rounded-full"
+              >
+                Download CV
+                <i
+                  class="pi pi-download ms-2"
+                  style="font-size: 1.25rem"
+                ></i></button
+            ></a>
           </div>
         </div>
         <div class="grid sm:grid-cols-2 gap-4 p-5">
-          <div class="rounded-lg min-h-[200px] border border-white"></div>
-          <div class="rounded-lg min-h-[200px] border border-white"></div>
-          <div class="rounded-lg min-h-[200px] border border-white"></div>
-          <div class="rounded-lg min-h-[200px] border border-white"></div>
+          <div
+            class="rounded-lg min-h-[200px] bg-cgi-Phasmo1 bg-cover bg-center"
+          ></div>
+          <div
+            class="rounded-lg min-h-[200px] bg-programming-Forex bg-cover bg-center"
+          ></div>
+          <div
+            class="rounded-lg min-h-[200px] bg-programming-Ecommerce bg-center bg-cover"
+          ></div>
+          <div
+            class="rounded-lg min-h-[200px] bg-cgi-Demons bg-cover bg-center"
+          ></div>
         </div>
       </div>
     </div>

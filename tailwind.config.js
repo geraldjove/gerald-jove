@@ -16,6 +16,10 @@ export default {
           'url("https://cdna.artstation.com/p/assets/images/images/063/660/922/large/gerald-jove-photo-2.jpg?1686063435")',
         "cgi-Massager":
           'url("https://cdnb.artstation.com/p/assets/images/images/056/627/037/large/gerald-jove-product-1.jpg?1669727403")',
+        "programming-Forex":
+          'url("https://geraldjove.github.io/website-developer-portfolio/static/media/forex.66055487fe27f6a27c47.JPG");',
+        "programming-Ecommerce":
+          "url('https://geraldjove.github.io/website-developer-portfolio/static/media/ecommerce.a4c2f27456ac52c09261.JPG');",
       },
     },
   },

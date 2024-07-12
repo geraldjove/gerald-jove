@@ -14,7 +14,24 @@ onMounted(() => {
   );
 });
 
-const scrollUp = () => {};
+const scrollUpBtn = (section) => {
+  const scrollContainer = document.getElementById(section);
+  if (scrollContainer) {
+    scrollContainer.scrollBy({
+      top: -100,
+      behavior: "smooth",
+    });
+  }
+};
+const scrollDownBtn = (section) => {
+  const scrollContainer = document.getElementById(section);
+  if (scrollContainer) {
+    scrollContainer.scrollBy({
+      top: 100,
+      behavior: "smooth",
+    });
+  }
+};
 </script>
 
 <template>
@@ -31,15 +48,19 @@ const scrollUp = () => {};
         </h1>
       </div>
       <div class="grid sm:grid-cols-2 gap-4 rounded-lg">
-        <div class="max-h-[500px] rounded-lg p-4 flex flex-col justify-center">
+        <div class="sm:max-h-[500px] rounded-lg p-4 my-auto">
           <div class="mb-5">
             <h1 class="font-bold mb-3">
-              <span class="bg-[#009efa] px-5 py-1">// Programming</span>
+              <span class="bg-[#009efa] px-5 py-1">// Web Development</span>
             </h1>
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Est
-              veniam fuga minima maiores ea neque possimus, ex deleniti eaque at
-              vitae soluta illo facilis aliquid, dolores esse amet quia ab?
+              I am a skilled Full-stack Web Developer with expertise in HTML5,
+              CSS, JavaScript, Node.js, React, PHP, MySQL, Python, and more. I
+              have completed a Vocational Course in Full Stack Web Development
+              at Zuitt Coding Bootcamp and have experience in API integration,
+              REST API, and various web development frameworks and tools. My
+              technical proficiency and diverse skill set make me a valuable
+              asset in the field of web development.
             </p>
           </div>
           <div class="mb-5">
@@ -47,9 +68,16 @@ const scrollUp = () => {};
               <span class="bg-[#009efa] px-5 py-1">// Creative</span>
             </h1>
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Est
-              veniam fuga minima maiores ea neque possimus, ex deleniti eaque at
-              vitae soluta illo facilis aliquid, dolores esse amet quia ab?
+              As a Multimedia Artist and Digital Marketing Specialist, I
+              specialize in creating visually stunning 3D models and animations.
+              My freelance work includes developing bespoke 3D assets, managing
+              social media content, and implementing SEO strategies to boost
+              online visibility. At SM Ltd., I generated captivating 3D models
+              and animations that drove sales and increased brand visibility,
+              while my role at Versalife Innovations involved crafting
+              innovative graphic design concepts and motion graphics for social
+              media campaigns, significantly enhancing engagement and brand
+              recognition.
             </p>
           </div>
         </div>
@@ -61,16 +89,22 @@ const scrollUp = () => {};
               <h1 class="font-black uppercase text-center text-[#009efa] my-5">
                 Web Development
               </h1>
-              <i class="text-3xl pi pi-arrow-circle-up mb-5"></i>
+              <button @click="scrollUpBtn('programming')">
+                <i class="text-3xl pi pi-arrow-circle-up mb-5"></i>
+              </button>
+
               <div
                 class="max-h-[450px] overflow-auto remove-scrollbar text-center"
+                id="programming"
               >
                 <div v-for="program in programArray.sort()" :key="program.id">
                   <h3 class="my-10 text-3xl">{{ program }}</h3>
                   <hr width="100px" class="mx-auto" />
                 </div>
               </div>
-              <i class="text-3xl pi pi-arrow-circle-down mt-5"></i>
+              <button @click="scrollDownBtn('programming')">
+                <i class="text-3xl pi pi-arrow-circle-down mt-5"></i>
+              </button>
             </div>
 
             <div
@@ -79,9 +113,12 @@ const scrollUp = () => {};
               <h1 class="font-black uppercase text-center text-[#009efa] my-5">
                 Creative
               </h1>
-              <i class="text-3xl pi pi-arrow-circle-up mb-5"></i>
+              <button @click="scrollUpBtn('creative')">
+                <i class="text-3xl pi pi-arrow-circle-up mb-5"></i>
+              </button>
               <div
                 class="max-h-[450px] overflow-auto remove-scrollbar text-center"
+                id="creative"
               >
                 <div
                   v-for="creative in creativeArray.sort()"
@@ -92,7 +129,9 @@ const scrollUp = () => {};
                   <hr width="100px" class="mx-auto" />
                 </div>
               </div>
-              <i class="text-3xl pi pi-arrow-circle-down mt-5"></i>
+              <button @click="scrollDownBtn('creative')">
+                <i class="text-3xl pi pi-arrow-circle-down mt-5"></i>
+              </button>
             </div>
           </section>
         </div>

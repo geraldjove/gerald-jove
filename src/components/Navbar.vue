@@ -7,30 +7,38 @@ import { RouterLink } from "vue-router";
     <div
       class="max-w-screen-xl flex flex-wrap justify-between items-center mx-auto"
     >
-      <a to="/" class="text-white font-bold text-3xl"
-        >GJ<span class="text-[#009efa]">.</span></a
+      <RouterLink to="/" class="text-white font-bold text-3xl"
+        >GJ<span class="text-[#009efa]">.</span></RouterLink
       >
       <ul class="flex">
-        <li
-          class="p-4 font-medium hover:bg-[#009efa] hover:rounded-b-lg text-white"
+        <RouterLink to="/"
+          ><li
+            class="p-4 font-medium hover:bg-[#009efa] hover:rounded-b-lg text-white"
+          >
+            Home
+          </li></RouterLink
         >
-          <RouterLink to="/">Home</RouterLink>
-        </li>
-        <li
-          class="p-4 font-medium hover:bg-[#009efa] hover:rounded-b-lg text-white"
+        <RouterLink to="/about"
+          ><li
+            class="p-4 font-medium hover:bg-[#009efa] hover:rounded-b-lg text-white"
+          >
+            About
+          </li></RouterLink
         >
-          <RouterLink to="/about">About</RouterLink>
-        </li>
-        <li
-          class="p-4 font-medium hover:bg-[#009efa] hover:rounded-b-lg text-white"
+        <RouterLink to="/works"
+          ><li
+            class="p-4 font-medium hover:bg-[#009efa] hover:rounded-b-lg text-white"
+          >
+            Works
+          </li></RouterLink
         >
-          <RouterLink to="/works">Works</RouterLink>
-        </li>
-        <li
-          class="p-4 font-medium hover:bg-[#009efa] hover:rounded-b-lg text-white"
+        <RouterLink to="/contact"
+          ><li
+            class="p-4 font-medium hover:bg-[#009efa] hover:rounded-b-lg text-white"
+          >
+            Contact
+          </li></RouterLink
         >
-          <RouterLink to="/contact">Contact</RouterLink>
-        </li>
       </ul>
       <button class="text-white font-bold border border-white p-3 rounded-xl">
         <a

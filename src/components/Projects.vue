@@ -12,13 +12,13 @@ import { RouterLink } from "vue-router";
           class="bg-[#009efa] w-[120px] sm:w-[300px] sm:h-[10px] h-[5px] mb-5"
         ></div>
         <p class="mb-5">
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatum
-          quas fugit recusandae repellendus similique facere officiis nisi quod
-          fugiat quos. Sunt quisquam omnis quas nobis officia neque nostrum
-          ipsam molestias. Lorem ipsum, dolor sit amet consectetur adipisicing
-          elit. Voluptatum quas fugit recusandae repellendus similique facere
-          officiis nisi quod fugiat quos. Sunt quisquam omnis quas nobis officia
-          neque nostrum ipsam molestias.
+          I have worked on a diverse range of projects that showcase my skills
+          in 3D modeling, graphics design, video editing, and web development.
+          From creating visually stunning 3D models and animations to designing
+          engaging graphics and editing high-quality videos, my projects reflect
+          my technical proficiency and creative flair. Additionally, my web
+          development projects demonstrate my ability to integrate various
+          technologies and frameworks to build dynamic and responsive websites.
         </p>
       </div>
       <div class="grid sm:grid-cols-12 gap-4 mb-5">
@@ -29,7 +29,7 @@ import { RouterLink } from "vue-router";
           class="bg-cgi-Phasmo1 bg-cover bg-center bg-no-repeat min-h-[200px] sm:col-span-2 rounded-lg"
         ></div>
         <div
-          class="bg-purple-500 bg-cover bg-center min-h-[200px] sm:col-span-7 rounded-lg"
+          class="bg-programming-Forex bg-cover bg-center min-h-[200px] sm:col-span-7 rounded-lg"
         ></div>
         <div
           class="bg-cgi-Massager bg-center bg-cover min-h-[200px] sm:col-span-5 rounded-lg"
@@ -44,13 +44,13 @@ import { RouterLink } from "vue-router";
           ></video>
         </div>
         <div
-          class="bg-cyan-500 min-h-[200px] max-h-[200px] sm:col-span-6 rounded-lg overflow-hidden relative"
+          class="bg-programming-Ecommerce bg-cover bg-center min-h-[200px] max-h-[200px] sm:col-span-6 rounded-lg overflow-hidden relative"
         ></div>
       </div>
     </div>
     <div class="flex justify-center">
       <button
-        class="text-white bg-[#009efa] hover:bg-[#4abdff] p-4 w-[250px] rounded-lg uppercase font-bold"
+        class="text-black hover:text-white bg-[#009efa] hover:bg-[#4abdff] p-4 w-[250px] rounded-lg uppercase font-bold"
       >
         <RouterLink to="/projects">View More</RouterLink>
       </button>
