@@ -1,6 +1,8 @@
-<script setup></script>
+<script setup>
+import { RouterLink } from "vue-router";
+</script>
 <template>
-  <section class="min-h-[100vh] bg-[#1a1a1a] p-4">
+  <section class="min-h-[100vh] bg-[#1a1a1a] p-4" id="projects">
     <div
       class="sm:min-h-screen max-w-screen-xl mx-auto text-white flex flex-col justify-center"
     >
@@ -50,7 +52,7 @@
       <button
         class="text-white bg-[#009efa] hover:bg-[#4abdff] p-4 w-[250px] rounded-lg uppercase font-bold"
       >
-        <a href="/">View More</a>
+        <RouterLink to="/projects">View More</RouterLink>
       </button>
     </div>
   </section>

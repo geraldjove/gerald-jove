@@ -2,7 +2,7 @@
 import profilePhoto from "@/assets/img/profile-photo.jpg";
 </script>
 <template>
-  <section class="min-h-[100vh] bg-[#1a1a1a]">
+  <section class="min-h-[100vh] bg-[#1a1a1a]" id="hero">
     <div class="grid sm:grid-cols-2 max-w-screen-xl mx-auto p-4">
       <div
         class="sm:min-h-screen flex flex-col justify-center text-white mx-auto mb-5"
@@ -23,7 +23,13 @@ import profilePhoto from "@/assets/img/profile-photo.jpg";
             >Web Developer • Multimedia Artist</span
           >
         </h1>
-        <h3>'};</h3>
+        <h3 class="mb-5">'};</h3>
+        <button
+          class="bg-[#009efa] max-w-[150px] p-2 rounded-full font-bold text-black flex justify-center items-center"
+        >
+          <a href="#contact">Get in Touch</a>
+          <i class="pi pi-arrow-circle-right ms-2"></i>
+        </button>
       </div>
       <div class="flex flex-col justify-center">
         <img

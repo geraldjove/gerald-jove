@@ -13,10 +13,12 @@ onMounted(() => {
     (creativeSkill) => creativeSkill
   );
 });
+
+const scrollUp = () => {};
 </script>
 
 <template>
-  <section class="min-h-[100vh] bg-[#1a1a1a]">
+  <section class="min-h-[100vh] bg-[#1a1a1a]" id="skills">
     <div
       class="sm:min-h-screen max-w-screen-xl mx-auto text-white flex flex-col justify-center p-4"
     >

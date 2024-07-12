@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <section class="min-h-[100vh] bg-[#1a1a1a] flex">
+  <section class="min-h-[100vh] bg-[#1a1a1a] flex" id="contact">
     <div
       class="sm:min-h-screen max-w-screen-xl mx-auto text-white flex flex-col items-center justify-center p-4"
     >
@@ -28,11 +28,12 @@
             Get in Touch
           </button>
           <h1 class="font-bold text-3xl text-black">OR</h1>
-          <button
-            class="bg-black p-5 rounded-full min-w-[80%] mb-auto my-10 text-[#009efa] font-bold"
+          <a
+            href="mailto:geraldkevinjove@gmail.com"
+            class="bg-black p-5 rounded-full min-w-[80%] mb-auto my-10 text-[#009efa] font-bold text-center"
           >
-            Email
-          </button>
+            <button>Email</button></a
+          >
         </div>
       </div>
     </div>

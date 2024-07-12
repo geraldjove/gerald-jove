@@ -1,23 +1,10 @@
 <script setup></script>
 
 <template>
-  <section class="min-h-[100vh] bg-[#1a1a1a]">
+  <section class="min-h-[100vh] bg-[#1a1a1a]" id="about">
     <div
       class="sm:min-h-screen max-w-screen-xl mx-auto text-white flex flex-col justify-center p-4"
     >
-      <!-- <div class="flex flex-col justify-center items-center mx-auto">
-        <h1 class="text-3xl uppercase font-black">
-          About <span class="text-[#009efa]">Me</span>
-          <div
-            class="bg-[#009efa] w-[110px] sm:w-[110px] sm:h-[5px] h-[5px]"
-          ></div>
-        </h1>
-        <h1
-          class="text-7xl uppercase font-black opacity-5 overlay-text text-center"
-        >
-          Gerald
-        </h1>
-      </div> -->
       <div class="flex flex-col justify-center items-center sm:mt-0 mt-5">
         <h1 class="text-3xl uppercase font-black">
           About <span class="text-[#009efa]">Me</span>
