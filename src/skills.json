@@ -1,0 +1,45 @@
+{
+  "skills": {
+    "programming": [
+      "React Js",
+      "Vue Js",
+      "Node Js",
+      "Express Js",
+      "Tailwind CSS",
+      "Sass",
+      "Bootstrap",
+      "Javascript",
+      "HTML 5",
+      "CSS 3",
+      "PHP",
+      "MySQL",
+      "JQuery",
+      "Postman",
+      "MongoDB",
+      "Amazon Web Services",
+      "API Integration with Fetch",
+      "Vercel",
+      "Git & GitHub",
+      "RESTful API",
+      "C++",
+      "C#",
+      "Java",
+      "Visual Studio Code"
+    ],
+    "creative": [
+      "Adobe Photoshop",
+      "Adobe After Effects",
+      "Adobe Premiere Pro",
+      "Adobe Substance Painter",
+      "Blender",
+      "Autodesk 3DS Max",
+      "Autodesk Maya",
+      "Zbrush",
+      "Figma UI/UX",
+      "Arnold Render",
+      "Cycle & Eevee Render",
+      "V-ray",
+      "Houdini"
+    ]
+  }
+}
