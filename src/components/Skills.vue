@@ -35,25 +35,53 @@ const scrollDownBtn = (section) => {
 </script>
 
 <template>
-  <section class="min-h-[100vh] bg-[#1a1a1a]" id="skills">
+  <section
+    class="min-h-[100vh] min-w-[100%] bg-[#1a1a1a] overflow-hidden"
+    id="skills"
+  >
     <div
       class="sm:min-h-screen max-w-screen-xl mx-auto text-white flex flex-col justify-center p-4"
     >
       <div>
-        <h1 class="font-monoton sm:text-9xl text-5xl flex flex-col items-end">
+        <h1
+          class="font-monoton sm:text-9xl text-5xl flex flex-col items-end"
+          v-motion
+          :initial="{ opacity: 0, x: 100, scale: 1 }"
+          :visible-once="{ opacity: 1, x: 0, scale: 1 }"
+          :delay="100"
+          :duration="1200"
+        >
           Skills
           <div
             class="bg-[#009efa] w-[120px] sm:w-[300px] sm:h-[10px] h-[5px] mb-5"
+            v-motion
+            :initial="{ opacity: 0, x: 100, scale: 1 }"
+            :visible-once="{ opacity: 1, x: 0, scale: 1 }"
+            :delay="200"
+            :duration="1200"
           ></div>
         </h1>
       </div>
       <div class="grid sm:grid-cols-2 gap-4 rounded-lg">
         <div class="sm:max-h-[500px] rounded-lg p-4 my-auto">
           <div class="mb-5">
-            <h1 class="font-bold mb-3">
+            <h1
+              class="font-bold mb-3"
+              v-motion
+              :initial="{ opacity: 0, x: -100, scale: 1 }"
+              :visible-once="{ opacity: 1, x: 0, scale: 1 }"
+              :delay="300"
+              :duration="1200"
+            >
               <span class="bg-[#009efa] px-5 py-1">// Web Development</span>
             </h1>
-            <p>
+            <p
+              v-motion
+              :initial="{ opacity: 0, x: -100, scale: 1 }"
+              :visible-once="{ opacity: 1, x: 0, scale: 1 }"
+              :delay="400"
+              :duration="1200"
+            >
               I am a skilled Full-stack Web Developer with expertise in HTML5,
               CSS, JavaScript, Node.js, React, PHP, MySQL, Python, and more. I
               have completed a Vocational Course in Full Stack Web Development
@@ -64,10 +92,23 @@ const scrollDownBtn = (section) => {
             </p>
           </div>
           <div class="mb-5">
-            <h1 class="font-bold mb-3">
+            <h1
+              class="font-bold mb-3"
+              v-motion
+              :initial="{ opacity: 0, x: -100, scale: 1 }"
+              :visible-once="{ opacity: 1, x: 0, scale: 1 }"
+              :delay="500"
+              :duration="1200"
+            >
               <span class="bg-[#009efa] px-5 py-1">// Creative</span>
             </h1>
-            <p>
+            <p
+              v-motion
+              :initial="{ opacity: 0, x: -100, scale: 1 }"
+              :visible-once="{ opacity: 1, x: 0, scale: 1 }"
+              :delay="600"
+              :duration="1200"
+            >
               As a Multimedia Artist and Digital Marketing Specialist, I
               specialize in creating visually stunning 3D models and animations.
               My freelance work includes developing bespoke 3D assets, managing
@@ -85,6 +126,11 @@ const scrollDownBtn = (section) => {
           <section class="grid sm:grid-cols-2 gap-4">
             <div
               class="border border-[#009efa] rounded-xl flex flex-col items-center p-5"
+              v-motion
+              :initial="{ opacity: 0, y: 100, scale: 1 }"
+              :visible-once="{ opacity: 1, y: 0, scale: 1 }"
+              :delay="600"
+              :duration="1200"
             >
               <h1 class="font-black uppercase text-center text-[#009efa] my-5">
                 Web Development
@@ -109,6 +155,11 @@ const scrollDownBtn = (section) => {
 
             <div
               class="border border-[#009efa] rounded-xl flex flex-col items-center p-5"
+              v-motion
+              :initial="{ opacity: 0, y: 100, scale: 1 }"
+              :visible-once="{ opacity: 1, y: 0, scale: 1 }"
+              :delay="800"
+              :duration="1200"
             >
               <h1 class="font-black uppercase text-center text-[#009efa] my-5">
                 Creative

@@ -1,0 +1,36 @@
+{
+  "education": [
+    {
+      "id": "1",
+      "course": "Vocational Course in Full-stack Web Development",
+      "institute": "Zuitt Coding Bootcamp",
+      "location": "Manila, Philippines",
+      "date": "November 2023 - January 2024",
+      "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvursKiqy_3taE2mLyC_ewp6Zo1XVL1SA_Kw&s"
+    },
+    {
+      "id": "2",
+      "course": "3DS Max Specialist",
+      "institute": "CIIT College of Arts & Technology",
+      "location": "Quezon City, Philippines",
+      "date": "November 2022 - April 2023",
+      "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQdpBadEWMjRLKIkwdKzZ0qTSUB1GPxVIr0g&s"
+    },
+    {
+      "id": "3",
+      "course": "Business Entrepreneurship, Sales, & Marketing",
+      "institute": "Filipino Institute",
+      "location": "Doha City, Qatar",
+      "date": "2018",
+      "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIUnCrgoghs2QXlEIe3KVBT_OvBNo0mzBMTw&s"
+    },
+    {
+      "id": "4",
+      "course": "Bachelor of Science in Multimeida Arts and Science",
+      "institute": "Mapua University",
+      "location": "Manila, Philippines",
+      "date": "May 2011 - August 2017",
+      "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlpzip37a_GBL5bpcptKt--FmdiUh8XxRsrw&s"
+    }
+  ]
+}

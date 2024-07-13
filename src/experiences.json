@@ -1,0 +1,40 @@
+{
+  "experiences": [
+    {
+      "id": "1",
+      "title": "Freelance Multimedia Arts and Digital Marketing Specialist",
+      "company": "Self-Employed",
+      "location": "Caloocan",
+      "date": "September 2019 - Present",
+      "responsibilities": [
+        "Specialized in bespoke 3D model assets and WordPress support.",
+        "Implemented SEO strategies to boost online visibility and engagement.",
+        "Managed social media content, fostering audience engagement."
+      ]
+    },
+    {
+      "id": "2",
+      "title": "3D Visual Designer",
+      "company": "SM Ltd.",
+      "location": "Online Remote",
+      "date": "May 2022 - September 2023",
+      "responsibilities": [
+        "Generated captivating 3D models and animations, driving sales success.",
+        "Created informative medical animations for enhanced viewer understanding.",
+        "Contributed to increased brand visibility through compelling 3D visuals."
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Junior Multimedia Artist",
+      "company": "Versalife Innovations International, Inc.",
+      "location": "Quezon City",
+      "date": "June 2018 - June 2019",
+      "responsibilities": [
+        "Crafted innovative graphic design concepts for social media campaigns, driving engagement and brand recognition.",
+        "Utilized 3D models to enhance advertising efforts and improve campaign performance metrics.",
+        "Engineered captivating motion graphics and visual effects for 3D animations, reinforcing brand identity."
+      ]
+    }
+  ]
+}
