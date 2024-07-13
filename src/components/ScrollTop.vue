@@ -1,8 +1,14 @@
 <script setup>
-const scrollToHero = () => {
-  const heroSection = document.getElementById("hero");
-  if (heroSection) {
-    heroSection.scrollIntoView({ behavior: "smooth" });
+// const scrollToHero = () => {
+//   const heroSection = document.getElementById("hero");
+//   if (heroSection) {
+//     heroSection.scrollIntoView({ behavior: "smooth" });
+//   }
+// };
+
+const scrollToTop = () => {
+  if (window.scrollY > 0) {
+    scroll(0, 0);
   }
 };
 </script>
@@ -14,7 +20,7 @@ const scrollToHero = () => {
     >
       <button
         class="border-[#009efa] border-2 rounded-full p-5 me-10"
-        @click="scrollToHero"
+        @click="scrollToTop"
       >
         <i class="pi pi-angle-double-up text-3xl text-[#009efa]"></i>
       </button>

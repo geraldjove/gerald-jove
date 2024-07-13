@@ -6,15 +6,11 @@
       <p>© 2024 Gerald Jove. All rights reserved</p>
       <nav>
         <nav class="ms-5">
-          <a href="/privacy-policy" target="_blank" class="hover:text-[#009efa]"
-            >Privacy Policy</a
-          >
-          |
           <a
-            href="/terms-of-service"
+            href="https://github.com/geraldjove"
             target="_blank"
             class="hover:text-[#009efa]"
-            >Terms of Service</a
+            >GitHub</a
           >
           |
           <a
@@ -22,6 +18,13 @@
             target="_blank"
             class="hover:text-[#009efa]"
             >LinkedIn</a
+          >
+          |
+          <a
+            href="https://www.facebook.com/gkbjove/"
+            target="_blank"
+            class="hover:text-[#009efa]"
+            >Facebook</a
           >
         </nav>
       </nav>

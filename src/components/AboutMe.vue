@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <section class="min-h-[100vh] bg-[#1a1a1a]" id="about">
+  <section class="min-h-[100vh] bg-[#1a1a1a] overflow-hidden" id="next-section">
     <div
       class="sm:min-h-screen max-w-screen-xl mx-auto text-white flex flex-col justify-center p-4"
     >
@@ -77,25 +77,40 @@
                 ><i class="pi pi-instagram p-5 hover:text-[#009efa]"></i
               ></a>
             </div>
-            <a
-              href="https://drive.google.com/uc?export=download&id=19FSRCQP-5lCsknrKTliY38CvT2cpDGPFx63q3KuKCgs"
-              download="gerald-jove-web-developer-resume"
-              target="_blank"
-              class="mx-auto"
-              v-motion
-              :initial="{ opacity: 0, y: 100, scale: 0 }"
-              :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-              :delay="400"
-              :duration="1200"
-              ><button
-                class="text-black font-bold bg-[#009efa] hover:bg-[#4abdff] hover:text-white p-5 rounded-full"
-              >
-                Download CV
-                <i
-                  class="pi pi-download ms-2"
-                  style="font-size: 1.25rem"
-                ></i></button
-            ></a>
+            <div class="flex sm:flex-row flex-col justify-center items-center">
+              <a
+                href="/about"
+                class="mx-auto"
+                v-motion
+                :initial="{ opacity: 0, y: 100, scale: 0 }"
+                :visible-once="{ opacity: 1, y: 0, scale: 1 }"
+                :delay="400"
+                :duration="1200"
+                ><button
+                  class="text-black font-bold min-w-[200px] bg-[#009efa] hover:bg-[#4abdff] hover:text-white p-5 rounded-full my-1"
+                >
+                  About Page <i class="pi pi-arrow-up-right"></i></button
+              ></a>
+              <a
+                href="https://drive.google.com/uc?export=download&id=19FSRCQP-5lCsknrKTliY38CvT2cpDGPFx63q3KuKCgs"
+                download="gerald-jove-web-developer-resume"
+                target="_blank"
+                class="mx-auto"
+                v-motion
+                :initial="{ opacity: 0, y: 100, scale: 0 }"
+                :visible-once="{ opacity: 1, y: 0, scale: 1 }"
+                :delay="400"
+                :duration="1200"
+                ><button
+                  class="text-black font-bold bg-[#009efa] hover:bg-[#4abdff] hover:text-white p-5 rounded-full min-w-[200px] my-1"
+                >
+                  Download CV
+                  <i
+                    class="pi pi-download ms-2"
+                    style="font-size: 1.25rem"
+                  ></i></button
+              ></a>
+            </div>
           </div>
         </div>
         <div class="grid sm:grid-cols-2 gap-4 p-5">

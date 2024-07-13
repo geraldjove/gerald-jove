@@ -54,14 +54,18 @@ import { RouterLink } from "vue-router";
             to="/contact"
             class="bg-black p-5 rounded-full min-w-[80%] mt-auto my-10 text-[#009efa] font-bold text-center"
           >
-            <button>Contact Details</button></RouterLink
+            <button class="flex justify-center items-center mx-auto">
+              <i class="me-4 pi pi-phone"></i> Contact Details
+            </button></RouterLink
           >
           <h1 class="font-bold text-3xl text-black">OR</h1>
           <a
             to="mailto:geraldkevinjove@gmail.com"
             class="bg-black p-5 rounded-full min-w-[80%] mb-auto my-10 text-[#009efa] font-bold text-center"
           >
-            <button>Direct Email</button></a
+            <button class="flex justify-center items-center mx-auto">
+              <i class="me-4 pi pi-send"></i> Send an Email
+            </button></a
           >
         </div>
       </div>

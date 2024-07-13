@@ -101,7 +101,7 @@ import { RouterLink } from "vue-router";
     </div>
     <div class="flex justify-center">
       <RouterLink
-        to="/projects"
+        to="/works"
         v-motion
         :initial="{ opacity: 0, x: 0, scale: 0 }"
         :visible-once="{ opacity: 1, x: 0, scale: 1 }"

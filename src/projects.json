@@ -1,0 +1,59 @@
+{
+  "projects": {
+    "programming": [
+      {
+        "id": "1",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "title": "ForEx Calculator",
+        "description": "Looking to convert currencies effortlessly? Our forex calculator offers instant and accurate conversions at the latest exchange rates. Whether you're a traveler, investor, or simply curious, streamline your financial calculations hassle-free with our tool!",
+        "hasCode": true,
+        "code": "https://github.com/geraldjove/forex-calculator",
+        "live": "https://geraldjove.github.io/forex-calculator/"
+      },
+      {
+        "id": "2",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "title": "E-commerce Shop",
+        "description": "Welcome to our user-friendly e-commerce platform! Shop seamlessly through our wide range of products with intuitive navigation. Explore today for a convenient online shopping experience brought to life through stylish design and seamless functionality.",
+        "hasCode": true,
+        "code": "https://github.com/geraldjove/b335-jove-capstone-3",
+        "live": "https://b335-capstone-jove-3.vercel.app/"
+      },
+      {
+        "id": "3",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "title": "To Do List App",
+        "description": "Presenting a sleek and intuitive Things To Do app website, designed for seamless organization and productivity. With its minimalist interface and user-friendly features, users can effortlessly create, manage, and prioritize tasks. Elevate efficiency and streamline daily routines with this indispensable tool, showcasing my proficiency in UI/UX design and web development.",
+        "hasCode": true,
+        "code": "https://github.com/geraldjove/simple-things-to-do-app",
+        "live": "https://geraldjove.github.io/simple-things-to-do-app/"
+      }
+    ],
+    "creative": [
+      {
+        "id": "1",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "title": "ArtStation",
+        "description": "Welcome to our user-friendly e-commerce platform! Shop seamlessly through our wide range of products with intuitive navigation. Explore today for a convenient online shopping experience brought to life through stylish design and seamless functionality.",
+        "hasCode": false,
+        "link": "https://artstation.com"
+      },
+      {
+        "id": "2",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "title": "YouTube",
+        "description": "Welcome to our user-friendly e-commerce platform! Shop seamlessly through our wide range of products with intuitive navigation. Explore today for a convenient online shopping experience brought to life through stylish design and seamless functionality.",
+        "hasCode": false,
+        "link": "https://artstation.com"
+      },
+      {
+        "id": "3",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "title": "Behance",
+        "description": "Welcome to our user-friendly e-commerce platform! Shop seamlessly through our wide range of products with intuitive navigation. Explore today for a convenient online shopping experience brought to life through stylish design and seamless functionality.",
+        "hasCode": false,
+        "link": "https://artstation.com"
+      }
+    ]
+  }
+}

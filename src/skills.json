@@ -24,12 +24,15 @@
       "C++",
       "C#",
       "Java",
-      "Visual Studio Code"
+      "Visual Studio Code",
+      "Wordpress",
+      "SEO Optimization"
     ],
     "creative": [
       "Adobe Photoshop",
       "Adobe After Effects",
       "Adobe Premiere Pro",
+      "Adobe Illustrator",
       "Adobe Substance Painter",
       "Blender",
       "Autodesk 3DS Max",
@@ -37,9 +40,9 @@
       "Zbrush",
       "Figma UI/UX",
       "Arnold Render",
+      "Toonboom",
       "Cycle & Eevee Render",
-      "V-ray",
-      "Houdini"
+      "V-ray"
     ]
   }
 }

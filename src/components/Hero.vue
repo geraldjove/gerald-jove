@@ -1,13 +1,15 @@
 <script setup>
 import profilePhoto from "@/assets/img/profile-photo.jpg";
+import ScrollDown from "@/components/ScrollDown.vue";
 import { RouterLink } from "vue-router";
 </script>
 <template>
-  <section class="min-h-[100vh] bg-[#1a1a1a] overflow-hidden" id="hero">
-    <div class="grid sm:grid-cols-2 max-w-screen-xl mx-auto p-4">
-      <div
-        class="sm:min-h-screen flex flex-col justify-center text-white mx-auto mb-5"
-      >
+  <section
+    class="bg-[#1a1a1a] overflow-hidden flex flex-col justify-center items-center"
+    id="hero"
+  >
+    <div class="grid sm:grid-cols-2 max-w-screen-xl mx-auto sm:mt-10 p-4">
+      <div class="flex flex-col justify-center text-white mx-auto mb-5">
         <h3
           v-motion
           :initial="{ opacity: 0, y: 100 }"
@@ -106,5 +108,6 @@ import { RouterLink } from "vue-router";
         />
       </div>
     </div>
+    <ScrollDown class="ms-auto" />
   </section>
 </template>
