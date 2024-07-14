@@ -5,10 +5,12 @@ import { RouterLink } from "vue-router";
 </script>
 <template>
   <section
-    class="bg-[#1a1a1a] overflow-hidden flex flex-col justify-center items-center"
-    id="hero"
+    class="bg-[#1a1a1a] min-h-[100vh] overflow-hidden flex flex-col justify-center items-center"
+    id="cover"
   >
-    <div class="grid sm:grid-cols-2 max-w-screen-xl mx-auto sm:mt-10 p-4">
+    <div
+      class="grid min-h-[100%] sm:grid-cols-2 max-w-screen-xl mx-auto sm:mt-10 p-4"
+    >
       <div class="flex flex-col justify-center text-white mx-auto mb-5">
         <h3
           v-motion

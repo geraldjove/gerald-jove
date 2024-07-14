@@ -1,5 +1,12 @@
 <script setup>
 import Cover from "@/components/Cover.vue";
+import { ref } from "vue";
+
+const refData = ref({
+  email: "",
+  subject: "",
+  message: "",
+});
 </script>
 
 <template>
@@ -33,9 +40,8 @@ import Cover from "@/components/Cover.vue";
                 :duration="1200"
                 class="sm:text-7xl text-2xl font-black tracking-wider text-white uppercase mb-5"
               >
-                Let's Bring Your
-                <span>Vision</span>
-                into <span class="text-[#009efa] italic">Reality</span>!
+                Let's Bring Your Vision into
+                <span class="text-[#009efa] italic">Reality</span>!
               </h1>
               <h1
                 v-motion
@@ -103,12 +109,17 @@ import Cover from "@/components/Cover.vue";
             >
               Send an <span class="text-white italic">Email</span>!
             </h1>
-            <form @submit.prevent="handleSubmit" class="flex flex-col">
+            <form
+              action="https://formspree.io/f/mvoeqbpk"
+              method="POST"
+              class="flex flex-col"
+            >
               <label for="email" class="font-bold text-xl">Email:</label>
               <input
                 type="email"
                 name="email"
                 id="email"
+                v-model="refData.email"
                 placeholder="yourname@email.com"
                 class="rounded-lg mb-3 min-h-[40px]"
               />
@@ -116,11 +127,12 @@ import Cover from "@/components/Cover.vue";
               <select
                 name="subject"
                 id="subject"
+                v-model="refData.subject"
                 class="rounded-lg mb-3 min-h-[40px]"
               >
-                <option value="general-inquirey">General Inquiry</option>
-                <option value="quotations">Project Quotations</option>
+                <option value="general-inquiry">General Inquiry</option>
                 <option value="customer-support">Customer Support</option>
+                <option value="hire-me">Hire Me</option>
                 <option value="others">Others</option>
               </select>
               <label for="message" class="font-bold text-xl"
@@ -129,6 +141,7 @@ import Cover from "@/components/Cover.vue";
               <textarea
                 name="message"
                 id="message"
+                v-model="refData.message"
                 cols="30"
                 rows="10"
                 class="mb-3 rounded-xl"

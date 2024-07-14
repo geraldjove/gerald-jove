@@ -1,9 +1,8 @@
 <script setup>
-import { RouterLink, useRoute } from "vue-router";
-import { onMounted, ref } from "vue";
+import { useRoute, RouterLink } from "vue-router";
+import { ref, onMounted } from "vue";
 
 const navSwitch = ref(false);
-const navPosition = ref(true);
 
 const isActiveLink = (routePath) => {
   const route = useRoute();
@@ -12,8 +11,16 @@ const isActiveLink = (routePath) => {
 
 const navToggle = () => {
   navSwitch.value = !navSwitch.value;
-  console.log(navSwitch.value);
 };
+
+const scrollToTop = () => {
+  window.scrollTo(0, 0);
+};
+
+onMounted(() => {
+  const burgerElement = document.getElementById("burger");
+  burgerElement.addEventListener("click", () => {});
+});
 </script>
 
 <template>
@@ -36,19 +43,14 @@ const navToggle = () => {
           :duration="1200"
           >GJ<span class="text-[#009efa]">.</span></RouterLink
         >
-        <div class="ms-auto sm:hidden block p-2">
+        <!-- Burger Icons -->
+        <div class="ms-auto sm:hidden block p-2" id="burger">
           <i
             @click="navToggle"
             :class="[
               navSwitch
-                ? 'pi pi-bars bg-[#009efa] border p-4 rounded-xl'
-                : 'pi',
-              'pi-bars',
-              'text-white',
-              'border-white',
-              'border',
-              'p-4',
-              'rounded-xl',
+                ? 'pi pi-times border p-4 rounded-xl text-white'
+                : 'pi pi-bars text-white border-white border p-4 rounded-xl',
             ]"
           ></i>
         </div>
@@ -61,6 +63,10 @@ const navToggle = () => {
       >
         <ul class="text-white flex flex-col justify-center items-center mt-4">
           <RouterLink
+            @click="
+              navToggle();
+              scrollToTop();
+            "
             to="/"
             :class="[
               isActiveLink('/')
@@ -75,6 +81,10 @@ const navToggle = () => {
           </RouterLink>
           <hr width="100px" class="mx-auto" />
           <RouterLink
+            @click="
+              navToggle();
+              scrollToTop();
+            "
             to="/about"
             :class="[
               isActiveLink('/about')
@@ -89,6 +99,10 @@ const navToggle = () => {
           >
           <hr width="100px" class="mx-auto" />
           <RouterLink
+            @click="
+              navToggle();
+              scrollToTop();
+            "
             to="/works"
             :class="[
               isActiveLink('/works')
@@ -103,6 +117,10 @@ const navToggle = () => {
           >
           <hr width="100px" class="mx-auto" />
           <RouterLink
+            @click="
+              navToggle();
+              scrollToTop();
+            "
             to="/contact"
             :class="[
               isActiveLink('/contact')
@@ -201,7 +219,7 @@ const navToggle = () => {
         </ul>
       </div>
       <div class="hidden sm:block">
-        <RouterLink
+        <a
           href="https://drive.google.com/uc?export=download&id=19FSRCQP-5lCsknrKTliY38CvT2cpDGPFx63q3KuKCgs"
           download="gerald-jove-web-developer-resume"
           target="_blank"
@@ -220,7 +238,7 @@ const navToggle = () => {
               class="pi pi-download ms-2"
               style="font-size: 1.25rem"
             ></i></button
-        ></RouterLink>
+        ></a>
       </div>
     </div>
   </nav>

@@ -19,8 +19,13 @@ defineProps({
 </script>
 
 <template>
-  <section class="bg-[#1a1a1a] p-5">
-    <div class="container min-h-[100vh] mx-auto flex flex-col justify-center">
+  <section
+    class="bg-[#1a1a1a] min-h-[100vh] flex justify-center items-center p-5 overflow-hidden"
+    id="cover"
+  >
+    <div
+      class="container min-h-[100%] mx-auto flex flex-col justify-center items-center"
+    >
       <div class="text-white my-auto">
         <h1
           :class="`sm:text-[15rem] text-[3.5rem] font-monoton leading-none text-[#009efa] flex justify-${alignment} items-center pt-10`"
@@ -48,7 +53,7 @@ defineProps({
           {{ subtitle }}
         </h3>
       </div>
-      <ScrollDown class="my-auto" />
+      <ScrollDown class="ms-auto" />
     </div>
   </section>
 </template>

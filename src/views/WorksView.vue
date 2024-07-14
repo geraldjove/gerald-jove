@@ -1,6 +1,7 @@
 <script setup>
 import Cover from "@/components/Cover.vue";
 import ProjectCard from "@/components/ProjectCard.vue";
+import CreativeCard from "@/components/CreativeCard.vue";
 import worksData from "@/projects.json";
 
 import { ref, onMounted } from "vue";
@@ -39,7 +40,7 @@ onMounted(() => {
           Web Development
         </h1>
         <div
-          class="bg-[#009efa] w-[120px] sm:w-[500px] sm:h-[5px] h-[5px] mb-5"
+          class="bg-[#009efa] w-[120px] sm:w-[500px] sm:h-[5px] h-[5px] mb-10"
           v-motion
           :initial="{ opacity: 0, x: 100, scale: 1 }"
           :visible-once="{ opacity: 1, x: 0, scale: 1 }"
@@ -47,7 +48,7 @@ onMounted(() => {
           :duration="1200"
         ></div>
       </div>
-      <div class="grid sm:grid-cols-3 gap-2 mb-5">
+      <div class="grid sm:grid-cols-3 gap-2 mb-20">
         <ProjectCard
           v-for="(program, index) in programArray"
           :key="program.id"
@@ -72,7 +73,7 @@ onMounted(() => {
           Creative
         </h1>
         <div
-          class="bg-[#009efa] w-[120px] sm:w-[500px] sm:h-[5px] h-[5px] mb-5"
+          class="bg-[#009efa] w-[120px] sm:w-[500px] sm:h-[5px] h-[5px] mb-10"
           v-motion
           :initial="{ opacity: 0, x: 100, scale: 1 }"
           :visible-once="{ opacity: 1, x: 0, scale: 1 }"
@@ -80,10 +81,10 @@ onMounted(() => {
           :duration="1200"
         ></div>
       </div>
-      <div class="grid sm:grid-cols-3 gap-2 mb-5">
-        <ProjectCard
+      <div class="grid sm:grid-cols-5 justify-items-center gap-1 mb-20`,">
+        <CreativeCard
           v-for="(art, index) in creativeArray"
-          :key="art.id"
+          :key="index"
           :project="art"
           v-motion
           :initial="{ opacity: 0, y: 0, scale: 0 }"

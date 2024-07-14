@@ -1,11 +1,4 @@
 <script setup>
-// const scrollToHero = () => {
-//   const heroSection = document.getElementById("hero");
-//   if (heroSection) {
-//     heroSection.scrollIntoView({ behavior: "smooth" });
-//   }
-// };
-
 const scrollToTop = () => {
   if (window.scrollY > 0) {
     scroll(0, 0);
