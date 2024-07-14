@@ -1,5 +1,9 @@
 <script setup>
 import { RouterLink } from "vue-router";
+
+const scrollToTop = () => {
+  window.scrollTo(0, 0);
+};
 </script>
 
 <template>
@@ -52,6 +56,7 @@ import { RouterLink } from "vue-router";
         >
           <RouterLink
             to="/contact"
+            @click="scrollToTop()"
             class="bg-black p-5 rounded-full min-w-[80%] mt-auto my-10 text-[#009efa] font-bold text-center"
           >
             <button class="flex justify-center items-center mx-auto">

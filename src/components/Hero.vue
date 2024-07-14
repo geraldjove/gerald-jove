@@ -2,6 +2,10 @@
 import profilePhoto from "@/assets/img/profile-photo.jpg";
 import ScrollDown from "@/components/ScrollDown.vue";
 import { RouterLink } from "vue-router";
+
+const scrollToTop = () => {
+  window.scrollTo(0, 0);
+};
 </script>
 <template>
   <section
@@ -84,6 +88,7 @@ import { RouterLink } from "vue-router";
         <RouterLink to="/contact" class="me-auto">
           <button
             class="bg-[#009efa] hover:text-white hover:bg-[#4abdff] max-w-[150px] p-2 rounded-full font-bold text-black flex justify-center items-center"
+            @click="scrollToTop()"
             v-motion
             :initial="{ opacity: 0, y: 100 }"
             :enter="{ opacity: 1, y: 0, scale: 1 }"

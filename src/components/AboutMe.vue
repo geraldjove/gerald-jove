@@ -1,4 +1,10 @@
-<script setup></script>
+<script setup>
+import { RouterLink } from "vue-router";
+
+const scrollToTop = () => {
+  window.scrollTo(0, 0);
+};
+</script>
 
 <template>
   <section class="min-h-[100vh] bg-[#1a1a1a] overflow-hidden" id="next-section">
@@ -78,8 +84,9 @@
               ></a>
             </div>
             <div class="flex sm:flex-row flex-col justify-center items-center">
-              <a
-                href="/about"
+              <RouterLink
+                to="/about"
+                @click="scrollToTop()"
                 class="mx-auto"
                 v-motion
                 :initial="{ opacity: 0, y: 100, scale: 0 }"
@@ -90,9 +97,10 @@
                   class="text-black font-bold min-w-[200px] bg-[#009efa] hover:bg-[#4abdff] hover:text-white p-5 rounded-full my-1"
                 >
                   About Page <i class="pi pi-arrow-up-right"></i></button
-              ></a>
+              ></RouterLink>
               <a
-                href="https://drive.google.com/uc?export=download&id=19FSRCQP-5lCsknrKTliY38CvT2cpDGPFx63q3KuKCgs"
+                href="https://drive.google.com/uc?export=download&id=1nf_5JQAv0tN-pOy-SQG_DsxNZkNW9lSo
+"
                 download="gerald-jove-web-developer-resume"
                 target="_blank"
                 class="mx-auto"

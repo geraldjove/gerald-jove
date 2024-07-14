@@ -220,7 +220,7 @@ onMounted(() => {
       </div>
       <div class="hidden sm:block">
         <a
-          href="https://drive.google.com/uc?export=download&id=19FSRCQP-5lCsknrKTliY38CvT2cpDGPFx63q3KuKCgs"
+          href="https://drive.google.com/uc?export=download&id=1nf_5JQAv0tN-pOy-SQG_DsxNZkNW9lSo"
           download="gerald-jove-web-developer-resume"
           target="_blank"
           v-motion
