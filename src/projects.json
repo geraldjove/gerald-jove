@@ -1,0 +1,156 @@
+{
+  "projects": {
+    "programming": [
+      {
+        "id": "1",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "title": "ForEx Calculator",
+        "description": "Looking to convert currencies effortlessly? Our forex calculator offers instant and accurate conversions at the latest exchange rates. Whether you're a traveler, investor, or simply curious, streamline your financial calculations hassle-free with our tool!",
+        "hasCode": true,
+        "code": "https://github.com/geraldjove/forex-calculator",
+        "live": "https://geraldjove.github.io/forex-calculator/"
+      },
+      {
+        "id": "2",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "title": "E-commerce Shop",
+        "description": "Welcome to our user-friendly e-commerce platform! Shop seamlessly through our wide range of products with intuitive navigation. Explore today for a convenient online shopping experience brought to life through stylish design and seamless functionality.",
+        "hasCode": true,
+        "code": "https://github.com/geraldjove/b335-jove-capstone-3",
+        "live": "https://b335-capstone-jove-3.vercel.app/"
+      },
+      {
+        "id": "3",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "title": "To Do List App",
+        "description": "Presenting a sleek and intuitive Things To Do app website, designed for seamless organization and productivity. With its minimalist interface and user-friendly features, users can effortlessly create, manage, and prioritize tasks. Elevate efficiency and streamline daily routines with this indispensable tool, showcasing my proficiency in UI/UX design and web development.",
+        "hasCode": true,
+        "code": "https://github.com/geraldjove/simple-things-to-do-app",
+        "live": "https://geraldjove.github.io/simple-things-to-do-app/"
+      }
+    ],
+    "creative": [
+      {
+        "id": "1",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/DvNJOR"
+      },
+      {
+        "id": "2",
+        "img": "https://cdnb.artstation.com/p/assets/images/images/056/627/037/smaller_square/gerald-jove-product-1.jpg?1669727403",
+        "title": "YouTube",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/Vym20R"
+      },
+      {
+        "id": "3",
+        "img": "https://cdna.artstation.com/p/assets/images/images/055/907/050/smaller_square/gerald-jove-product-1.jpg?1668008911",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/X1rDq3"
+      },
+      {
+        "id": "4",
+        "img": "https://cdna.artstation.com/p/assets/images/images/055/823/870/smaller_square/gerald-jove-color1.jpg?1667838826",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/WmZ29v"
+      },
+      {
+        "id": "5",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/055/092/730/smaller_square/gerald-jove-gerald-jove-untitled.jpg?1666103810",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/d0kK4e"
+      },
+      {
+        "id": "6",
+        "img": "https://cdnb.artstation.com/p/assets/video_clips/images/051/224/555/smaller_square/gerald-jove-thumb.jpg?1656759715",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/9NgAkQ"
+      },
+      {
+        "id": "7",
+        "img": "https://cdna.artstation.com/p/assets/video_clips/images/050/766/830/smaller_square/gerald-jove-thumb.jpg?1655654126",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/B3Dqvl"
+      },
+      {
+        "id": "8",
+        "img": "https://cdnb.artstation.com/p/assets/videos/images/047/372/087/smaller_square/gerald-jove-maxresdefault.jpg?1647438462",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/zDKZ5q"
+      },
+      {
+        "id": "9",
+        "img": "https://cdna.artstation.com/p/assets/video_clips/images/049/140/464/smaller_square/gerald-jove-thumb.jpg?1651774651",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/VyYV8X"
+      },
+      {
+        "id": "10",
+        "img": "https://cdnb.artstation.com/p/assets/images/images/049/233/301/smaller_square/gerald-jove-0012.jpg?1652023091",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/9Nzdwo"
+      },
+      {
+        "id": "11",
+        "img": "https://cdnb.artstation.com/p/assets/video_clips/images/049/491/369/smaller_square/gerald-jove-thumb.jpg?1652637106",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/kloKlK"
+      },
+      {
+        "id": "12",
+        "img": "https://cdna.artstation.com/p/assets/covers/images/050/299/842/smaller_square/gerald-jove-gerald-jove-screenshot-2022-06-07-013052.jpg?1654536679",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/o2P1ZJ"
+      },
+      {
+        "id": "13",
+        "img": "https://cdna.artstation.com/p/assets/video_clips/images/049/942/902/smaller_square/gerald-jove-thumb.jpg?1653673264",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/X12vyY"
+      },
+      {
+        "id": "14",
+        "img": "https://cdna.artstation.com/p/assets/video_clips/images/048/684/516/smaller_square/gerald-jove-thumb.jpg?1650650468",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/aGB1LL"
+      },
+      {
+        "id": "15",
+        "img": "https://cdna.artstation.com/p/assets/video_clips/images/048/443/784/smaller_square/gerald-jove-thumb.jpg?1650039108",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/wJyQLw"
+      },
+      {
+        "id": "16",
+        "img": "https://cdna.artstation.com/p/assets/video_clips/images/048/339/526/smaller_square/gerald-jove-thumb.jpg?1649791111",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/o28lAm"
+      },
+      {
+        "id": "17",
+        "img": "https://cdnb.artstation.com/p/assets/video_clips/images/048/227/413/smaller_square/gerald-jove-thumb.jpg?1649514482",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/9NO81N"
+      },
+      {
+        "id": "18",
+        "img": "https://cdna.artstation.com/p/assets/video_clips/images/048/204/172/smaller_square/gerald-jove-thumb.jpg?1649440848",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/8wOeoq"
+      },
+      {
+        "id": "19",
+        "img": "https://cdna.artstation.com/p/assets/video_clips/images/048/107/268/smaller_square/gerald-jove-thumb.jpg?1649228864",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/eJ9bqD"
+      },
+      {
+        "id": "20",
+        "img": "https://cdnb.artstation.com/p/assets/video_clips/images/047/370/321/smaller_square/gerald-jove-thumb.jpg?1647434813",
+        "hasCode": false,
+        "link": "https://www.artstation.com/artwork/eJzKGJ"
+      }
+    ]
+  }
+}
