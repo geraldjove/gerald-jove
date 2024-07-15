@@ -1,5 +1,8 @@
 <script setup>
 import { RouterLink } from "vue-router";
+const scrollToTop = () => {
+  window.scrollTo(0, 0);
+};
 </script>
 <template>
   <section class="min-h-[100vh] overflow-hidden bg-[#1a1a1a] p-4" id="projects">
@@ -101,6 +104,7 @@ import { RouterLink } from "vue-router";
     </div>
     <div class="flex justify-center">
       <RouterLink
+        @click="scrollToTop()"
         to="/works"
         v-motion
         :initial="{ opacity: 0, x: 0, scale: 0 }"

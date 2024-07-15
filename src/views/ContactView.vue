@@ -15,12 +15,24 @@ const refData = ref({
     subtitle="Get in Touch and Let's Work Together"
     alignment="center"
   />
-  <section class="min-h-[100vh] bg-[#1a1a1a]" id="next-section">
+  <section class="min-h-[100vh] bg-[#1a1a1a] overflow-hidden" id="next-section">
     <div
       class="container min-h-[100vh] mx-auto flex justify-center items-center p-5"
     >
+<<<<<<< HEAD
       <div class="border border-white min-w-full rounded-xl">
         <div class="grid sm:grid-cols-2">
+=======
+      <div
+        v-motion
+        :initial="{ opacity: 0, y: 0, scale: 0 }"
+        :visible-once="{ opacity: 1, y: 0, scale: 1 }"
+        :delay="100"
+        :duration="1200"
+        class="border border-white min-w-full rounded-xl"
+      >
+        <div class="grid sm:grid-cols-2 grid-cols-1">
+>>>>>>> fb33519d8239c3d18355db2176d6d864f901c844
           <div class="min-h-[100px] p-5">
             <div
               class="text-white font-bold sm:text-2xl min-h-[500px] flex flex-col justify-center sm:ms-10"
@@ -31,6 +43,7 @@ const refData = ref({
                 Let's Bring Your Vision into
                 <span class="text-[#009efa] italic">Reality</span>!
               </h1>
+<<<<<<< HEAD
               <h1 class="flex items-center p-5">
                 <i class="pi pi-send mr-5"></i> geraldkevinjove@gmail.com
               </h1>
@@ -38,6 +51,36 @@ const refData = ref({
                 <i class="pi pi-phone mr-5"></i> (+63) 966-331-0965
               </h1>
               <h1 class="p-5">
+=======
+              <h1
+                v-motion
+                :initial="{ opacity: 0, y: 0, scale: 0 }"
+                :visible-once="{ opacity: 1, y: 0, scale: 1 }"
+                :delay="200"
+                :duration="1200"
+                class="flex sm:flex-row flex-col items-center p-5 sm:text-[1.5rem] text-[0.85rem] text-center"
+              >
+                <i class="pi pi-send mr-5"></i> geraldkevinjove@gmail.com
+              </h1>
+              <h1
+                v-motion
+                :initial="{ opacity: 0, y: 0, scale: 0 }"
+                :visible-once="{ opacity: 1, y: 0, scale: 1 }"
+                :delay="300"
+                :duration="1200"
+                class="flex sm:flex-row flex-col items-center p-5 text-center"
+              >
+                <i class="pi pi-phone mr-5"></i> (+63) 966-331-0965
+              </h1>
+              <h1
+                v-motion
+                :initial="{ opacity: 0, y: 0, scale: 0 }"
+                :visible-once="{ opacity: 1, y: 0, scale: 1 }"
+                :delay="400"
+                :duration="1200"
+                class="flex sm:flex-row flex-col items-center p-5 text-center"
+              >
+>>>>>>> fb33519d8239c3d18355db2176d6d864f901c844
                 <i class="pi pi-map-marker mr-5"></i> Caloocan City, Philippines
               </h1>
             </div>

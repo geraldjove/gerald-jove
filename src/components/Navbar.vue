@@ -44,7 +44,7 @@ onMounted(() => {
           >GJ<span class="text-[#009efa]">.</span></RouterLink
         >
         <!-- Burger Icons -->
-        <div class="ms-auto sm:hidden block p-2" id="burger">
+        <div class="ms-auto sm:hidden block py-2" id="burger">
           <i
             @click="navToggle"
             :class="[
