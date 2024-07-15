@@ -2,7 +2,11 @@
 import { RouterLink } from "vue-router";
 
 const scrollToTop = () => {
-  window.scrollTo(0, 0);
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "instant",
+  });
 };
 </script>
 
@@ -65,7 +69,7 @@ const scrollToTop = () => {
           >
           <h1 class="font-bold text-3xl text-black">OR</h1>
           <a
-            to="mailto:geraldkevinjove@gmail.com"
+            href="mailto:geraldkevinjove@gmail.com"
             class="bg-black p-5 rounded-full min-w-[80%] mb-auto my-10 text-[#009efa] font-bold text-center"
           >
             <button class="flex justify-center items-center mx-auto">

@@ -50,14 +50,9 @@ onMounted(() => {
       </div>
       <div class="grid sm:grid-cols-3 gap-2 mb-20">
         <ProjectCard
-          v-for="(program, index) in programArray"
+          v-for="program in programArray"
           :key="program.id"
           :project="program"
-          v-motion
-          :initial="{ opacity: 0, y: 0, scale: 0 }"
-          :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-          :delay="200 + index * 200"
-          :duration="1200"
         />
       </div>
       <!-- Creative Section -->
@@ -86,11 +81,6 @@ onMounted(() => {
           v-for="(art, index) in creativeArray"
           :key="index"
           :project="art"
-          v-motion
-          :initial="{ opacity: 0, y: 0, scale: 0 }"
-          :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-          :delay="200 + index * 200"
-          :duration="1200"
         />
       </div>
     </div>

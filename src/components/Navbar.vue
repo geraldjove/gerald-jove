@@ -34,11 +34,11 @@ onMounted(() => {
         <RouterLink
           to="/"
           class="text-white font-bold text-3xl"
+          @click="scrollToTop()"
           v-motion
           :initial="{ opacity: 0, y: 0, scale: 0 }"
           :enter="{ opacity: 1, y: 0, scale: 1 }"
           :variants="{ custom: { scale: 2 } }"
-          :hovered="{ scale: 1.2 }"
           :delay="100"
           :duration="1200"
           >GJ<span class="text-[#009efa]">.</span></RouterLink
