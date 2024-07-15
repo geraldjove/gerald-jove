@@ -2,7 +2,7 @@
 
 <template>
   <section class="min-h-50px max-w-screen-full bg-[#1a1a1a]">
-    <div class="flex justify-center items-center text-white">
+    <div class="flex flex-wrap justify-center items-center text-white">
       <p>© 2024 Gerald Jove. All rights reserved</p>
       <nav>
         <nav class="ms-5">

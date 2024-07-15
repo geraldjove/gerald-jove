@@ -3,7 +3,7 @@
     "programming": [
       {
         "id": "1",
-        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "img": "https://geraldjove.github.io/website-developer-portfolio/static/media/forex.66055487fe27f6a27c47.JPG",
         "title": "ForEx Calculator",
         "description": "Looking to convert currencies effortlessly? Our forex calculator offers instant and accurate conversions at the latest exchange rates. Whether you're a traveler, investor, or simply curious, streamline your financial calculations hassle-free with our tool!",
         "hasCode": true,
@@ -12,7 +12,7 @@
       },
       {
         "id": "2",
-        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "img": "https://geraldjove.github.io/website-developer-portfolio/static/media/ecommerce.a4c2f27456ac52c09261.JPG",
         "title": "E-commerce Shop",
         "description": "Welcome to our user-friendly e-commerce platform! Shop seamlessly through our wide range of products with intuitive navigation. Explore today for a convenient online shopping experience brought to life through stylish design and seamless functionality.",
         "hasCode": true,
@@ -21,7 +21,7 @@
       },
       {
         "id": "3",
-        "img": "https://cdna.artstation.com/p/assets/covers/images/063/661/302/smaller_square/gerald-jove-gerald-jove-photo-1-2.jpg?1686063972",
+        "img": "https://geraldjove.github.io/website-developer-portfolio/static/media/things-to-do.61b66d0ffc8325f3618c.JPG",
         "title": "To Do List App",
         "description": "Presenting a sleek and intuitive Things To Do app website, designed for seamless organization and productivity. With its minimalist interface and user-friendly features, users can effortlessly create, manage, and prioritize tasks. Elevate efficiency and streamline daily routines with this indispensable tool, showcasing my proficiency in UI/UX design and web development.",
         "hasCode": true,

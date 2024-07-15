@@ -34,11 +34,11 @@ onMounted(() => {
         <RouterLink
           to="/"
           class="text-white font-bold text-3xl"
+          @click="scrollToTop()"
           v-motion
           :initial="{ opacity: 0, y: 0, scale: 0 }"
           :enter="{ opacity: 1, y: 0, scale: 1 }"
           :variants="{ custom: { scale: 2 } }"
-          :hovered="{ scale: 1.2 }"
           :delay="100"
           :duration="1200"
           >GJ<span class="text-[#009efa]">.</span></RouterLink
@@ -220,7 +220,7 @@ onMounted(() => {
       </div>
       <div class="hidden sm:block">
         <a
-          href="https://drive.google.com/uc?export=download&id=19FSRCQP-5lCsknrKTliY38CvT2cpDGPFx63q3KuKCgs"
+          href="https://drive.google.com/uc?export=download&id=1nf_5JQAv0tN-pOy-SQG_DsxNZkNW9lSo"
           download="gerald-jove-web-developer-resume"
           target="_blank"
           v-motion

@@ -19,67 +19,30 @@ const refData = ref({
     <div
       class="container min-h-[100vh] mx-auto flex justify-center items-center p-5"
     >
-      <div
-        v-motion
-        :initial="{ opacity: 0, y: 0, scale: 0 }"
-        :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-        :delay="100"
-        :duration="1200"
-        class="border border-white min-w-full rounded-xl"
-      >
+      <div class="border border-white min-w-full rounded-xl">
         <div class="grid sm:grid-cols-2">
           <div class="min-h-[100px] p-5">
             <div
               class="text-white font-bold sm:text-2xl min-h-[500px] flex flex-col justify-center sm:ms-10"
             >
               <h1
-                v-motion
-                :initial="{ opacity: 0, y: 0, scale: 0 }"
-                :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-                :delay="100"
-                :duration="1200"
                 class="sm:text-7xl text-2xl font-black tracking-wider text-white uppercase mb-5"
               >
                 Let's Bring Your Vision into
                 <span class="text-[#009efa] italic">Reality</span>!
               </h1>
-              <h1
-                v-motion
-                :initial="{ opacity: 0, y: 0, scale: 0 }"
-                :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-                :delay="200"
-                :duration="1200"
-                class="flex items-center p-5"
-              >
+              <h1 class="flex items-center p-5">
                 <i class="pi pi-send mr-5"></i> geraldkevinjove@gmail.com
               </h1>
-              <h1
-                v-motion
-                :initial="{ opacity: 0, y: 0, scale: 0 }"
-                :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-                :delay="300"
-                :duration="1200"
-                class="p-5"
-              >
+              <h1 class="p-5">
                 <i class="pi pi-phone mr-5"></i> (+63) 966-331-0965
               </h1>
-              <h1
-                v-motion
-                :initial="{ opacity: 0, y: 0, scale: 0 }"
-                :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-                :delay="400"
-                :duration="1200"
-                class="p-5"
-              >
+              <h1 class="p-5">
                 <i class="pi pi-map-marker mr-5"></i> Caloocan City, Philippines
               </h1>
             </div>
             <div
               class="min-h-[50px] sm:max-w-full my-5 flex justify-around items-center border rounded-xl border-[#009efa] text-white"
-              v-motion
-              :initial="{ opacity: 0, y: 0, scale: 0 }"
-              :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-              :delay="300"
               :duration="1200"
             >
               <a href="https://www.linkedin.com/in/geraldjove" target="_blank"
@@ -97,11 +60,6 @@ const refData = ref({
             </div>
           </div>
           <div
-            v-motion
-            :initial="{ opacity: 0, y: 0, scale: 0 }"
-            :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-            :delay="100"
-            :duration="1200"
             class="min-h-[100px] bg-[#009efa] rounded-r-xl p-5 flex flex-col justify-center"
           >
             <h1
