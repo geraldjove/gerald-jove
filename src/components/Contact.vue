@@ -2,15 +2,11 @@
 import { RouterLink } from "vue-router";
 
 const scrollToTop = () => {
-<<<<<<< HEAD
   window.scrollTo({
     top: 0,
     left: 0,
     behavior: "instant",
   });
-=======
-  window.scrollTo(0, 0);
->>>>>>> fb33519d8239c3d18355db2176d6d864f901c844
 };
 </script>
 

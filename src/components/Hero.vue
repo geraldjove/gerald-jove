@@ -2,18 +2,13 @@
 import profilePhoto from "@/assets/img/profile-photo.jpg";
 import ScrollDown from "@/components/ScrollDown.vue";
 import { RouterLink } from "vue-router";
-<<<<<<< HEAD
+
 const scrollToTop = () => {
   window.scrollTo({
     top: 0,
     left: 0,
     behavior: "instant",
   });
-=======
-
-const scrollToTop = () => {
-  window.scrollTo(0, 0);
->>>>>>> fb33519d8239c3d18355db2176d6d864f901c844
 };
 </script>
 <template>
