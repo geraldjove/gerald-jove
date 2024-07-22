@@ -24,9 +24,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <nav
-    class="bg-[#1a1a1a] sm:absolute fixed z-10 min-w-[100vw] overflow-hidden top-0"
-  >
+  <nav class="bg-[#1a1a1a] sm:absolute fixed z-10 w-full overflow-hidden top-0">
     <div
       class="sm:max-w-screen-xl min-w-[50px] sm:flex sm:flex-wrap justify-between items-center mx-auto px-2"
     >
