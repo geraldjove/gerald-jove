@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink } from "vue-router";
+import primeSneaks from "../assets/img/prime-sneaks.png";
 
 const scrollToTop = () => {
   window.scrollTo(0, 0);
@@ -139,13 +140,19 @@ const scrollToTop = () => {
             :duration="1200"
           ></div>
           <div
-            class="rounded-lg min-h-[200px] bg-programming-Ecommerce bg-center bg-cover"
+            class="rounded-lg min-h-[200px] bg-center bg-cover"
             v-motion
             :initial="{ opacity: 0, y: 0, scale: 0 }"
             :visible-once="{ opacity: 1, y: 0, scale: 1 }"
             :delay="500"
             :duration="1200"
-          ></div>
+          >
+            <img
+              :src="primeSneaks"
+              alt="prime-sneaks"
+              class="min-h-full object-cover"
+            />
+          </div>
           <div
             class="rounded-lg min-h-[200px] bg-cgi-Demons bg-cover bg-center"
             v-motion

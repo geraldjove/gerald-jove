@@ -1,6 +1,7 @@
 <script setup>
 import Cover from "@/components/Cover.vue";
 import ProjectCard from "@/components/ProjectCard.vue";
+import PortfolioLinkCard from "@/components/PortfolioLinkCard.vue";
 import CreativeCard from "@/components/CreativeCard.vue";
 import worksData from "@/projects.json";
 
@@ -67,6 +68,7 @@ onMounted(() => {
         >
           Creative
         </h1>
+
         <div
           class="bg-[#009efa] w-[120px] sm:w-[500px] sm:h-[5px] h-[5px] mb-10"
           v-motion
@@ -75,6 +77,23 @@ onMounted(() => {
           :delay="200"
           :duration="1200"
         ></div>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-4 mb-5">
+        <PortfolioLinkCard
+          image="https://www.artstation.com/assets/about/logo/logo-artstation-horizontal-aa3fb1d5023367e8cd6935164def00483b2a42825df9a69a8c6f5f462569c91a.png"
+          title="ArtStation"
+          link="https://www.artstation.com/geraldjove"
+        />
+        <PortfolioLinkCard
+          image="https://cdn.mos.cms.futurecdn.net/8gzcr6RpGStvZFA2qRt4v6-1200-80.jpg"
+          title="YouTube"
+          link="https://www.youtube.com/@GeraldJove"
+        />
+        <PortfolioLinkCard
+          image="https://allvectorlogo.com/img/2021/12/github-logo-vector.png"
+          title="GitHub"
+          link="https://github.com/geraldjove"
+        />
       </div>
       <div class="grid sm:grid-cols-5 justify-items-center gap-1 mb-20`,">
         <CreativeCard

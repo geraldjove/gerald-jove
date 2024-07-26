@@ -46,7 +46,9 @@ const toggleShowFullDescription = () => {
           >
         </p>
       </div>
+      <!-- Stack Used -->
     </div>
+
     <!-- Portfolio Live & Code Button -->
     <div v-if="project.hasCode === true" class="grid grid-cols-2 mt-auto">
       <a :href="project.live" target="_blank"

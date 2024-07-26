@@ -1,7 +1,13 @@
 <script setup>
 import { RouterLink } from "vue-router";
+import primeSneaks from "../assets/img/prime-sneaks.png";
+
 const scrollToTop = () => {
-  window.scrollTo(0, 0);
+  window.scroll({
+    top: 0,
+    left: 0,
+    behavior: "instant",
+  });
 };
 </script>
 <template>
@@ -93,7 +99,7 @@ const scrollToTop = () => {
           ></video>
         </div>
         <div
-          class="bg-programming-Ecommerce bg-cover bg-center min-h-[200px] max-h-[200px] sm:col-span-6 rounded-lg overflow-hidden relative"
+          class="bg-programming-Ecommerce rounded-lg min-w-[200px] sm:col-span-6 bg-cover bg-center"
           v-motion
           :initial="{ opacity: 0, x: 100, scale: 1 }"
           :visible-once="{ opacity: 1, x: 0, scale: 1 }"
