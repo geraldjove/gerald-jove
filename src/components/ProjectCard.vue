@@ -51,18 +51,18 @@ const toggleShowFullDescription = () => {
 
     <!-- Portfolio Live & Code Button -->
     <div v-if="project.hasCode === true" class="grid grid-cols-2 mt-auto">
-      <a :href="project.live" target="_blank"
-        ><button
-          class="bg-[#009efa] min-w-full rounded-bl-xl font-bold uppercase min-h-[50px]"
-        >
-          Live
-        </button></a
-      >
       <a :href="project.code" target="_blank"
         ><button
-          class="bg-[#e93e63] min-w-full rounded-br-xl font-bold uppercase min-h-[50px]"
+          class="bg-[#e93e63] min-w-full rounded-bl-xl font-bold uppercase min-h-[50px]"
         >
           Code
+        </button></a
+      >
+      <a :href="project.live" target="_blank"
+        ><button
+          class="bg-[#009efa] min-w-full rounded-br-xl font-bold uppercase min-h-[50px]"
+        >
+          Live
         </button></a
       >
     </div>

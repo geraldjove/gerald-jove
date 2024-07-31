@@ -28,6 +28,23 @@ onMounted(() => {
   />
   <section class="min-h-[100vh] bg-[#1a1a1a]" id="next-section">
     <div class="container mx-auto p-5">
+      <div class="grid sm:grid-cols-3 gap-4 mb-10">
+        <PortfolioLinkCard
+          image="https://www.artstation.com/assets/about/logo/logo-artstation-horizontal-aa3fb1d5023367e8cd6935164def00483b2a42825df9a69a8c6f5f462569c91a.png"
+          title="ArtStation"
+          link="https://www.artstation.com/geraldjove"
+        />
+        <PortfolioLinkCard
+          image="https://cdn.mos.cms.futurecdn.net/8gzcr6RpGStvZFA2qRt4v6-1200-80.jpg"
+          title="YouTube"
+          link="https://www.youtube.com/@GeraldJove"
+        />
+        <PortfolioLinkCard
+          image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHyWp6EGwy3_zRBG283TbBSyPeU4byviEejA&s"
+          title="GitHub"
+          link="https://github.com/geraldjove"
+        />
+      </div>
       <!-- Web Development Sections -->
       <div class="flex flex-col justify-center items-center">
         <h1
@@ -78,23 +95,7 @@ onMounted(() => {
           :duration="1200"
         ></div>
       </div>
-      <div class="grid sm:grid-cols-3 gap-4 mb-5">
-        <PortfolioLinkCard
-          image="https://www.artstation.com/assets/about/logo/logo-artstation-horizontal-aa3fb1d5023367e8cd6935164def00483b2a42825df9a69a8c6f5f462569c91a.png"
-          title="ArtStation"
-          link="https://www.artstation.com/geraldjove"
-        />
-        <PortfolioLinkCard
-          image="https://cdn.mos.cms.futurecdn.net/8gzcr6RpGStvZFA2qRt4v6-1200-80.jpg"
-          title="YouTube"
-          link="https://www.youtube.com/@GeraldJove"
-        />
-        <PortfolioLinkCard
-          image="https://allvectorlogo.com/img/2021/12/github-logo-vector.png"
-          title="GitHub"
-          link="https://github.com/geraldjove"
-        />
-      </div>
+
       <div class="grid sm:grid-cols-5 justify-items-center gap-1 mb-20`,">
         <CreativeCard
           v-for="(art, index) in creativeArray"

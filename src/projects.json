@@ -12,12 +12,12 @@
       },
       {
         "id": "2",
-        "img": "https://geraldjove.github.io/website-developer-portfolio/static/media/ecommerce.a4c2f27456ac52c09261.JPG",
-        "title": "E-commerce Shop",
-        "description": "Welcome to our user-friendly e-commerce platform! Shop seamlessly through our wide range of products with intuitive navigation. Explore today for a convenient online shopping experience brought to life through stylish design and seamless functionality.",
+        "img": "https://i.postimg.cc/hP1hT01d/prime-sneaks.png",
+        "title": "Prime Sneaks E-commerce Store",
+        "description": "Featuring a sleek, responsive sneaker store built with Vite, React JS, and Tailwind, showcasing a dynamic and engaging user experience.",
         "hasCode": true,
-        "code": "https://github.com/geraldjove/b335-jove-capstone-3",
-        "live": "https://b335-capstone-jove-3.vercel.app/"
+        "code": "https://github.com/geraldjove/prime-sneaks",
+        "live": "https://prime-sneaks.netlify.app/"
       },
       {
         "id": "3",
