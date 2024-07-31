@@ -11,8 +11,10 @@ defineProps({
 
 <template>
   <div class="w-full border border-gray-200 rounded-lg min-h-[350px]">
-    <div class="max-h-[250px] overflow-hidden">
-      <img :src="image" alt="alt-image" class="w-full rounded-lg" />
+    <div
+      class="max-h-[250px] min-h-[250px] overflow-hidden flex justify-center items-center rounded-t-lg bg-white"
+    >
+      <img :src="image" alt="alt-image" class="w-full" />
     </div>
     <div class="p-5 space-y-2">
       <div>
