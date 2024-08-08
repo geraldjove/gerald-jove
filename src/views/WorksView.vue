@@ -30,14 +30,14 @@ onMounted(() => {
     <div class="container mx-auto p-5">
       <div class="grid sm:grid-cols-3 gap-4 mb-10">
         <PortfolioLinkCard
-          image="https://www.artstation.com/assets/about/logo/logo-artstation-horizontal-aa3fb1d5023367e8cd6935164def00483b2a42825df9a69a8c6f5f462569c91a.png"
+          image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxdlKpU7l3bZcJvxXBChhxKebZGu3Q_TusVA&s"
           title="ArtStation"
           link="https://www.artstation.com/geraldjove"
         />
         <PortfolioLinkCard
-          image="https://cdn.mos.cms.futurecdn.net/8gzcr6RpGStvZFA2qRt4v6-1200-80.jpg"
-          title="YouTube"
-          link="https://www.youtube.com/@GeraldJove"
+          image="https://1000logos.net/wp-content/uploads/2020/11/Behance-Logo-2005-500x213.jpg"
+          title="Behance"
+          link="https://www.behance.net/gkbjove"
         />
         <PortfolioLinkCard
           image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHyWp6EGwy3_zRBG283TbBSyPeU4byviEejA&s"
