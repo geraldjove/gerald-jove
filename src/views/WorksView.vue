@@ -4,6 +4,7 @@ import ProjectCard from "@/components/ProjectCard.vue";
 import PortfolioLinkCard from "@/components/PortfolioLinkCard.vue";
 import CreativeCard from "@/components/CreativeCard.vue";
 import worksData from "@/projects.json";
+import gDrive from "@/assets/img/g-drive.jpg";
 
 import { ref, onMounted } from "vue";
 
@@ -28,7 +29,7 @@ onMounted(() => {
   />
   <section class="min-h-[100vh] bg-[#1a1a1a]" id="next-section">
     <div class="container mx-auto p-5">
-      <div class="grid sm:grid-cols-3 gap-4 mb-10">
+      <div class="grid sm:grid-cols-4 gap-4 mb-10">
         <PortfolioLinkCard
           image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxdlKpU7l3bZcJvxXBChhxKebZGu3Q_TusVA&s"
           title="ArtStation"
@@ -43,6 +44,11 @@ onMounted(() => {
           image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHyWp6EGwy3_zRBG283TbBSyPeU4byviEejA&s"
           title="GitHub"
           link="https://github.com/geraldjove"
+        />
+        <PortfolioLinkCard
+          :image="gDrive"
+          title="Google Drive"
+          link="https://drive.google.com/drive/folders/1mbLQnjr1s5Rlz8P0uOk0NkL-9cye9a_H?usp=drive_link"
         />
       </div>
       <!-- Web Development Sections -->
