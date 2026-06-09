@@ -4,8 +4,31 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        monoton: ["Monoton", "sans-serif"],
+        sans: ["Space Grotesk", "sans-serif"],
+        display: ["Archivo", "sans-serif"],
+      },
+      colors: {
+        ink: {
+          DEFAULT: "#0b1120",
+          950: "#0b1120",
+          900: "#0f172a",
+          800: "#1e293b",
+          700: "#334155",
+        },
+        accent: {
+          DEFAULT: "#009efa",
+          light: "#4abdff",
+          dark: "#0072c6",
+        },
+      },
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
+      },
+      animation: {
+        float: "float 6s ease-in-out infinite",
       },
       backgroundImage: {
         "cgi-Mouse":

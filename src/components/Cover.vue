@@ -20,40 +20,44 @@ defineProps({
 
 <template>
   <section
-    class="bg-[#1a1a1a] min-h-[100vh] flex justify-center items-center p-5 overflow-hidden"
+    class="bg-grid relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-ink-950 px-6 pt-28 pb-16"
     id="cover"
   >
+    <!-- Ambient glow -->
     <div
-      class="container min-h-[100%] mx-auto flex flex-col justify-center items-center"
-    >
-      <div class="text-white my-auto">
-        <h1
-          :class="`sm:text-[15rem] text-[3.5rem] font-monoton leading-none text-[#009efa] flex justify-${alignment} items-center pt-10`"
-        >
-          <span
-            v-for="(letter, index) in title.split('')"
-            :key="index"
-            v-motion
-            :initial="{ opacity: 0, y: -1000, scale: 0 }"
-            :enter="{ opacity: 1, y: 0, rotate: 0, scale: 1 }"
-            :delay="200 + index * 100"
-            :duration="1200"
-          >
-            {{ letter }}
-          </span>
-        </h1>
-        <h3
-          v-motion
-          :initial="{ opacity: 0, x: 0, scale: 0 }"
-          :enter="{ opacity: 1, x: 0, scale: 1 }"
-          :delay="200"
-          :duration="1200"
-          :class="`sm:text-[3rem] font-bold leading-none flex justify-${alignment}`"
-        >
-          {{ subtitle }}
-        </h3>
-      </div>
-      <ScrollDown class="ms-auto" />
+      class="pointer-events-none absolute left-1/2 top-10 h-80 w-80 -translate-x-1/2 rounded-full bg-accent/15 blur-[120px]"
+    ></div>
+
+    <div class="relative flex flex-col items-center text-center">
+      <h1
+        class="font-display text-6xl font-extrabold uppercase leading-none tracking-tight text-white sm:text-8xl"
+        v-motion
+        :initial="{ opacity: 0, y: 40 }"
+        :enter="{ opacity: 1, y: 0 }"
+        :duration="900"
+      >
+        {{ title }}
+      </h1>
+      <div
+        class="mt-5 h-1 w-24 rounded-full bg-accent"
+        v-motion
+        :initial="{ opacity: 0, scaleX: 0 }"
+        :enter="{ opacity: 1, scaleX: 1 }"
+        :delay="400"
+        :duration="800"
+      ></div>
+      <h3
+        class="mt-6 max-w-2xl text-lg font-medium text-slate-300 sm:text-2xl"
+        v-motion
+        :initial="{ opacity: 0, y: 20 }"
+        :enter="{ opacity: 1, y: 0 }"
+        :delay="500"
+        :duration="800"
+      >
+        {{ subtitle }}
+      </h3>
     </div>
+
+    <ScrollDown class="absolute bottom-6 left-1/2 -translate-x-1/2" />
   </section>
 </template>

@@ -2,80 +2,54 @@
 import { RouterLink } from "vue-router";
 
 const scrollToTop = () => {
-  window.scrollTo({
-    top: 0,
-    left: 0,
-    behavior: "instant",
-  });
+  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 };
 </script>
 
 <template>
-  <section class="min-h-[100vh] bg-[#1a1a1a] flex" id="contact">
-    <div
-      class="sm:min-h-screen max-w-screen-xl mx-auto text-white flex flex-col items-center justify-center p-4"
-    >
-      <div>
-        <h1
-          class="font-monoton sm:text-7xl text-5xl"
-          v-motion
-          :initial="{ opacity: 0, x: 0, scale: 0 }"
-          :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-          :delay="100"
-          :duration="1200"
-        >
-          Contact
-        </h1>
-      </div>
+  <section class="bg-grid relative overflow-hidden bg-ink-950 py-24" id="contact">
+    <div class="mx-auto max-w-screen-xl px-6">
       <div
-        class="bg-[#009efa] w-[120px] sm:w-[300px] sm:h-[10px] h-[5px] mb-5"
+        class="glass-strong relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:px-16"
         v-motion
-        :initial="{ opacity: 0, x: 100, scale: 1 }"
-        :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-        :delay="200"
-        :duration="1200"
-      ></div>
-      <div class="grid sm:grid-cols-5 p-5 min-h-[500px]">
-        <div class="sm:col-span-3 flex flex-col items-center justify-center">
-          <h1
-            class="sm:text-8xl text-2xl font-black tracking-wider text-white uppercase"
-            v-motion
-            :initial="{ opacity: 0, x: -100, scale: 1 }"
-            :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-            :delay="100"
-            :duration="1200"
-          >
-            Let's Bring Your
-            <span>Vision</span>
-            into <span class="text-[#009efa] italic">Reality</span>!
-          </h1>
-        </div>
+        :initial="{ opacity: 0, y: 40 }"
+        :visible-once="{ opacity: 1, y: 0 }"
+        :duration="900"
+      >
+        <!-- glow -->
         <div
-          class="bg-[#009efa] rounded-xl flex flex-col items-center sm:col-span-2"
-          v-motion
-          :initial="{ opacity: 0, y: 100, scale: 1 }"
-          :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-          :delay="300"
-          :duration="1200"
+          class="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-accent/20 blur-[120px]"
+        ></div>
+
+        <span class="relative mb-4 inline-block text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+          Let's Connect
+        </span>
+        <h2
+          class="relative mx-auto max-w-3xl font-display text-4xl font-extrabold leading-tight text-white sm:text-6xl"
         >
-          <RouterLink
-            to="/contact"
-            @click="scrollToTop()"
-            class="bg-black p-5 rounded-full min-w-[80%] mt-auto my-10 text-[#009efa] font-bold text-center"
-          >
-            <button class="flex justify-center items-center mx-auto">
-              <i class="me-4 pi pi-phone"></i> Contact Details
-            </button></RouterLink
-          >
-          <h1 class="font-bold text-3xl text-black">OR</h1>
-          <a
-            href="mailto:geraldkevinjove@gmail.com"
-            class="bg-black p-5 rounded-full min-w-[80%] mb-auto my-10 text-[#009efa] font-bold text-center"
-          >
-            <button class="flex justify-center items-center mx-auto">
-              <i class="me-4 pi pi-send"></i> Send an Email
-            </button></a
-          >
+          Let's Bring Your Vision into
+          <span class="text-gradient">Reality</span>
+        </h2>
+        <p class="relative mx-auto mt-6 max-w-xl text-slate-400">
+          Have a project in mind or just want to say hello? I'm always open to
+          discussing new opportunities and creative collaborations.
+        </p>
+
+        <div class="relative mt-10 flex flex-wrap items-center justify-center gap-4">
+          <a href="mailto:geraldkevinjove@gmail.com">
+            <button
+              class="inline-flex items-center gap-2 rounded-xl bg-accent px-8 py-3 font-bold text-ink-900 transition-all duration-200 hover:bg-accent-light hover:shadow-[0_0_40px_-8px_rgba(0,158,250,0.8)]"
+            >
+              <i class="pi pi-send"></i> Send an Email
+            </button>
+          </a>
+          <RouterLink to="/contact" @click="scrollToTop()">
+            <button
+              class="inline-flex items-center gap-2 rounded-xl border border-white/15 px-8 py-3 font-semibold text-white transition-colors duration-200 hover:border-accent/60 hover:text-accent"
+            >
+              <i class="pi pi-phone"></i> Contact Details
+            </button>
+          </RouterLink>
         </div>
       </div>
     </div>

@@ -1,42 +1,29 @@
 <script setup>
-import { ref, defineProps } from "vue";
+import { defineProps } from "vue";
 
 defineProps({
   image: String,
   title: String,
-  description: String,
   link: String,
 });
 </script>
 
 <template>
-  <div class="w-full border border-gray-200 rounded-lg min-h-[350px]">
+  <a :href="link" target="_blank" rel="noopener" class="group block">
     <div
-      class="max-h-[250px] min-h-[250px] overflow-hidden flex justify-center items-center rounded-t-lg bg-white"
+      class="glass flex h-full flex-col items-center gap-4 rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-accent/40"
     >
-      <img :src="image" alt="alt-image" class="w-full p-5" />
+      <div
+        class="grid h-20 w-20 place-items-center overflow-hidden rounded-2xl bg-white p-3"
+      >
+        <img :src="image" :alt="`${title} logo`" class="max-h-full max-w-full object-contain" />
+      </div>
+      <h3 class="font-display text-lg font-bold text-white">{{ title }}</h3>
+      <span
+        class="mt-auto inline-flex items-center gap-1 text-sm font-medium text-accent"
+      >
+        Visit <i class="pi pi-arrow-up-right text-xs transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"></i>
+      </span>
     </div>
-    <div class="p-5 space-y-2">
-      <div>
-        <h1 class="text-xl font-bold text-[#009efa] text-center">
-          {{ title }}
-        </h1>
-      </div>
-      <div><hr class="my-2" /></div>
-      <div>
-        <p class="text-white">
-          {{ description }}
-        </p>
-      </div>
-      <div>
-        <a :href="link" target="_blank">
-          <button
-            class="bg-[#009efa] min-w-full rounded-xl font-bold uppercase min-h-[50px]"
-          >
-            Go to Portfolio
-          </button></a
-        >
-      </div>
-    </div>
-  </div>
+  </a>
 </template>

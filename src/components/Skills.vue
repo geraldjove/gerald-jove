@@ -6,185 +6,96 @@ const programArray = ref([]);
 const creativeArray = ref([]);
 
 onMounted(() => {
-  programArray.value = skillsData.skills.programming.map(
-    (programmingSkill) => programmingSkill
-  );
-  creativeArray.value = skillsData.skills.creative.map(
-    (creativeSkill) => creativeSkill
-  );
+  programArray.value = [...skillsData.skills.programming].sort();
+  creativeArray.value = [...skillsData.skills.creative].sort();
 });
-
-const scrollUpBtn = (section) => {
-  const scrollContainer = document.getElementById(section);
-  if (scrollContainer) {
-    scrollContainer.scrollBy({
-      top: -100,
-      behavior: "smooth",
-    });
-  }
-};
-const scrollDownBtn = (section) => {
-  const scrollContainer = document.getElementById(section);
-  if (scrollContainer) {
-    scrollContainer.scrollBy({
-      top: 100,
-      behavior: "smooth",
-    });
-  }
-};
 </script>
 
 <template>
   <section
-    class="min-h-[100vh] min-w-[100%] bg-[#1a1a1a] overflow-hidden"
+    class="bg-grid relative overflow-hidden bg-ink-950 py-24"
     id="skills"
   >
-    <div
-      class="sm:min-h-screen max-w-screen-xl mx-auto text-white flex flex-col justify-center p-4"
-    >
-      <div>
-        <h1
-          class="font-monoton sm:text-9xl text-5xl flex flex-col items-end"
-          v-motion
-          :initial="{ opacity: 0, x: 100, scale: 1 }"
-          :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-          :delay="100"
-          :duration="1200"
-        >
-          Skills
-          <div
-            class="bg-[#009efa] w-[120px] sm:w-[300px] sm:h-[10px] h-[5px] mb-5"
-            v-motion
-            :initial="{ opacity: 0, x: 100, scale: 1 }"
-            :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-            :delay="200"
-            :duration="1200"
-          ></div>
-        </h1>
+    <div class="mx-auto max-w-screen-xl px-6">
+      <!-- Header -->
+      <div
+        class="mb-14 flex flex-col items-center text-center"
+        v-motion
+        :initial="{ opacity: 0, y: 30 }"
+        :visible-once="{ opacity: 1, y: 0 }"
+        :duration="800"
+      >
+        <span class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+          What I Use
+        </span>
+        <h2 class="font-display text-4xl font-extrabold text-white sm:text-5xl">
+          My <span class="text-gradient">Skills</span>
+        </h2>
+        <div class="mt-4 h-1 w-20 rounded-full bg-accent"></div>
       </div>
-      <div class="grid sm:grid-cols-2 gap-4 rounded-lg">
-        <div class="sm:max-h-[500px] rounded-lg p-4 my-auto">
-          <div class="mb-5">
-            <h1
-              class="font-bold mb-3"
-              v-motion
-              :initial="{ opacity: 0, x: -100, scale: 1 }"
-              :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-              :delay="300"
-              :duration="1200"
-            >
-              <span class="bg-[#009efa] px-5 py-1">// Web Development</span>
-            </h1>
-            <p
-              v-motion
-              :initial="{ opacity: 0, x: -100, scale: 1 }"
-              :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-              :delay="400"
-              :duration="1200"
-            >
-              I am a skilled Full-stack Web Developer with expertise in HTML5,
-              CSS, JavaScript, Node.js, React, PHP, MySQL, Python, and more. I
-              have completed a Vocational Course in Full Stack Web Development
-              at Zuitt Coding Bootcamp and have experience in API integration,
-              REST API, and various web development frameworks and tools. My
-              technical proficiency and diverse skill set make me a valuable
-              asset in the field of web development.
-            </p>
+
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <!-- Web Development -->
+        <div
+          class="glass rounded-2xl p-8"
+          v-motion
+          :initial="{ opacity: 0, y: 40 }"
+          :visible-once="{ opacity: 1, y: 0 }"
+          :duration="800"
+        >
+          <div class="mb-4 flex items-center gap-3">
+            <span class="grid h-11 w-11 place-items-center rounded-xl bg-accent/15 text-accent">
+              <i class="pi pi-code text-xl"></i>
+            </span>
+            <h3 class="font-display text-xl font-bold text-white">
+              Web Development
+            </h3>
           </div>
-          <div class="mb-5">
-            <h1
-              class="font-bold mb-3"
-              v-motion
-              :initial="{ opacity: 0, x: -100, scale: 1 }"
-              :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-              :delay="500"
-              :duration="1200"
+          <p class="mb-6 text-sm leading-relaxed text-slate-400">
+            Full-stack web developer skilled in HTML5, CSS, JavaScript, Node.js,
+            React, PHP, MySQL, Python, and more — with experience in API
+            integration, REST APIs, and modern frameworks.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="program in programArray"
+              :key="program"
+              class="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-200 transition-colors duration-200 hover:border-accent/50 hover:text-accent"
             >
-              <span class="bg-[#009efa] px-5 py-1">// Creative</span>
-            </h1>
-            <p
-              v-motion
-              :initial="{ opacity: 0, x: -100, scale: 1 }"
-              :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-              :delay="600"
-              :duration="1200"
-            >
-              As a Multimedia Artist and Digital Marketing Specialist, I
-              specialize in creating visually stunning 3D models and animations.
-              My freelance work includes developing bespoke 3D assets, managing
-              social media content, and implementing SEO strategies to boost
-              online visibility. At SM Ltd., I generated captivating 3D models
-              and animations that drove sales and increased brand visibility,
-              while my role at Versalife Innovations involved crafting
-              innovative graphic design concepts and motion graphics for social
-              media campaigns, significantly enhancing engagement and brand
-              recognition.
-            </p>
+              {{ program }}
+            </span>
           </div>
         </div>
-        <div class="min-h-[500px] rounded-lg">
-          <section class="grid sm:grid-cols-2 gap-4">
-            <div
-              class="border border-[#009efa] rounded-xl flex flex-col items-center p-5"
-              v-motion
-              :initial="{ opacity: 0, y: 100, scale: 1 }"
-              :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-              :delay="600"
-              :duration="1200"
-            >
-              <h1 class="font-black uppercase text-center text-[#009efa] my-5">
-                Web Development
-              </h1>
-              <button @click="scrollUpBtn('programming')">
-                <i class="text-3xl pi pi-arrow-circle-up mb-5"></i>
-              </button>
 
-              <div
-                class="max-h-[450px] overflow-auto remove-scrollbar text-center"
-                id="programming"
-              >
-                <div v-for="program in programArray.sort()" :key="program.id">
-                  <h3 class="my-10 text-3xl">{{ program }}</h3>
-                  <hr width="100px" class="mx-auto" />
-                </div>
-              </div>
-              <button @click="scrollDownBtn('programming')">
-                <i class="text-3xl pi pi-arrow-circle-down mt-5"></i>
-              </button>
-            </div>
-
-            <div
-              class="border border-[#009efa] rounded-xl flex flex-col items-center p-5"
-              v-motion
-              :initial="{ opacity: 0, y: 100, scale: 1 }"
-              :visible-once="{ opacity: 1, y: 0, scale: 1 }"
-              :delay="800"
-              :duration="1200"
+        <!-- Creative -->
+        <div
+          class="glass rounded-2xl p-8"
+          v-motion
+          :initial="{ opacity: 0, y: 40 }"
+          :visible-once="{ opacity: 1, y: 0 }"
+          :delay="150"
+          :duration="800"
+        >
+          <div class="mb-4 flex items-center gap-3">
+            <span class="grid h-11 w-11 place-items-center rounded-xl bg-accent/15 text-accent">
+              <i class="pi pi-palette text-xl"></i>
+            </span>
+            <h3 class="font-display text-xl font-bold text-white">Creative</h3>
+          </div>
+          <p class="mb-6 text-sm leading-relaxed text-slate-400">
+            Multimedia artist and digital marketing specialist creating visually
+            stunning 3D models and animations, motion graphics, and graphic
+            design that drive engagement and brand recognition.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="creative in creativeArray"
+              :key="creative"
+              class="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-200 transition-colors duration-200 hover:border-accent/50 hover:text-accent"
             >
-              <h1 class="font-black uppercase text-center text-[#009efa] my-5">
-                Creative
-              </h1>
-              <button @click="scrollUpBtn('creative')">
-                <i class="text-3xl pi pi-arrow-circle-up mb-5"></i>
-              </button>
-              <div
-                class="max-h-[450px] overflow-auto remove-scrollbar text-center"
-                id="creative"
-              >
-                <div
-                  v-for="creative in creativeArray.sort()"
-                  :key="creative.id"
-                  class=""
-                >
-                  <h3 class="my-10 text-3xl">{{ creative }}</h3>
-                  <hr width="100px" class="mx-auto" />
-                </div>
-              </div>
-              <button @click="scrollDownBtn('creative')">
-                <i class="text-3xl pi pi-arrow-circle-down mt-5"></i>
-              </button>
-            </div>
-          </section>
+              {{ creative }}
+            </span>
+          </div>
         </div>
       </div>
     </div>

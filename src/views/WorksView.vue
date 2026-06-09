@@ -12,100 +12,108 @@ const programArray = ref([]);
 const creativeArray = ref([]);
 
 onMounted(() => {
-  programArray.value = worksData.projects.programming.map((program) => {
-    return program;
-  });
-  creativeArray.value = worksData.projects.creative.map((art) => {
-    return art;
-  });
+  programArray.value = worksData.projects.programming;
+  creativeArray.value = worksData.projects.creative;
 });
+
+const portfolioLinks = [
+  {
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxdlKpU7l3bZcJvxXBChhxKebZGu3Q_TusVA&s",
+    title: "ArtStation",
+    link: "https://www.artstation.com/geraldjove",
+  },
+  {
+    image:
+      "https://1000logos.net/wp-content/uploads/2020/11/Behance-Logo-2005-500x213.jpg",
+    title: "Behance",
+    link: "https://www.behance.net/gkbjove",
+  },
+  {
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHyWp6EGwy3_zRBG283TbBSyPeU4byviEejA&s",
+    title: "GitHub",
+    link: "https://github.com/geraldjove",
+  },
+  {
+    image: gDrive,
+    title: "Google Drive",
+    link: "https://drive.google.com/drive/folders/1mbLQnjr1s5Rlz8P0uOk0NkL-9cye9a_H?usp=drive_link",
+  },
+];
 </script>
 
 <template>
-  <Cover
-    title="Works"
-    subtitle="Web Development & Multimedia Arts"
-    alignment="center"
-  />
-  <section class="min-h-[100vh] bg-[#1a1a1a]" id="next-section">
-    <div class="container mx-auto p-5">
-      <div class="grid sm:grid-cols-4 gap-4 mb-10">
+  <Cover title="Works" subtitle="Web Development & Multimedia Arts" />
+
+  <section class="bg-ink-900 py-24" id="next-section">
+    <div class="mx-auto max-w-screen-xl px-6">
+      <!-- Portfolio platforms -->
+      <div
+        class="mb-20 grid grid-cols-2 gap-4 sm:grid-cols-4"
+        v-motion
+        :initial="{ opacity: 0, y: 30 }"
+        :visible-once="{ opacity: 1, y: 0 }"
+        :duration="800"
+      >
         <PortfolioLinkCard
-          image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxdlKpU7l3bZcJvxXBChhxKebZGu3Q_TusVA&s"
-          title="ArtStation"
-          link="https://www.artstation.com/geraldjove"
-        />
-        <PortfolioLinkCard
-          image="https://1000logos.net/wp-content/uploads/2020/11/Behance-Logo-2005-500x213.jpg"
-          title="Behance"
-          link="https://www.behance.net/gkbjove"
-        />
-        <PortfolioLinkCard
-          image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHyWp6EGwy3_zRBG283TbBSyPeU4byviEejA&s"
-          title="GitHub"
-          link="https://github.com/geraldjove"
-        />
-        <PortfolioLinkCard
-          :image="gDrive"
-          title="Google Drive"
-          link="https://drive.google.com/drive/folders/1mbLQnjr1s5Rlz8P0uOk0NkL-9cye9a_H?usp=drive_link"
+          v-for="link in portfolioLinks"
+          :key="link.title"
+          :image="link.image"
+          :title="link.title"
+          :link="link.link"
         />
       </div>
-      <!-- Web Development Sections -->
-      <div class="flex flex-col justify-center items-center">
-        <h1
-          class="font-monoton sm:text-7xl text-3xl text-white uppercase"
-          v-motion
-          :initial="{ opacity: 0, x: 0, scale: 0 }"
-          :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-          :delay="200"
-          :duration="1200"
-        >
-          Web Development
-        </h1>
-        <div
-          class="bg-[#009efa] w-[120px] sm:w-[500px] sm:h-[5px] h-[5px] mb-10"
-          v-motion
-          :initial="{ opacity: 0, x: 100, scale: 1 }"
-          :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-          :delay="200"
-          :duration="1200"
-        ></div>
+
+      <!-- Web Development -->
+      <div
+        class="mb-12 flex flex-col items-center text-center"
+        v-motion
+        :initial="{ opacity: 0, y: 30 }"
+        :visible-once="{ opacity: 1, y: 0 }"
+        :duration="800"
+      >
+        <span class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+          Code
+        </span>
+        <h2 class="font-display text-4xl font-extrabold text-white sm:text-5xl">
+          Web <span class="text-gradient">Development</span>
+        </h2>
+        <div class="mt-4 h-1 w-20 rounded-full bg-accent"></div>
       </div>
-      <div class="grid sm:grid-cols-3 gap-2 mb-20">
+      <div class="mb-24 grid grid-cols-1 gap-6 md:grid-cols-3">
         <ProjectCard
-          v-for="program in programArray"
+          v-for="(program, index) in programArray"
           :key="program.id"
           :project="program"
+          v-motion
+          :initial="{ opacity: 0, y: 40 }"
+          :visible-once="{ opacity: 1, y: 0 }"
+          :delay="index * 120"
+          :duration="800"
         />
       </div>
-      <!-- Creative Section -->
-      <div class="flex flex-col justify-center items-center">
-        <h1
-          class="font-monoton sm:text-7xl text-3xl text-white uppercase"
-          v-motion
-          :initial="{ opacity: 0, x: 0, scale: 0 }"
-          :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-          :delay="200"
-          :duration="1200"
-        >
-          Creative
-        </h1>
 
-        <div
-          class="bg-[#009efa] w-[120px] sm:w-[500px] sm:h-[5px] h-[5px] mb-10"
-          v-motion
-          :initial="{ opacity: 0, x: 100, scale: 1 }"
-          :visible-once="{ opacity: 1, x: 0, scale: 1 }"
-          :delay="200"
-          :duration="1200"
-        ></div>
+      <!-- Creative -->
+      <div
+        class="mb-12 flex flex-col items-center text-center"
+        v-motion
+        :initial="{ opacity: 0, y: 30 }"
+        :visible-once="{ opacity: 1, y: 0 }"
+        :duration="800"
+      >
+        <span class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+          Art
+        </span>
+        <h2 class="font-display text-4xl font-extrabold text-white sm:text-5xl">
+          <span class="text-gradient">Creative</span>
+        </h2>
+        <div class="mt-4 h-1 w-20 rounded-full bg-accent"></div>
       </div>
-
-      <div class="grid sm:grid-cols-5 justify-items-center gap-1 mb-20`,">
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <CreativeCard
-          v-for="(art, index) in creativeArray"
-          :key="index"
+          v-for="art in creativeArray"
+          :key="art.id"
           :project="art"
         />
       </div>

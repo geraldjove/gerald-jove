@@ -28,3 +28,7 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+.vercel
+
+# Local dev tooling / installed skills
+.claude
