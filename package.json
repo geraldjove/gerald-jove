@@ -10,11 +10,7 @@
   },
   "dependencies": {
     "@vueuse/motion": "^2.2.3",
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "nodemon": "^3.1.4",
     "primeicons": "^7.0.0",
-    "puppeteer": "^22.13.0",
     "vue": "^3.4.29",
     "vue-router": "^4.4.0",
     "vue-scrollto": "^2.20.0"
