@@ -9,9 +9,8 @@ const refData = ref({
 });
 
 const contactInfo = [
-  { icon: "pi-envelope", label: "geraldkevinjove@gmail.com", href: "mailto:geraldkevinjove@gmail.com" },
-  { icon: "pi-phone", label: "(+63) 966-331-0965", href: "tel:+639663310965" },
   { icon: "pi-map-marker", label: "Caloocan City, Philippines", href: null },
+  { icon: "pi-comments", label: "Use the form — I'll reply by email", href: null },
 ];
 
 const socials = [

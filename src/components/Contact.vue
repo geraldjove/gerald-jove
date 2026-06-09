@@ -36,18 +36,11 @@ const scrollToTop = () => {
         </p>
 
         <div class="relative mt-10 flex flex-wrap items-center justify-center gap-4">
-          <a href="mailto:geraldkevinjove@gmail.com">
+          <RouterLink to="/contact" @click="scrollToTop()">
             <button
               class="inline-flex items-center gap-2 rounded-xl bg-accent px-8 py-3 font-bold text-ink-900 transition-all duration-200 hover:bg-accent-light hover:shadow-[0_0_40px_-8px_rgba(0,158,250,0.8)]"
             >
-              <i class="pi pi-send"></i> Send an Email
-            </button>
-          </a>
-          <RouterLink to="/contact" @click="scrollToTop()">
-            <button
-              class="inline-flex items-center gap-2 rounded-xl border border-white/15 px-8 py-3 font-semibold text-white transition-colors duration-200 hover:border-accent/60 hover:text-accent"
-            >
-              <i class="pi pi-phone"></i> Contact Details
+              <i class="pi pi-send"></i> Get in Touch
             </button>
           </RouterLink>
         </div>
