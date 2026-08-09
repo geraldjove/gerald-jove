@@ -4,7 +4,7 @@ import { ref } from "vue";
 
 const refData = ref({
   email: "",
-  subject: "general-inquiry",
+  subject: "project-inquiry",
   message: "",
 });
 
@@ -112,10 +112,9 @@ const socials = [
                 v-model="refData.subject"
                 class="w-full rounded-xl border border-white/10 bg-ink-950 px-4 py-3 text-white [color-scheme:dark] outline-none transition-colors focus:border-accent focus:ring-1 focus:ring-accent"
               >
+                <option value="project-inquiry">Project Inquiry</option>
                 <option value="general-inquiry">General Inquiry</option>
-                <option value="customer-support">Customer Support</option>
-                <option value="hire-me">Hire Me</option>
-                <option value="others">Others</option>
+                <option value="other">Other</option>
               </select>
             </div>
             <div>

@@ -7,7 +7,9 @@ import FooterComponent from "@/components/FooterComponent.vue";
 
 <template>
   <Navbar />
-  <RouterView />
+  <main id="main-content">
+    <RouterView />
+  </main>
   <ScrollTop />
   <FooterComponent />
 </template>

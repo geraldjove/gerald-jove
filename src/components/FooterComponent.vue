@@ -63,7 +63,7 @@ const socials = [
       </div>
 
       <div class="mt-8 border-t border-white/10 pt-6 text-center">
-        <p class="text-sm text-slate-500">
+        <p class="text-sm text-slate-400">
           © 2026 Gerald Jove. All rights reserved.
         </p>
       </div>

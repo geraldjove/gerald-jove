@@ -13,8 +13,6 @@ const socials = [
   { icon: "pi-instagram", url: "https://www.instagram.com/geraldjove/", label: "Instagram" },
 ];
 
-const resumeUrl =
-  "https://drive.google.com/uc?export=download&id=1ncDho6gvyf3khQrSzrzT7ghcb5Uhugkf";
 </script>
 
 <template>
@@ -86,17 +84,6 @@ const resumeUrl =
                 About Page <i class="pi pi-arrow-up-right"></i>
               </button>
             </RouterLink>
-            <a
-              :href="resumeUrl"
-              download="gerald-jove-web-developer-resume"
-              target="_blank"
-            >
-              <button
-                class="inline-flex items-center gap-2 rounded-xl border border-white/15 px-6 py-3 font-semibold text-white transition-colors duration-200 hover:border-accent/60 hover:text-accent"
-              >
-                Download CV <i class="pi pi-download"></i>
-              </button>
-            </a>
           </div>
         </div>
 

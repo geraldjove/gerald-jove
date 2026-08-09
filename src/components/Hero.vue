@@ -33,23 +33,6 @@ const socials = [
     >
       <!-- Text column -->
       <div class="flex flex-col">
-        <span
-          class="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 text-sm font-medium text-accent"
-          v-motion
-          :initial="{ opacity: 0, y: 20 }"
-          :enter="{ opacity: 1, y: 0 }"
-          :delay="200"
-          :duration="800"
-        >
-          <span class="relative flex h-2 w-2">
-            <span
-              class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75"
-            ></span>
-            <span class="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
-          </span>
-          Available for work
-        </span>
-
         <h1
           class="font-display text-5xl font-extrabold leading-[1.05] text-white sm:text-7xl"
           v-motion
@@ -153,13 +136,6 @@ const socials = [
             alt="Portrait of Gerald Jove"
             class="img-ring relative z-10 h-64 w-64 rounded-full object-cover sm:h-80 sm:w-80"
           />
-          <!-- floating accent badge -->
-          <div
-            class="glass absolute -bottom-2 -left-4 z-20 rounded-2xl px-4 py-3 text-center"
-          >
-            <p class="font-display text-2xl font-extrabold text-white">6+</p>
-            <p class="text-xs text-slate-400">Years Exp.</p>
-          </div>
         </div>
       </div>
     </div>

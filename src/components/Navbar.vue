@@ -23,9 +23,6 @@ const navToggle = () => {
 const scrollToTop = () => {
   window.scrollTo(0, 0);
 };
-
-const resumeUrl =
-  "https://drive.google.com/uc?export=download&id=1ncDho6gvyf3khQrSzrzT7ghcb5Uhugkf";
 </script>
 
 <template>
@@ -67,17 +64,6 @@ const resumeUrl =
         </li>
       </ul>
 
-      <!-- Desktop CTA -->
-      <a
-        :href="resumeUrl"
-        download="gerald-jove-web-developer-resume"
-        target="_blank"
-        class="hidden items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-ink-900 transition-all duration-200 hover:bg-accent-light hover:shadow-[0_0_30px_-6px_rgba(0,158,250,0.7)] sm:inline-flex"
-      >
-        Download CV
-        <i class="pi pi-download"></i>
-      </a>
-
       <!-- Burger -->
       <button
         @click="navToggle"
@@ -117,16 +103,6 @@ const resumeUrl =
               "
               >{{ link.label }}</RouterLink
             >
-          </li>
-          <li>
-            <a
-              :href="resumeUrl"
-              download="gerald-jove-web-developer-resume"
-              target="_blank"
-              class="mt-1 flex items-center justify-center gap-2 rounded-xl border border-accent/60 px-4 py-3 font-bold text-accent transition-colors hover:bg-accent/10"
-            >
-              Download CV <i class="pi pi-download"></i>
-            </a>
           </li>
         </ul>
       </div>
