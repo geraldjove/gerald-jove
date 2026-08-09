@@ -1,0 +1,162 @@
+---
+/**
+ * Qualification form.
+ *
+ * Static markup, progressively enhanced by src/scripts/contact-form.ts — not a
+ * framework island. Astro injects an inline hydration runtime for `client:*`
+ * directives, and the live CSP is `script-src 'self'` with no nonce (a static
+ * host cannot issue one), so an island would have been silently blocked in
+ * production while working perfectly in dev. Vanilla also drops the ~69 KB Vue
+ * runtime from the only page that would have loaded it.
+ *
+ * Without JS the form still posts natively to Formspree and `_next` returns the
+ * visitor to /thank-you, so no lead is lost. With JS the submit is intercepted,
+ * the visitor stays on the site, and the success state replaces the form —
+ * which is the whole point of audit finding H3.
+ */
+import { FIELDS, CONTACT, FORMSPREE_ENDPOINT } from '@/content/contact'
+import { SITE_URL } from '@/content/site'
+import { blankValue } from '@/content/blanks.js'
+
+/** Blank #8. Until Gerald picks a fallback, no contact address is published. */
+const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutralBody
+---
+
+<div data-contact-root>
+  <form
+    data-contact-form
+    class="surface p-6 sm:p-8"
+    action={FORMSPREE_ENDPOINT}
+    method="POST"
+    novalidate
+  >
+    <input type="hidden" name="_next" value={`${SITE_URL}/thank-you`} />
+
+    <p class="text-small text-fg-subtle">{CONTACT.formIntro}</p>
+
+    <div class="mt-7 space-y-5">
+      {
+        FIELDS.map((field) => (
+          <div>
+            <label for={`field-${field.name}`} class="block text-small font-medium text-fg-muted">
+              {field.label}
+              {!field.required && <span class="text-fg-quiet"> (optional)</span>}
+            </label>
+
+            {field.type === 'select' ? (
+              <select
+                id={`field-${field.name}`}
+                name={field.name}
+                class="field mt-2"
+                data-label={field.label}
+                data-required={field.required ? 'true' : undefined}
+                aria-describedby={`error-${field.name}`}
+              >
+                <option value="">Select one</option>
+                {field.options?.map((option) => <option value={option}>{option}</option>)}
+              </select>
+            ) : field.type === 'textarea' ? (
+              <textarea
+                id={`field-${field.name}`}
+                name={field.name}
+                rows={field.rows ?? 6}
+                placeholder={field.placeholder}
+                class="field mt-2 resize-y"
+                data-label={field.label}
+                data-required={field.required ? 'true' : undefined}
+                aria-describedby={`error-${field.name}`}
+              />
+            ) : (
+              <input
+                id={`field-${field.name}`}
+                type={field.type}
+                name={field.name}
+                placeholder={field.placeholder}
+                autocomplete={field.autocomplete}
+                class="field mt-2"
+                data-label={field.label}
+                data-required={field.required ? 'true' : undefined}
+                aria-describedby={`error-${field.name}`}
+              />
+            )}
+
+            <p id={`error-${field.name}`} data-error-for={field.name} class="mt-2 text-micro text-accent-hi" hidden />
+          </div>
+        ))
+      }
+    </div>
+
+    {/* Formspree's honeypot convention. Hidden from people, tempting to bots. */}
+    <div class="hidden" aria-hidden="true">
+      <label for="field-gotcha">Leave this field empty</label>
+      <input id="field-gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <button
+      type="submit"
+      data-submit
+      data-sending={CONTACT.submittingLabel}
+      class="btn btn-primary mt-7 w-full"
+    >
+      {CONTACT.submitLabel}
+    </button>
+
+    <div
+      data-form-error
+      hidden
+      tabindex="-1"
+      role="alert"
+      class="mt-5 rounded-card border border-accent/40 bg-inset p-4"
+    >
+      <p class="text-small font-semibold text-fg">{CONTACT.error.heading}</p>
+      <p class="mt-1 text-small text-fg-muted">{errorFallback}</p>
+    </div>
+  </form>
+
+  {/* Revealed in place of the form on success. */}
+  <div data-form-success hidden class="surface p-6 sm:p-8">
+    <h2 data-success-heading tabindex="-1" class="text-h3 text-fg">{CONTACT.success.heading}</h2>
+    <p class="mt-3 text-body text-fg-muted">{CONTACT.success.body}</p>
+    <a href={CONTACT.success.link.href} class="link-arrow mt-5 text-small">
+      {CONTACT.success.link.label}
+      <span aria-hidden="true">&rarr;</span>
+    </a>
+  </div>
+</div>
+
+<script>
+  import '@/scripts/contact-form.ts'
+</script>
+
+<style>
+  .field {
+    display: block;
+    width: 100%;
+    border-radius: 0.625rem;
+    border: 1px solid var(--color-line-strong);
+    background-color: var(--color-ink);
+    padding: 0.7rem 0.85rem;
+    color: var(--color-fg);
+    font-size: var(--text-small);
+    font-family: inherit;
+    color-scheme: dark;
+    transition: border-color var(--motion-base) var(--ease-out-soft);
+  }
+
+  .field::placeholder {
+    color: var(--color-fg-quiet);
+  }
+
+  .field:focus {
+    border-color: var(--color-accent);
+  }
+
+  .field[aria-invalid='true'] {
+    border-color: var(--color-accent-hi);
+  }
+
+  button[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+</style>

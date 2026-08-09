@@ -1,0 +1,225 @@
+---
+import { getCollection } from 'astro:content'
+import { Image, getImage } from 'astro:assets'
+
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Icon from '@/components/Icon.astro'
+import ServiceCard from '@/components/ServiceCard.astro'
+import CaseTeaser from '@/components/CaseTeaser.astro'
+import CtaBlock from '@/components/CtaBlock.astro'
+
+import { META, PRIMARY_CTA, AVAILABILITY } from '@/content/site'
+import { SERVICES } from '@/content/services'
+import {
+  HERO,
+  PROBLEM,
+  SERVICES_SECTION,
+  PROOF,
+  PROCESS,
+  DIFFERENTIATOR,
+  ABOUT_STRIP,
+  CLOSING,
+} from '@/content/home'
+
+import posterSource from '@/assets/img/product-animation-poster.jpg'
+import productMouse from '@/assets/img/product-mouse.jpg'
+import productHairdryer from '@/assets/img/product-hairdryer.jpg'
+import profilePhoto from '@/assets/img/profile-photo.jpg'
+
+const cases = (await getCollection('work', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+)
+
+/**
+ * Poster for the product animation. The clip is self-hosted, stripped of audio
+ * and re-encoded (2.7 MB -> 257 KB), and does not autoplay: audit L4 flagged an
+ * autoplaying remote MP4 on mobile. `preload="none"` means nothing downloads
+ * until someone presses play, so the mobile cost is the poster alone.
+ */
+const poster = await getImage({ src: posterSource, format: 'jpeg', width: 560, quality: 78 })
+---
+
+<BaseLayout title={META.home.title} description={META.home.description}>
+  {/* ---- Hero -------------------------------------------------------- */}
+  <section class="shell grid items-center gap-12 py-section lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+    <div>
+      <h1 class="text-display text-fg">{HERO.h1}</h1>
+
+      <p class="measure mt-7 text-lead text-fg-muted">{HERO.subheadline}</p>
+
+      <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+        <a href={PRIMARY_CTA.href} class="btn btn-primary">
+          {PRIMARY_CTA.label}
+          <Icon name="arrow-right" size={16} />
+        </a>
+        <a href={HERO.secondaryCta.href} class="link-arrow text-small">
+          {HERO.secondaryCta.label}
+          <Icon name="arrow-right" size={16} />
+        </a>
+      </div>
+
+      <p class="mt-6 text-micro text-fg-quiet">{AVAILABILITY.long}</p>
+    </div>
+
+    <figure class="mx-auto w-full max-w-[17rem] lg:max-w-none">
+      <video
+        class="w-full rounded-lg border border-line bg-raised"
+        controls
+        preload="none"
+        playsinline
+        loop
+        muted
+        width="540"
+        height="960"
+        poster={poster.src}
+      >
+        <source src="/media/product-animation.mp4" type="video/mp4" />
+      </video>
+      <figcaption class="mt-3 text-micro text-fg-quiet">Product animation · 9:16</figcaption>
+    </figure>
+  </section>
+
+  {/* ---- The problem -------------------------------------------------- */}
+  <section class="border-t border-line bg-raised">
+    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
+      <p class="eyebrow reveal">01 — Problem</p>
+      <div class="reveal">
+        <h2 class="text-h2 text-fg">{PROBLEM.h2}</h2>
+        <div class="measure mt-6 space-y-5">
+          {PROBLEM.body.map((para) => <p class="text-body text-fg-muted">{para}</p>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ---- Services ----------------------------------------------------- */}
+  <section class="border-t border-line">
+    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
+      <p class="eyebrow reveal">02 — Services</p>
+      <div>
+        <div class="reveal">
+          <h2 class="text-h2 text-fg">{SERVICES_SECTION.h2}</h2>
+          <p class="measure mt-4 text-lead text-fg-muted">{SERVICES_SECTION.intro}</p>
+        </div>
+
+        <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {SERVICES.map((service, i) => <ServiceCard service={service} index={i} />)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ---- Proof --------------------------------------------------------
+       Renders whatever case studies exist. The copy document supplies one
+       usable teaser; the second is blank #4 and is simply absent rather than
+       stubbed with a placeholder card. */}
+  {
+    cases.length > 0 && (
+      <section class="border-t border-line bg-raised">
+        <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
+          <p class="eyebrow reveal">03 — Proof</p>
+          <div>
+            <h2 class="reveal text-h2 text-fg">{PROOF.h2}</h2>
+            <div class="mt-10 grid gap-5 md:grid-cols-2">
+              {cases.map((entry, i) => (
+                <CaseTeaser
+                  title={entry.data.title}
+                  teaser={entry.data.teaser}
+                  slug={entry.id}
+                  service={entry.data.service}
+                  result={entry.data.result}
+                  resultBlank={entry.data.resultBlank}
+                  index={i}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* ---- Process ------------------------------------------------------ */}
+  <section class="border-t border-line">
+    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
+      <p class="eyebrow reveal">04 — Process</p>
+      <div>
+        <h2 class="reveal text-h2 text-fg">{PROCESS.h2}</h2>
+
+        <ol class="mt-10 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2">
+          {
+            PROCESS.steps.map((step, i) => (
+              <li class="reveal bg-ink p-6 sm:p-7" style={`--reveal-delay:${i * 80}ms`}>
+                <p class="eyebrow text-fg-quiet">Step {i + 1}</p>
+                <h3 class="mt-3 text-h3 text-fg">
+                  {step.label}
+                  {step.note && <span class="ml-2 text-small font-normal text-fg-quiet">({step.note})</span>}
+                </h3>
+                <p class="mt-3 text-small text-fg-subtle">{step.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  {/* ---- Differentiator ----------------------------------------------- */}
+  <section class="border-t border-line bg-raised">
+    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
+      <p class="eyebrow reveal">05 — Why me</p>
+      <div class="reveal">
+        <h2 class="text-h2 text-fg">{DIFFERENTIATOR.h2}</h2>
+        <div class="measure mt-6 space-y-5">
+          {DIFFERENTIATOR.body.map((para) => <p class="text-body text-fg-muted">{para}</p>)}
+        </div>
+
+        <div class="mt-10 grid grid-cols-2 gap-5 sm:max-w-lg">
+          <Image
+            src={productMouse}
+            alt="Photoreal 3D render of a wireless mouse, lit on a dark background"
+            widths={[280, 560]}
+            sizes="(min-width: 640px) 260px, 45vw"
+            format="avif"
+            class="rounded-lg border border-line"
+          />
+          <Image
+            src={productHairdryer}
+            alt="Photoreal 3D render of a hair dryer on a warm gradient background"
+            widths={[280, 560]}
+            sizes="(min-width: 640px) 260px, 45vw"
+            format="avif"
+            class="rounded-lg border border-line"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ---- About strip --------------------------------------------------- */}
+  <section class="border-t border-line">
+    <div class="shell py-section-sm">
+      <div class="reveal flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+        <Image
+          src={profilePhoto}
+          alt="Gerald Jove"
+          widths={[96, 192]}
+          sizes="96px"
+          format="avif"
+          class="h-24 w-24 shrink-0 rounded-full border border-line object-cover"
+        />
+        <div class="measure">
+          <h2 class="text-h3 text-fg">{ABOUT_STRIP.h2}</h2>
+          <p class="mt-2 text-small text-fg-subtle">{ABOUT_STRIP.body}</p>
+          <a href={ABOUT_STRIP.link.href} class="link-arrow mt-4 text-small">
+            {ABOUT_STRIP.link.label}
+            <Icon name="arrow-right" size={16} />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ---- Close --------------------------------------------------------- */}
+  <CtaBlock heading={CLOSING.h2} body={CLOSING.body} availability="short" />
+</BaseLayout>

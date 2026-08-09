@@ -1,0 +1,70 @@
+---
+import '@/styles/global.css'
+import Nav from '@/components/Nav.astro'
+import Footer from '@/components/Footer.astro'
+import { SITE_URL, OG_DEFAULTS } from '@/content/site'
+import { blankValue } from '@/content/blanks.js'
+
+interface Props {
+  title: string
+  description: string
+  ogTitle?: string
+  ogDescription?: string
+  /** Set on /thank-you and 404 — pages with no business being indexed. */
+  noindex?: boolean
+}
+
+const { title, description, ogTitle, ogDescription, noindex = false } = Astro.props
+
+/**
+ * Real per-route canonical. The old SPA had none at all, and a single static
+ * canonical would have been worse than none — it would have labelled every
+ * route as the homepage.
+ */
+const path = Astro.url.pathname.replace(/\/+$/, '')
+const canonical = `${SITE_URL}${path}`
+
+/** Blank #6. While null the og:image tag is omitted rather than pointed at a placeholder. */
+const ogImage = blankValue('ogImage')
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/logo.png" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Gerald Jove" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={ogTitle ?? OG_DEFAULTS.title} />
+    <meta property="og:description" content={ogDescription ?? OG_DEFAULTS.description} />
+    {ogImage && <meta property="og:image" content={new URL(ogImage, SITE_URL).href} />}
+
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={ogTitle ?? OG_DEFAULTS.title} />
+    <meta name="twitter:description" content={ogDescription ?? OG_DEFAULTS.description} />
+    {ogImage && <meta name="twitter:image" content={new URL(ogImage, SITE_URL).href} />}
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+  </head>
+
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      import '@/scripts/reveal.ts'
+    </script>
+  </body>
+</html>

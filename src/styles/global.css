@@ -1,0 +1,328 @@
+/* ---------------------------------------------------------------------------
+   geraldjove.com — design system
+   Palette and typefaces are locked (#0b1120 / #009efa / Archivo / Space Grotesk).
+   Everything else — scale, rhythm, surfaces, motion — is defined here rather
+   than chosen ad hoc at the call site. See docs/design-system.md.
+
+   Fonts are self-hosted (audit D5). Each @font-face is unicode-range scoped, so
+   an English page downloads only the latin subset.
+--------------------------------------------------------------------------- */
+@import '@fontsource-variable/archivo/wght.css';
+@import '@fontsource-variable/space-grotesk/wght.css';
+@import 'tailwindcss';
+
+@theme {
+  /* --- Colour -------------------------------------------------------------
+     Every text token is measured against every surface it can sit on; the
+     dimmest pairing anywhere is 4.99:1, against a 4.5:1 AA floor. Ratios in
+     docs/design-system.md. White on accent fill is 2.89:1 and therefore never
+     used — accent buttons take accent-ink. */
+  --color-ink: #0b1120;
+  --color-raised: #101a2e;
+  --color-card: #16203a;
+  --color-inset: #1d2947;
+
+  --color-fg: #f5f8fc;
+  --color-fg-muted: #c2cee1;
+  --color-fg-subtle: #9aa8bf;
+  /* 4.99:1 on the lightest surface (inset). An earlier #7f8da6 measured 4.81 on
+     `card` but only 4.29 on `inset` — safe only because nothing happened to use
+     that pair. Tokens should hold on every surface, not by luck. */
+  --color-fg-quiet: #8b99b1;
+
+  --color-accent: #009efa;
+  --color-accent-hi: #38b0fb;
+  --color-accent-lo: #0072c6;
+  --color-accent-ink: #05101f;
+
+  --color-line: rgba(255, 255, 255, 0.09);
+  --color-line-strong: rgba(255, 255, 255, 0.17);
+
+  /* --- Type ---------------------------------------------------------------
+     Fluid modular scale. Tracking tightens as size grows; leading loosens as
+     size shrinks. Body sits at 17px because the copy is long-form. */
+  --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.2;
+  --text-eyebrow--letter-spacing: 0.2em;
+  --text-eyebrow--font-weight: 600;
+
+  --text-micro: 0.8125rem;
+  --text-micro--line-height: 1.5;
+
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.6;
+
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.68;
+
+  --text-lead: clamp(1.125rem, 1.02rem + 0.42vw, 1.375rem);
+  --text-lead--line-height: 1.55;
+
+  --text-h3: clamp(1.1875rem, 1.1rem + 0.38vw, 1.4375rem);
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 700;
+
+  --text-h2: clamp(1.75rem, 1.35rem + 1.7vw, 2.875rem);
+  --text-h2--line-height: 1.14;
+  --text-h2--letter-spacing: -0.022em;
+  --text-h2--font-weight: 700;
+
+  --text-h1: clamp(2.125rem, 1.55rem + 2.5vw, 3.5rem);
+  --text-h1--line-height: 1.08;
+  --text-h1--letter-spacing: -0.028em;
+  --text-h1--font-weight: 800;
+
+  --text-display: clamp(2.5rem, 1.4rem + 4.9vw, 5rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.035em;
+  --text-display--font-weight: 800;
+
+  /* --- Spacing rhythm -----------------------------------------------------
+     Sections are not uniform: weight in the page hierarchy sets the interval. */
+  --spacing-gutter: clamp(1.25rem, 0.9rem + 1.6vw, 2.5rem);
+  --spacing-section-sm: clamp(3rem, 2.2rem + 3.2vw, 4.5rem);
+  --spacing-section: clamp(4.5rem, 3.2rem + 5.2vw, 7.5rem);
+  --spacing-section-lg: clamp(6rem, 4rem + 8vw, 10.5rem);
+
+  --radius-card: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-pill: 999px;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+:root {
+  /* Internal motion tokens — referenced by the component CSS below, not by
+     utility classes. One set of durations for the whole site. */
+  --motion-fast: 150ms;
+  --motion-base: 260ms;
+  --motion-slow: 560ms;
+
+  --measure: 66ch;
+  --shell: 76rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-fg-muted);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.68;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    color: var(--color-fg);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible focus for every interactive element. The accent is 6.52:1 on the
+     page background, well past the 3:1 required for non-text UI. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent-hi);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@layer components {
+  /* --- Layout ------------------------------------------------------------ */
+  .shell {
+    width: 100%;
+    max-width: var(--shell);
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  .measure {
+    max-width: var(--measure);
+  }
+
+  /* --- Surfaces -----------------------------------------------------------
+     Three levels, with rules. Cards use `surface`; anything that must lift off
+     a card uses `surface-inset`. The old build applied a frosted-glass
+     treatment to almost everything, which flattened the hierarchy it was
+     supposed to create. */
+  .surface {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+  }
+
+  .surface-inset {
+    background-color: var(--color-inset);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+  }
+
+  .hairline-top {
+    border-top: 1px solid var(--color-line);
+  }
+
+  /* --- Eyebrow label ----------------------------------------------------- */
+  .eyebrow {
+    display: inline-block;
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-fg-subtle);
+  }
+
+  /* --- Buttons ------------------------------------------------------------
+     Accent is reserved for the primary action. It is not decoration. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-pill);
+    padding: 0.8125rem 1.5rem;
+    font-family: var(--font-display);
+    font-size: var(--text-small);
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    cursor: pointer;
+    transition:
+      background-color var(--motion-base) var(--ease-out-soft),
+      border-color var(--motion-base) var(--ease-out-soft),
+      color var(--motion-base) var(--ease-out-soft),
+      transform var(--motion-fast) var(--ease-out-soft);
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  .btn-primary {
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-accent-hi);
+  }
+
+  .btn-secondary {
+    border: 1px solid var(--color-line-strong);
+    color: var(--color-fg);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent-hi);
+  }
+
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-accent-hi);
+    font-weight: 600;
+    transition: gap var(--motion-base) var(--ease-out-soft);
+  }
+
+  .link-arrow:hover {
+    gap: 0.7rem;
+  }
+
+  /* --- Skip link ---------------------------------------------------------- */
+  .skip-link {
+    position: absolute;
+    left: 0.75rem;
+    top: -4rem;
+    z-index: 100;
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    padding: 0.7rem 1.1rem;
+    border-radius: 0 0 0.5rem 0.5rem;
+    font-weight: 700;
+    transition: top var(--motion-base) var(--ease-out-soft);
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+
+  /* --- Reveal -------------------------------------------------------------
+     Default state is VISIBLE. reveal.ts arms only the elements that are below
+     the fold, synchronously, so there is no hidden-then-shown flash and no
+     dependency on JS for content to exist. With no JS, or with reduced motion
+     requested, nothing is ever armed. */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .reveal.reveal-armed {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+    transition:
+      opacity var(--motion-slow) var(--ease-out-soft) var(--reveal-delay, 0ms),
+      transform var(--motion-slow) var(--ease-out-soft) var(--reveal-delay, 0ms);
+  }
+
+  .reveal.reveal-armed.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The reveal script already opts out of arming when reduced motion is set; this
+   is the belt-and-braces case for CSS transitions declared elsewhere. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal,
+  .reveal.reveal-armed {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

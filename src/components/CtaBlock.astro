@@ -1,0 +1,31 @@
+---
+import Icon from './Icon.astro'
+import { PRIMARY_CTA, AVAILABILITY } from '@/content/site'
+
+interface Props {
+  heading: string
+  body?: string
+  /** Long form on the home page close, short form elsewhere. */
+  availability?: 'long' | 'short'
+}
+
+const { heading, body, availability = 'short' } = Astro.props
+---
+
+<section class="border-t border-line bg-raised">
+  <div class="shell py-section">
+    <div class="measure reveal">
+      <h2 class="text-h2 text-fg">{heading}</h2>
+      {body && <p class="mt-5 text-lead text-fg-muted">{body}</p>}
+
+      <div class="mt-9 flex flex-wrap items-center gap-4">
+        <a href={PRIMARY_CTA.href} class="btn btn-primary">
+          {PRIMARY_CTA.label}
+          <Icon name="arrow-right" size={16} />
+        </a>
+      </div>
+
+      <p class="mt-5 text-micro text-fg-quiet">{AVAILABILITY[availability]}</p>
+    </div>
+  </div>
+</section>

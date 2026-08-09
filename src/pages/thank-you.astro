@@ -1,0 +1,27 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Icon from '@/components/Icon.astro'
+
+import { META } from '@/content/site'
+import { THANK_YOU } from '@/content/contact'
+---
+
+{/*
+  A real route, not just an inline state. It is where Formspree sends a visitor
+  whose browser posted the form natively (no JS), and it means a shared or
+  bookmarked /thank-you URL resolves instead of 404ing. noindex: it is a
+  post-submit destination, not a page worth ranking.
+*/}
+<BaseLayout title={META.thankYou.title} description={META.thankYou.description} noindex>
+  <section class="shell py-section-lg">
+    <div class="measure">
+      <h1 class="text-h1 text-fg">{THANK_YOU.h1}</h1>
+      <p class="mt-5 text-lead text-fg-muted">{THANK_YOU.body}</p>
+
+      <a href={THANK_YOU.link.href} class="link-arrow mt-8 text-body">
+        {THANK_YOU.link.label}
+        <Icon name="arrow-right" size={16} />
+      </a>
+    </div>
+  </section>
+</BaseLayout>

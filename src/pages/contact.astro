@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Icon from '@/components/Icon.astro'
+import ContactForm from '@/components/ContactForm.astro'
+
+import { META, AVAILABILITY } from '@/content/site'
+import { CONTACT } from '@/content/contact'
+---
+
+<BaseLayout title={META.contact.title} description={META.contact.description}>
+  <section class="shell py-section">
+    <div class="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+      <div>
+        <h1 class="text-h1 text-fg">{CONTACT.h1}</h1>
+        <p class="measure mt-5 text-lead text-fg-muted">{CONTACT.subheadline}</p>
+
+        <p class="mt-8 text-small text-fg-quiet">{AVAILABILITY.long}</p>
+
+        <p class="mt-6 text-small text-fg-subtle">
+          {CONTACT.alternative.prefix}{' '}
+          <a
+            href={CONTACT.alternative.href}
+            rel="noopener"
+            target="_blank"
+            class="link-arrow align-baseline"
+          >
+            {CONTACT.alternative.label}
+            <Icon name="arrow-right" size={14} />
+          </a>
+        </p>
+      </div>
+
+      <ContactForm />
+    </div>
+  </section>
+</BaseLayout>

@@ -41,3 +41,6 @@ docs/
 # tasks/ holds implementation briefs that describe commercial positioning,
 # pricing and launch sequencing. Same reasoning as docs/ — do not publish.
 tasks/
+
+# Astro generated types
+.astro/

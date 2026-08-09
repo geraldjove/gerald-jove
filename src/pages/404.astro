@@ -1,0 +1,33 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Icon from '@/components/Icon.astro'
+import { META } from '@/content/site'
+---
+
+{/*
+  A real 404 document. On the old SPA every unknown path returned HTTP 200 with
+  the app shell, which search engines read as a soft 404 (audit M2). With static
+  output Vercel serves this file with a genuine 404 status.
+*/}
+<BaseLayout title={META.notFound.title} description={META.notFound.description} noindex>
+  <section class="shell py-section-lg">
+    <div class="measure">
+      <p class="eyebrow text-fg-quiet">404</p>
+      <h1 class="mt-4 text-h1 text-fg">That page doesn’t exist.</h1>
+      <p class="mt-5 text-lead text-fg-muted">
+        The link may be out of date. Everything on the site is reachable from here.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-x-6 gap-y-3">
+        <a href="/" class="link-arrow text-small">Home <Icon name="arrow-right" size={16} /></a>
+        <a href="/services" class="link-arrow text-small">
+          Services <Icon name="arrow-right" size={16} />
+        </a>
+        <a href="/work" class="link-arrow text-small">Work <Icon name="arrow-right" size={16} /></a>
+        <a href="/contact" class="link-arrow text-small">
+          Contact <Icon name="arrow-right" size={16} />
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,32 @@
+---
+import Icon from './Icon.astro'
+import { cardPrice, type Service } from '@/content/services'
+
+interface Props {
+  service: Service
+  index: number
+}
+
+const { service, index } = Astro.props
+const price = cardPrice(service)
+const num = String(index + 1).padStart(2, '0')
+---
+
+<article class="surface reveal flex flex-col p-6 sm:p-7" style={`--reveal-delay:${index * 90}ms`}>
+  <p class="eyebrow text-fg-quiet">{num}</p>
+
+  <h3 class="mt-4 text-h3 text-fg">{service.name}</h3>
+  <p class="mt-2 text-small font-semibold text-fg-muted">{service.card.forWhom}</p>
+  <p class="mt-4 flex-1 text-small text-fg-subtle">{service.card.summary}</p>
+
+  {
+    /* Blank #3 lives here for the 3D service. While the price is null the whole
+       line is omitted — no "From $—", no "Contact for pricing" filler. */
+    price && <p class="mt-6 text-small font-semibold text-fg">{price}</p>
+  }
+
+  <a href={`/services#${service.slug}`} class="link-arrow mt-6 text-small">
+    Learn more
+    <Icon name="arrow-right" size={16} />
+  </a>
+</article>
