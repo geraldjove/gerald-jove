@@ -32,3 +32,12 @@ coverage
 
 # Local dev tooling / installed skills
 .claude
+
+# Private strategy docs — this repository is PUBLIC.
+# docs/ holds commercially sensitive material (contract terms, rate card).
+# Remove this line only if you have checked what is inside.
+docs/
+
+# tasks/ holds implementation briefs that describe commercial positioning,
+# pricing and launch sequencing. Same reasoning as docs/ — do not publish.
+tasks/
