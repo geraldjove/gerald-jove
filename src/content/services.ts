@@ -122,16 +122,353 @@ export const SERVICES: Service[] = [
   },
 ]
 
-/** Services page header and the "what I don't do" block — copy §4 and §4.4. */
+/* ---------------------------------------------------------------------------
+   Services page — transcribed from Figma frame 33:504 (1440 x 7837).
+
+   Everything below is verbatim from the design. Nothing here is authored, and
+   nothing is reworded: where the Figma reads oddly, it is reproduced as drawn
+   and flagged in the rebuild report rather than tidied up in code.
+
+   Two exceptions, both recorded:
+
+   1. Node 33:404 draws "Starting From $3,500". Gerald confirmed 3D Product
+      Visuals is a monthly engagement, so the price ships as "From $3,500/month"
+      to match how the other two are drawn. The Figma is wrong here, not this
+      file — it needs the same correction before the next export.
+   2. Node 33:306's last bullet reads "A handover session 30 days of support
+      after launch" — two items collapsed into one list row in the Figma. It is
+      reproduced exactly as drawn, because a 1:1 copy is the brief; splitting it
+      is a change for the Figma to make first.
+
+   "What I don't do" is deliberately absent: the Figma has no such section.
+--------------------------------------------------------------------------- */
+
+/**
+ * A bullet. Plain text, or a price row where one figure is set in the accent
+ * colour two steps up the scale — nodes 33:306, 33:353, 33:404 all do this.
+ */
+export type ServiceListItem = string | { before?: string; figure: string; after?: string }
+
+/**
+ * One run of content inside a detail block. The Figma stores each block as a
+ * single text node with internal paragraph and list runs; `runs` is that
+ * structure made explicit so the page can render real <p> and <ul> elements
+ * instead of one pre-wrapped blob.
+ *
+ * `gapPx` overrides the standard 28px (one blank line) gap above a run. Only
+ * node 33:353 needs it: the blank line before "Monthly Output" is set at 36px,
+ * so that gap measures 42px, not 28px.
+ */
+export type ServiceRun =
+  | { kind: 'p'; text: string }
+  | { kind: 'ul'; items: ServiceListItem[] }
+  | { kind: 'label'; text: string; gapPx?: number }
+
+export interface ServiceDetailBlock {
+  /** Figma node of the heading, e.g. "33:298". */
+  headingNode: string
+  heading: string
+  /** Figma node of the body text, e.g. "33:300". */
+  bodyNode: string
+  runs: ServiceRun[]
+}
+
+export interface ServiceDetailSection {
+  /** In-page anchor. */
+  id: string
+  /** Figma section frame node. */
+  node: string
+  title: string
+  titleNode: string
+  blocks: ServiceDetailBlock[]
+  /** Figma node of the CTA group. */
+  ctaNode: string
+}
+
+/** Intro section — Figma 33:285. */
 export const SERVICES_PAGE = {
-  h1: 'Three services. One problem.',
-  subheadline:
-    'Every one of these exists to raise the amount of good creative your team can ship in a week.',
-  exclusions: {
-    heading: 'What I don’t do',
-    body: 'I don’t build marketing websites, design logos or brand identities, run your ad accounts, or take one-off single-render jobs. If that’s what you need, I’m happy to point you to someone who does it well.',
+  node: '33:285',
+  /**
+   * Node 33:287. Poppins Bold 72.504px — the only Poppins heading on this page.
+   * Drawn as two colour runs on two lines; `lead` is white, `accent` is #0af.
+   */
+  h1: { node: '33:287', lead: 'Three services.', accent: 'One goal.' },
+  /** Node 33:288. Roboto Condensed Regular 24px. */
+  subheadline: {
+    node: '33:288',
+    text: 'Help your team make more good creative without making production harder',
   },
+  /** Node 33:292. */
+  image: { node: '33:292', alt: 'Four interlocking puzzle pieces forming a single connected system' },
 } as const
+
+/** Every CTA on this page is the same button — nodes 33:339, 33:354, 33:405. */
+export const SERVICES_CTA = { label: 'Book a 20-minute call', href: '/contact' } as const
+
+export const SERVICE_DETAILS: ServiceDetailSection[] = [
+  {
+    id: 'creative-automation-systems',
+    node: '33:293',
+    title: 'Creative Automation Systems',
+    titleNode: '33:295',
+    ctaNode: '33:339',
+    blocks: [
+      {
+        headingNode: '33:298',
+        heading: 'Who is this for?',
+        bodyNode: '33:300',
+        runs: [
+          {
+            kind: 'p',
+            text: 'Marketing teams and creative agencies that already have ideas, people, and ad budget but cannot produce creative fast enough. You may also have tried no-code automation before and found that it became difficult to manage as your workflow grew.',
+          },
+        ],
+      },
+      {
+        headingNode: '33:301',
+        heading: 'The Problem',
+        bodyNode: '33:302',
+        runs: [
+          { kind: 'p', text: 'A lot of creative work is still done by hand.' },
+          { kind: 'p', text: 'Briefs get copied.' },
+          { kind: 'p', text: 'Files get renamed.' },
+          { kind: 'p', text: 'Images get resized one at a time.' },
+          { kind: 'p', text: 'Assets get moved between tools.' },
+          { kind: 'p', text: 'Someone has to check everything.' },
+          { kind: 'p', text: 'A few manual steps may not seem like much.' },
+          {
+            kind: 'p',
+            text: 'But when your team needs hundreds of files, those small steps turn into hours of work.',
+          },
+        ],
+      },
+      {
+        headingNode: '33:303',
+        heading: 'What I Build',
+        bodyNode: '33:304',
+        runs: [
+          { kind: 'p', text: 'I build a custom production system around your workflow.' },
+          {
+            kind: 'p',
+            text: 'The system handles repeat tasks automatically while keeping people involved where creative judgment is needed.',
+          },
+          { kind: 'p', text: 'It runs on accounts and tools you control.' },
+          { kind: 'p', text: 'Your code. Your data. Your system.' },
+        ],
+      },
+      {
+        headingNode: '33:305',
+        heading: 'What You Get',
+        bodyNode: '33:306',
+        runs: [
+          {
+            kind: 'ul',
+            items: [
+              'A clear map of your current production process',
+              'The main production problems identified',
+              'A working automation system',
+              'Human approval steps where needed',
+              'Documentation',
+              // Drawn as one row in the Figma. See the note at the top of this block.
+              'A handover session 30 days of support after launch',
+            ],
+          },
+          { kind: 'label', text: 'Timeline' },
+          { kind: 'ul', items: ['Usually 4 to 8 weeks.'] },
+          { kind: 'label', text: 'Price' },
+          {
+            kind: 'ul',
+            items: [
+              { before: 'From ', figure: '$8,000', after: ' Fixed project price.' },
+              'The full scope and cost are agreed on before work starts.',
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'managed-ad-creative',
+    node: '33:431',
+    title: 'Managed Ad Creative',
+    titleNode: '33:345',
+    ctaNode: '33:354',
+    blocks: [
+      {
+        headingNode: '33:346',
+        heading: 'Who is this for?',
+        bodyNode: '33:350',
+        runs: [
+          {
+            kind: 'p',
+            text: 'Teams running paid ads that need more creative than their current team can make.',
+          },
+        ],
+      },
+      {
+        headingNode: '33:347',
+        heading: 'The Problem',
+        bodyNode: '33:351',
+        runs: [
+          { kind: 'p', text: 'Your media team wants to test more ideas.' },
+          { kind: 'p', text: 'But every new idea takes design time.' },
+          { kind: 'p', text: 'So tests get delayed.' },
+          { kind: 'p', text: 'Winning ads do not get enough new versions.' },
+          { kind: 'p', text: 'Your team ends up testing less than planned.' },
+        ],
+      },
+      {
+        headingNode: '33:348',
+        heading: 'What I Do',
+        bodyNode: '33:352',
+        runs: [
+          { kind: 'p', text: 'I handle ongoing creative production for you.' },
+          { kind: 'p', text: 'This can include:' },
+          {
+            kind: 'ul',
+            items: [
+              'New ad concepts',
+              'Static ads',
+              'Motion ads',
+              'Different sizes',
+              'New versions of winning ads',
+              'Creative updates',
+              'Product visuals',
+            ],
+          },
+          { kind: 'p', text: 'The goal is to keep new creative moving every week.' },
+        ],
+      },
+      {
+        headingNode: '33:349',
+        heading: 'What You Get',
+        bodyNode: '33:353',
+        runs: [
+          {
+            kind: 'ul',
+            items: [
+              'Static and motion ads',
+              'Sizes for the placements you use',
+              'Weekly production cycles',
+              'Monthly review call',
+              'Direct access to me',
+            ],
+          },
+          { kind: 'label', text: 'Price' },
+          { kind: 'ul', items: [{ before: 'From ', figure: '$4,500/month' }] },
+          // The blank line above this label is set at 36px in the Figma, so the
+          // gap measures 42px rather than the 28px used everywhere else.
+          { kind: 'label', text: 'Monthly Output', gapPx: 42 },
+          {
+            kind: 'ul',
+            items: [
+              'Up to 100 creative variants per month.',
+              '2 3D animations of top performing ads per month.',
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: '3d-product-visuals',
+    node: '33:447',
+    title: '3D Product Visuals & CGI Ads',
+    titleNode: '33:396',
+    ctaNode: '33:405',
+    blocks: [
+      {
+        headingNode: '33:397',
+        heading: 'Who is this for?',
+        bodyNode: '33:401',
+        runs: [
+          {
+            kind: 'p',
+            text: 'Brands that need more product images than a normal photoshoot can easily provide.',
+          },
+          { kind: 'p', text: 'This is useful if you have:' },
+          {
+            kind: 'ul',
+            items: [
+              'Many products',
+              'Different product colors',
+              'New launches',
+              'Products that are not manufactured yet',
+              'Lots of campaigns',
+              'A constant need for new ads',
+            ],
+          },
+        ],
+      },
+      {
+        headingNode: '33:398',
+        heading: 'The Problem',
+        bodyNode: '33:402',
+        runs: [
+          { kind: 'p', text: 'Photoshoots take planning.' },
+          { kind: 'p', text: 'You need the product.' },
+          { kind: 'p', text: 'The location.' },
+          { kind: 'p', text: 'The camera setup.' },
+          { kind: 'p', text: 'The lighting.' },
+          { kind: 'p', text: 'The photographer.' },
+          { kind: 'p', text: 'And usually a fixed shoot date.' },
+          {
+            kind: 'p',
+            text: 'If you need another angle or background later, you may need another shoot.',
+          },
+        ],
+      },
+      {
+        headingNode: '33:399',
+        heading: 'What I Make',
+        bodyNode: '33:403',
+        runs: [
+          { kind: 'p', text: 'I create a digital 3D version of your product.' },
+          {
+            kind: 'p',
+            text: 'Once the model is ready, I can create new product images without photographing it again.',
+          },
+          { kind: 'p', text: 'That can include:' },
+          {
+            kind: 'ul',
+            items: [
+              'Different camera angles',
+              'Different colors',
+              'New backgrounds',
+              'New lighting',
+              'Product animations',
+              'Ad creative',
+              'Launch visuals',
+            ],
+          },
+        ],
+      },
+      {
+        headingNode: '33:400',
+        heading: 'What You Get',
+        bodyNode: '33:404',
+        runs: [
+          {
+            kind: 'ul',
+            items: [
+              'Product modeling',
+              'Materials and textures',
+              'Lighting',
+              'Hero product renders',
+              'Multiple sizes',
+              'Optional animation',
+              'Source files for future projects',
+            ],
+          },
+          { kind: 'label', text: 'Price' },
+          // Figma draws "Starting From $3,500". Corrected to monthly on Gerald's
+          // confirmation — see the note at the top of this section.
+          { kind: 'ul', items: [{ before: 'From ', figure: '$3,500/month' }] },
+        ],
+      },
+    ],
+  },
+]
 
 /** Resolve a service's card price: real string, or null when the blank is unfilled. */
 export function cardPrice(service: Service): string | null {

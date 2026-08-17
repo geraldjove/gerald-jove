@@ -1,0 +1,142 @@
+---
+/**
+ * The body of one detail block — Figma nodes `33:300`/`33:302`/`33:304`/`33:306`
+ * and their equivalents in `33:431` and `33:447`.
+ *
+ * ⚠ In the Figma each of these blocks is ONE text node that is visually a list.
+ * The paragraph and list runs are read out of the node's internal structure and
+ * rebuilt here as real `<p>` and `<ul>` elements, so the markup says what the
+ * design means. Nothing is reworded and nothing is reordered.
+ *
+ * The trailing "Timeline" / "Price" / "Monthly Output" rows are 24px Roboto
+ * Condensed **Bold** paragraphs in the design, not list items, so they render
+ * as labelled rows rather than bullets.
+ *
+ * ⚠ Line-height is set explicitly to 7/6 and NOT left as `normal`
+ * (`leading-auto`). Figma's auto leading here rounds to a whole pixel — 42px at
+ * 36px and 28px at 24px, confirmed by the auto-height nodes `33:298` (h=42) and
+ * `33:300` (h=84 = 3 × 28), `33:304` (h=224 = 8 × 28), `33:302` (h=420 =
+ * 15 × 28). The browser's `normal` for Roboto Condensed is 1.171875 or 1.2002
+ * depending on which metric table it reads, and either one drifts several
+ * pixels down a fifteen-line block.
+ */
+import type { ServiceListItem, ServiceRun } from '@/content/services'
+
+interface Props {
+  runs: ServiceRun[]
+  /** Figma node of the source text node, carried through for traceability. */
+  node: string
+}
+
+const { runs, node } = Astro.props
+
+const isPriceRow = (item: ServiceListItem): item is Exclude<ServiceListItem, string> =>
+  typeof item !== 'string'
+
+/**
+ * `gapPx` is a Figma pixel gap above a run, expressed here relative to the
+ * block's 24px base so it holds through the type ramp below 90rem. Only
+ * `33:353` needs it: its blank line before "Monthly Output" is set at 36px.
+ */
+const gapStyle = (gapPx?: number) => (gapPx ? `--run-gap:${gapPx / 24}em` : undefined)
+---
+
+<div class="svc-runs" data-node={node}>
+  {
+    runs.map((run) => {
+      if (run.kind === 'p') return <p>{run.text}</p>
+
+      if (run.kind === 'label')
+        return (
+          <p class="svc-runs__label" style={gapStyle(run.gapPx)}>
+            {run.text}
+          </p>
+        )
+
+      return (
+        <ul>
+          {run.items.map((item) => (
+            <li>
+              {isPriceRow(item) ? (
+                <Fragment>{item.before}<span class="svc-runs__figure">{item.figure}</span>{item.after}</Fragment>
+              ) : (
+                item
+              )}
+            </li>
+          ))}
+        </ul>
+      )
+    })
+  }
+</div>
+
+<style>
+  .svc-runs {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--text-fx-24); /* 24px at ≥90rem */
+    /* 7/6 — see the note at the top of this file. */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+  }
+
+  /* One blank line between runs, which is exactly how the design separates
+     them. `1lh` is the line box; the `em` above it is the fallback for engines
+     without the `lh` unit. */
+  .svc-runs > * + * {
+    margin-top: var(--run-gap, calc(var(--leading-fx) * 1em));
+    margin-top: var(--run-gap, 1lh);
+  }
+
+  .svc-runs p {
+    text-wrap: wrap; /* the drawn line breaks are the design's, not the browser's */
+  }
+
+  /* "Timeline", "Price", "Monthly Output" — 24px Bold, white. Same size as the
+     body copy; only the weight changes. */
+  .svc-runs__label {
+    font-weight: 700;
+  }
+
+  .svc-runs ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Marker geometry measured off the rendered frame, in em so it survives the
+     type ramp: text indent 36px, marker 6px wide at x=15, y=10 within the 28px
+     line box. */
+  .svc-runs li {
+    position: relative;
+    padding-left: 1.5em;
+  }
+
+  .svc-runs li::before {
+    content: '';
+    position: absolute;
+    left: 0.625em;
+    top: 0.4167em;
+    width: 0.25em;
+    height: 0.25em;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+
+  /* A price row's 36px figure grows its line box to 42px, in the design as
+     well as here. The design drops the marker to y=24 within that taller line
+     rather than keeping it at 10 — measured on all three price rows
+     (33:306 y=1864 on a line at 1840, 33:353 y=1691 on 1667, 33:404 y=2133 on
+     2109). Without this the three markers sit 14px high. */
+  .svc-runs li:has(.svc-runs__figure)::before {
+    top: 1em;
+  }
+
+  /* The one accent figure inside a price row — 36px Bold #00aaff on a 24px
+     line. */
+  .svc-runs__figure {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+</style>

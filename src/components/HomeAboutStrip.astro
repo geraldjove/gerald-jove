@@ -1,0 +1,181 @@
+---
+/**
+ * "About Gerald" — Figma node `8:31`, 1440 x 1024, fill #242424.
+ * A full-height portrait panel on the left (37:821) and a copy block on the
+ * right centred on x=1002 rather than on the frame.
+ *
+ * The #d9d9d9 rectangle behind the portrait (24:194) is not reproduced: the
+ * export is opaque and covers the panel at every width.
+ */
+import { Image } from 'astro:assets'
+
+import HomeLines from './HomeLines.astro'
+import { ABOUT_STRIP } from '@/content/home'
+
+import portrait from '@/assets/img/home-about-strip-portrait.jpg'
+---
+
+<section class="fx-frame about" style="--fx-h: 64rem" data-node="8:31">
+  <div class="about__panel" data-node="37:821">
+    <Image
+      src={portrait}
+      alt={ABOUT_STRIP.portraitAlt}
+      widths={[360, 720]}
+      sizes="(min-width: 90rem) 45rem, 100vw"
+      format="webp"
+      quality={80}
+      class="about__panel-img"
+    />
+  </div>
+
+  <div class="about__canvas">
+    <div class="about__copy" data-node="24:186">
+      <h2 class="about__h2" data-node="24:187">
+        <HomeLines lines={ABOUT_STRIP.h2.lines} />
+      </h2>
+
+      <p class="about__body" data-node="24:189">{ABOUT_STRIP.body}</p>
+
+      <a class="fx-pill about__cta" href={ABOUT_STRIP.cta.href} data-node="24:190">
+        <span set:text={ABOUT_STRIP.cta.label} />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    background-color: var(--color-raised); /* 8:31 fill #242424 */
+    overflow: hidden;
+  }
+
+  /* AUTHORED: below 1440 the portrait becomes a band above the copy. */
+  .about__panel {
+    height: clamp(14rem, 52vw, 26rem);
+  }
+
+  .about__panel-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 22%;
+  }
+
+  .about__canvas {
+    position: relative;
+    padding: 3rem var(--spacing-gutter) 4rem;
+  }
+
+  .about__h2 {
+    margin: 0;
+    font-family: var(--font-sans); /* Roboto Condensed */
+    font-weight: 700;
+    font-size: var(--text-fx-64); /* 24:187 64px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap; /* global.css sets `balance` on h1-h6 */
+  }
+
+  .about__body {
+    margin: 1rem 0 0;
+    max-width: 33.1875rem; /* 24:189 is 531px wide */
+    font-family: var(--font-sans);
+    font-size: var(--text-fx-18); /* 18px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap; /* global.css sets `pretty` */
+  }
+
+  .about__cta {
+    margin-top: 1.5rem;
+    /* 24:192 sits 16.25px inside a 130px pill and 10px short of its right edge,
+       so the label is placed from the left rather than centred. */
+    justify-content: flex-start;
+    padding-inline: 1.0156rem;
+    min-height: 1.875rem; /* 24:191 h = 30 */
+    border-radius: 4.9486rem; /* 79.178px */
+    /* AUTHORED floor: 11.085px is too small to read below the design width. */
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  /* --- The design, exactly ------------------------------------------------ */
+  @media (min-width: 90rem) {
+    /* 24:194 / 37:821 — 720 wide, exactly half the 1440 frame, so 50% keeps it
+       flush to the left edge above 1440 as well. */
+    .about__panel {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      height: auto;
+      width: 50%;
+    }
+
+    .about__panel-img {
+      object-position: center;
+    }
+
+    .about__canvas {
+
+      position: absolute;
+
+      /* `inset: 0` + a definite width + `margin-inline: auto` centres it.
+
+         `min()` not a bare 90rem: a media query counts the scrollbar gutter
+
+         and layout does not, so on a 1440px window this box would be 1440
+
+         wide inside 1425 of layout and hang 7.5px off both edges. Same
+
+         reasoning as `.fx-canvas` in global.css. */
+
+      inset: 0;
+
+      width: min(var(--fx-frame), 100%);
+
+      margin-inline: auto;
+      padding: 0;
+    }
+
+    /* 24:186 — x=819, y=401. */
+    .about__copy {
+      position: absolute;
+      left: 51.1875rem;
+      top: 25.0625rem;
+      width: 34.1875rem; /* 547 */
+    }
+
+    .about__h2 {
+      /* 24:187 — 366 wide starting at x=819, so centred on x=1002. */
+      position: absolute;
+      left: 11.4375rem; /* 1002 - 819 */
+      line-height: var(--leading-fx-64); /* 75px */
+      top: 0;
+      transform: translateX(-50%);
+      width: max-content;
+    }
+
+    .about__body {
+      position: absolute;
+      left: 1rem; /* 24:189 x=835 against the group's 819 */
+      top: 5.5rem; /* y=489 against 401 */
+      line-height: var(--leading-fx-18); /* 21px */
+      margin: 0;
+      width: 33.1875rem; /* 531 */
+      max-width: none;
+    }
+
+    .about__cta {
+      position: absolute;
+      left: 1rem; /* 24:190 x=835 */
+      top: 12rem; /* y=593 against 401 */
+      margin-top: 0;
+      width: 8.125rem; /* 130 */
+      height: 1.875rem; /* 30 */
+      font-size: var(--home-text-11b); /* 24:192 11.085px */
+      line-height: var(--leading-fx-11); /* 13px */
+    }
+  }
+</style>

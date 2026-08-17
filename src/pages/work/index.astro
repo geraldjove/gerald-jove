@@ -15,8 +15,10 @@ const cases = (await getCollection('work', ({ data }) => !data.draft)).sort(
 
 <BaseLayout title={META.work.title} description={META.work.description}>
   <section class="shell py-section">
-    {/* Reuses the copy document's own proof headline rather than inventing one. */}
-    <h1 class="text-h1 text-fg">{PROOF.h2}</h1>
+    {/* Reuses the copy document's own proof headline rather than inventing one.
+        `workH1`, not `h2`: this route keeps its own wording, and a flat string
+        here means re-cutting the homepage heading cannot break this page. */}
+    <h1 class="text-h1 text-fg">{PROOF.workH1}</h1>
   </section>
 
   <section class="border-t border-line bg-raised">

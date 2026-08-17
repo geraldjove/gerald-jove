@@ -1,0 +1,53 @@
+---
+/**
+ * Renders a Figma heading as its drawn runs and drawn line breaks.
+ *
+ * The Figma is only defined at 1440, so the hard breaks are too: at >=90rem the
+ * `<br>` elements are live and the heading breaks exactly where the design does;
+ * below that they collapse and the text reflows. Every line's last run carries a
+ * trailing space so the joined-up form still reads as a sentence — the space is
+ * dropped by the browser when it sits immediately before a line break.
+ */
+import type { Run } from '@/content/home'
+
+interface Props {
+  lines: readonly (readonly Run[])[]
+}
+
+const { lines } = Astro.props
+---
+
+{
+  lines.map((runs, i) => (
+    <Fragment>
+      {i > 0 && <br class="fig-br" />}
+      {runs.map((run) => (
+        <span
+          class:list={['run', run.accent && 'run--accent', run.bold && 'run--bold']}
+          set:text={run.t}
+        />
+      ))}
+    </Fragment>
+  ))
+}
+
+<style>
+  .run--accent {
+    color: var(--color-accent);
+  }
+
+  .run--bold {
+    font-weight: 700;
+  }
+
+  /* The design's line breaks exist only where the design does. */
+  .fig-br {
+    display: none;
+  }
+
+  @media (min-width: 90rem) {
+    .fig-br {
+      display: inline;
+    }
+  }
+</style>

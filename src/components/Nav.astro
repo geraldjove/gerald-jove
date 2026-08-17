@@ -1,41 +1,86 @@
 ---
+/**
+ * Primary navigation — a 1:1 rebuild of the Figma `Navbar` component instance.
+ *
+ * Source nodes: 33:611, 33:621, 33:630, 33:639. All four instances are
+ * identical (x=70, 1301 × 85), so this is one component, not four.
+ *
+ * ⚠ The navbar does NOT sit on the 1340px content grid. In the design it is a
+ * centred 1201px row: "Home" starts at x=120 and the pill ends at x=1321,
+ * which is 70px inboard of the page content box (x=50→1390) on every frame.
+ * That is the design. Verified on the Contact frame, where the nav starts at
+ * 120 while the h1 group 33:506 starts at 50 and the card 33:538 ends at 1390.
+ *
+ * Two deliberate departures from the Figma, both required:
+ *  - FIVE links, not four. The design omits Work; shipping it is a fixed
+ *    decision. The Figma's 200px gap cannot survive a fifth item inside 1201px,
+ *    so the row is `space-between`: the outer edges stay exact and the interior
+ *    spacing (≈150px) is authored.
+ *  - Below 90rem there is no design at all. The collapsed bar, its wordmark and
+ *    the disclosure panel are authored.
+ *
+ * ⚠ At ≥90rem the header is OUT OF FLOW and TRANSPARENT.
+ *
+ * In the design the navbar is a child of the first section frame (Hero `1:2`
+ * on the homepage) at y=0, with no fill — the hero artwork runs underneath it.
+ * A header that occupies flow space pushes every section down 85px, which is
+ * why a page agent had already written `margin-top: calc(-1 * var(--fx-nav-h))`
+ * to cancel it. That fudge belongs here once, not in four page files.
+ *
+ * Scroll behaviour is NOT in the Figma — a static frame cannot express it — so
+ * `absolute` vs `fixed` vs `sticky` is authored either way. `absolute` was
+ * chosen because it is the only option that is 1:1 on all four pages AND
+ * contrast-safe: a transparent FIXED header would pass over the Services rail
+ * images (bright grainy gradients at x=53 / x=977), putting white links on a
+ * light ground mid-scroll, and an opaque fixed header would cover the hero
+ * artwork the design shows through. The cost is that the nav scrolls away on a
+ * long page. ⚠ It also means `scroll-margin-top: var(--fx-nav-h)` is now wrong
+ * — nothing persists to scroll under.
+ *
+ * Below 90rem the bar is sticky, opaque and in flow. That layout is authored.
+ */
 import Icon from './Icon.astro'
-import { NAV_LINKS, NAV_CTA } from '@/content/site'
+import { NAV_LINKS, NAV_CTA, SITE_NAME } from '@/content/site'
 
 const path = Astro.url.pathname.replace(/\/+$/, '') || '/'
 const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href))
 ---
 
-<header class="sticky top-0 z-50 border-b border-line bg-ink/85 backdrop-blur-md">
-  <nav class="shell flex h-16 items-center justify-between gap-4" aria-label="Primary">
-    <a
-      href="/"
-      class="font-display text-[1.0625rem] font-extrabold tracking-tight text-fg transition-colors hover:text-accent-hi"
-    >
-      Gerald Jove
-    </a>
-
-    <ul class="hidden items-center gap-7 md:flex">
+<header class="sticky top-0 z-50 bg-ink fx:absolute fx:inset-x-0 fx:bg-transparent">
+  <nav aria-label="Primary">
+    {/* ≥90rem — the Figma row, 1201px centred, 85px tall. */}
+    <div class="fx-nav-row hidden h-[var(--fx-nav-h)] fx:flex">
       {
         NAV_LINKS.map((link) => (
-          <li>
-            <a
-              href={link.href}
-              aria-current={isCurrent(link.href) ? 'page' : undefined}
-              class:list={[
-                'text-small font-medium transition-colors',
-                isCurrent(link.href) ? 'text-fg' : 'text-fg-subtle hover:text-fg',
-              ]}
-            >
-              {link.label}
-            </a>
-          </li>
+          <a
+            href={link.href}
+            aria-current={isCurrent(link.href) ? 'page' : undefined}
+            class="font-display text-fx-18 leading-auto font-medium whitespace-nowrap text-fg transition-colors hover:text-accent"
+          >
+            {/* Poppins Medium 18px, white — I33:611;33:93–96 */}
+            {link.label}
+          </a>
         ))
       }
-    </ul>
 
-    <div class="flex items-center gap-2">
-      <a href={NAV_CTA.href} class="btn btn-primary hidden md:inline-flex">{NAV_CTA.label}</a>
+      {/* Book A Call — I33:611;33:606. 142 × 45, radius 118.214,
+          label Poppins Bold 16.55px black, inset 23px / 10px. */}
+      <a
+        href={NAV_CTA.href}
+        class="fx-pill text-fx-16 h-[2.8125rem] w-[8.875rem] shrink-0 whitespace-nowrap"
+      >
+        {NAV_CTA.label}
+      </a>
+    </div>
+
+    {/* <90rem — AUTHORED. The design has no small frame. */}
+    <div class="shell flex h-16 items-center justify-between gap-4 fx:hidden">
+      <a
+        href="/"
+        class="font-display text-fx-18 font-bold tracking-tight text-fg transition-colors hover:text-accent"
+      >
+        {SITE_NAME}
+      </a>
 
       <button
         type="button"
@@ -43,7 +88,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
         aria-expanded="false"
         aria-controls="nav-panel"
         aria-label="Toggle navigation menu"
-        class="grid h-10 w-10 place-items-center rounded-lg border border-line text-fg transition-colors hover:border-line-strong md:hidden"
+        class="grid h-10 w-10 place-items-center rounded-lg border border-line-strong text-fg transition-colors hover:border-accent"
       >
         <span data-icon="menu"><Icon name="menu" /></span>
         <span data-icon="close" class="hidden"><Icon name="close" /></span>
@@ -51,7 +96,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     </div>
   </nav>
 
-  <div id="nav-panel" data-nav-panel hidden class="border-t border-line md:hidden">
+  <div id="nav-panel" data-nav-panel hidden class="border-t border-line fx:hidden">
     <ul class="shell flex flex-col py-2">
       {
         NAV_LINKS.map((link) => (
@@ -60,8 +105,8 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
               href={link.href}
               aria-current={isCurrent(link.href) ? 'page' : undefined}
               class:list={[
-                'block py-3 text-body font-medium transition-colors',
-                isCurrent(link.href) ? 'text-fg' : 'text-fg-subtle hover:text-fg',
+                'block py-3 font-display text-fx-18 font-medium transition-colors',
+                isCurrent(link.href) ? 'text-accent' : 'text-fg hover:text-accent',
               ]}
             >
               {link.label}
@@ -70,7 +115,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
         ))
       }
       <li class="py-3">
-        <a href={NAV_CTA.href} class="btn btn-primary w-full">{NAV_CTA.label}</a>
+        <a href={NAV_CTA.href} class="fx-pill text-fx-16 h-[2.8125rem] w-full">{NAV_CTA.label}</a>
       </li>
     </ul>
   </div>

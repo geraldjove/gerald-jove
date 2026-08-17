@@ -1,0 +1,49 @@
+---
+/**
+ * The dropdown marker on the "When do you need this?" control — Figma `33:536`.
+ *
+ * A filled triangle, not a stroked chevron, so `Icon.astro` has no matching
+ * glyph. The path is the exact geometry of the exported asset
+ * (12.1244 x 10.5, fill #D9D9D9), written point-down: Figma draws the polygon
+ * point-up and rotates the wrapper 180deg, which is the same shape.
+ *
+ * Inlined rather than committed as a file because the vector is three points
+ * and the exported SVG is 266 bytes — an <img> would cost a request and could
+ * not be sized against the token system.
+ *
+ * ⚠ It positions itself. Astro scopes CSS per component, so a `.c-arrow` rule
+ * written in ContactForm.astro compiles to a selector carrying that file's
+ * scope id and never matches this element; the first build of this component
+ * took the class as a prop and silently laid the arrow out in flow, pushing
+ * the textarea and submit 10.5px down. The offsets below are measured from the
+ * enclosing `.c-select-wrap`, which is the control's own 443 x 35 box.
+ */
+---
+
+<svg
+  class="arrow"
+  viewBox="0 0 12.1244 10.5"
+  width="12.1244"
+  height="10.5"
+  fill="#D9D9D9"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d="M0 0H12.1244L6.06218 10.5Z"></path>
+</svg>
+
+<style>
+  /* Right edge at x=1332.11 (9.89px in from the control's right edge at 1342),
+     top at y=530.5 (14.5px down from the control's top at 516). Both axes are
+     sized explicitly: `height: auto` in global.css applies to <img>, not to an
+     inline <svg>, so a width-only rule would leave the intrinsic height
+     reserving a much taller box. */
+  .arrow {
+    position: absolute;
+    right: 0.618rem;
+    top: 0.90625rem;
+    width: 0.7578rem;
+    height: 0.65625rem;
+    pointer-events: none;
+  }
+</style>

@@ -1,0 +1,265 @@
+---
+/**
+ * Homepage hero — Figma node `1:2`, 1440 x 1024.
+ *
+ * At >=90rem every child sits at its Figma coordinate inside a 90rem canvas
+ * centred in the section; below that the section flows. Node ids are on the
+ * elements as `data-node` and beside every measurement as a comment.
+ *
+ * The navbar is drawn inside this frame in the Figma (node 33:611) and is NOT
+ * rendered here — the shared `Nav` from `BaseLayout` is that element.
+ */
+import { Image } from 'astro:assets'
+
+import type { Run } from '@/content/home'
+import HomeLines from './HomeLines.astro'
+import { HERO } from '@/content/home'
+import { AVAILABILITY } from '@/content/site'
+
+import heroBackground from '@/assets/img/home-hero-bg.jpg'
+
+/** `as const` narrows each run to its own literal shape; widen it back to Run. */
+const ledeParagraphs: readonly (readonly Run[])[] = HERO.body.paragraphs
+---
+
+<section class="fx-frame hero" style="--fx-h: 64rem" data-node="1:2">
+  {/* 19:12 — the black fill, the radial accent wash and the masked portrait,
+      flattened to one export because the mask and the gradient are baked in.
+
+      ⚠ This is the only frame on the site with artwork under the navbar. The
+      shared Nav is transparent over it and its links are white, which is legible
+      here only because THIS image is near-black across its top 85px. That is a
+      property of the file, not a guarantee: swap it for a lighter crop and the
+      nav fails silently, and no check in the build would catch it. */}
+  <div class="hero__bg">
+    <Image
+      src={heroBackground}
+      alt="Gerald Jove"
+      widths={[720, 1080, 1440]}
+      sizes="100vw"
+      format="webp"
+      quality={82}
+      loading="eager"
+      fetchpriority="high"
+      class="hero__img"
+    />
+  </div>
+
+  <div class="hero__canvas">
+    <div class="hero__copy" data-node="22:29">
+      {/* `fx-display` carries the two facts that always co-occur on the 19
+          enumerated Poppins nodes: the face, and line-height 1. */}
+      <h1 class="fx-display hero__h1" data-node="2:3">
+        <HomeLines lines={HERO.h1.lines} />
+      </h1>
+
+      <div class="hero__lede" data-node="4:6">
+        {
+          ledeParagraphs.map((runs) => (
+            <p>
+              {runs.map((run) => (
+                <span
+                  class:list={[run.accent && 'run--accent', run.bold && 'run--bold']}
+                  set:text={run.t}
+                />
+              ))}
+            </p>
+          ))
+        }
+      </div>
+
+      <a class="fx-pill hero__cta" href={HERO.cta.href} data-node="21:23">
+        <span set:text={HERO.cta.label} />
+      </a>
+
+      {/* 32:88 — AGENTS.md rule 5: the sentence comes from site.ts, not the
+          Figma. The leading asterisk is the design's own footnote marker. */}
+      <p class="hero__availability" data-node="32:88">*{AVAILABILITY.short}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* The frame's own fill is #000000. It is never visible: the 19:12 export is
+     opaque and covers the frame at every width, so `--color-ink` stands in
+     rather than introducing a black surface token nothing else needs. */
+  .hero {
+    background-color: var(--color-ink);
+    overflow: hidden;
+  }
+
+  /* No negative z-index here: `.hero` paints its own background over any child
+     below zero, which loses the artwork entirely. The copy sits above simply by
+     being later in the DOM and positioned. */
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 68% center;
+  }
+
+  /* AUTHORED: below 1440 the copy would sit across the portrait, so the image is
+     pushed right and scrimmed. Neither exists in the design. */
+  .hero__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      rgb(0 0 0 / 0.93) 0%,
+      rgb(0 0 0 / 0.78) 55%,
+      rgb(0 0 0 / 0.4) 100%
+    );
+  }
+
+  .hero__canvas {
+    position: relative;
+    padding: 7.5rem var(--spacing-gutter) 4.5rem;
+  }
+
+  /* Face and line-height come from `.fx-display`; only the node's own size and
+     weight are set here. */
+  .hero__h1 {
+    font-weight: 700;
+    font-size: var(--text-fx-72); /* 2:3 72.504px */
+    color: var(--color-fg);
+    text-wrap: wrap; /* global.css sets `balance` on h1-h6, which re-wraps it */
+    margin: 0;
+  }
+
+  .hero__lede {
+    margin-top: 2rem;
+    max-width: 31.5625rem; /* 4:6 is 505px wide */
+    font-family: var(--font-sans); /* Roboto Condensed */
+    font-size: var(--home-text-21); /* 21.278px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+  }
+
+  .hero__lede p {
+    margin: 0;
+    text-wrap: wrap; /* global.css sets `pretty`, which re-wraps the last line */
+  }
+
+  /* One blank line between the two paragraphs, as drawn in node 4:6. */
+  .hero__lede p + p {
+    margin-top: 1.1719em;
+    margin-top: 1lh;
+  }
+
+  .hero__lede .run--accent {
+    color: var(--color-accent);
+  }
+
+  .hero__lede .run--bold {
+    font-weight: 700;
+  }
+
+  .hero__cta {
+    margin-top: 2.5rem;
+    /* 5:18 starts 24px inside a 234.063px pill and ends 21px short of it, so
+       the label is placed from the left rather than centred. */
+    justify-content: flex-start;
+    padding-inline: 1.5rem;
+    min-height: 2.8076rem; /* 21:23 h = 44.921 */
+    border-radius: 7.3884rem; /* 5:17 radius 118.214 */
+    font-size: var(--text-fx-16); /* 5:18 16.55px */
+    white-space: nowrap;
+  }
+
+  .hero__availability {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-style: italic; /* no italic face is loaded; this is a synthesised oblique */
+    font-size: var(--text-fx-11); /* 32:88 11.5px */
+    line-height: 1;
+    color: var(--color-fg);
+    text-wrap: wrap;
+  }
+
+  /* --- The design, exactly ------------------------------------------------
+     Everything below reproduces frame 1:2 at its drawn coordinates. */
+  @media (min-width: 90rem) {
+    .hero__bg::after {
+      display: none;
+    }
+
+    .hero__img {
+      object-position: center;
+    }
+
+    .hero__canvas {
+
+      position: absolute;
+
+      /* `inset: 0` + a definite width + `margin-inline: auto` centres it.
+
+         `min()` not a bare 90rem: a media query counts the scrollbar gutter
+
+         and layout does not, so on a 1440px window this box would be 1440
+
+         wide inside 1425 of layout and hang 7.5px off both edges. Same
+
+         reasoning as `.fx-canvas` in global.css. */
+
+      inset: 0;
+
+      width: min(var(--fx-frame), 100%);
+
+      margin-inline: auto;
+      padding: 0;
+    }
+
+    /* 22:29 — x=50, y=220. Its children are placed at their own node offsets
+       inside it, because the Figma spaces them freely rather than in a flow. */
+    .hero__copy {
+      position: absolute;
+      left: 3.125rem;
+      top: 13.75rem;
+      width: 42.1875rem; /* 675 */
+    }
+
+    .hero__h1 {
+      /* 2:3 — `max-content` so the drawn <br>s alone decide the four lines and
+         a hairline of render width cannot add a fifth. */
+      width: max-content;
+    }
+
+    .hero__lede {
+      position: absolute;
+      left: 0;
+      top: 21.5625rem; /* 4:6 y=565 against the group's 220 */
+      line-height: var(--home-leading-21); /* 25px */
+      margin-top: 0;
+      width: 31.5625rem; /* 505 */
+      max-width: none;
+    }
+
+    .hero__cta {
+      position: absolute;
+      left: 0;
+      top: 32.3125rem; /* 21:23 y=737 */
+      margin-top: 0;
+      width: 14.6289rem; /* 234.063 */
+      height: 2.8076rem;
+    }
+
+    .hero__availability {
+      position: absolute;
+      left: 0;
+      /* One line in the design (h=12 at 11.5px). The synthesised oblique runs a
+         few px wider than the design's real Medium Italic, which is enough to
+         wrap it inside the 227px box; the box is a measure, not a boundary. */
+      white-space: nowrap;
+      top: 35.75rem; /* 32:88 y=792 */
+      margin-top: 0;
+      width: 14.1875rem; /* 227 */
+    }
+  }
+</style>

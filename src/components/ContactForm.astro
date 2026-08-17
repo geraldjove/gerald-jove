@@ -1,127 +1,140 @@
 ---
 /**
- * Qualification form.
+ * Qualification form — Figma card `33:538`, contents `33:539`.
  *
  * Static markup, progressively enhanced by src/scripts/contact-form.ts — not a
  * framework island. Astro injects an inline hydration runtime for `client:*`
  * directives, and the live CSP is `script-src 'self'` with no nonce (a static
- * host cannot issue one), so an island would have been silently blocked in
- * production while working perfectly in dev. Vanilla also drops the ~69 KB Vue
- * runtime from the only page that would have loaded it.
+ * host cannot issue one), so an island would be silently blocked in production
+ * while working perfectly in dev.
  *
  * Without JS the form still posts natively to Formspree and `_next` returns the
  * visitor to /thank-you, so no lead is lost. With JS the submit is intercepted,
- * the visitor stays on the site, and the success state replaces the form —
- * which is the whole point of audit finding H3.
+ * the visitor stays on the site, and the success state replaces the form.
+ *
+ * ── Geometry ──────────────────────────────────────────────────────────────
+ * Every measurement below is the Figma value divided by 16. The card is a flow
+ * layout, not an absolute one, because the design's own rhythm is already
+ * regular — heading(44) → 14 → [label(18) → 8 → control] → 14 → … → 22 →
+ * submit(35.234) reproduces all eleven node positions exactly, and leaves room
+ * for the error slots to push content down instead of overlapping it.
  */
 import { FIELDS, CONTACT, FORMSPREE_ENDPOINT } from '@/content/contact'
-import { SITE_URL } from '@/content/site'
+import { SITE_URL, AVAILABILITY } from '@/content/site'
 import { blankValue } from '@/content/blanks.js'
+import ContactSelectArrow from '@/components/ContactSelectArrow.astro'
 
 /** Blank #8. Until Gerald picks a fallback, no contact address is published. */
 const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutralBody
 ---
 
-<div data-contact-root>
+<div data-contact-root class="c-root">
   <form
     data-contact-form
-    class="surface p-6 sm:p-8"
+    class="c-card"
     action={FORMSPREE_ENDPOINT}
     method="POST"
     novalidate
   >
     <input type="hidden" name="_next" value={`${SITE_URL}/thank-you`} />
 
-    <p class="text-small text-fg-subtle">{CONTACT.formIntro}</p>
+    {/* 33:511 — Roboto Condensed Bold 38px. NOT Poppins: global.css defaults
+        every heading to --font-display, so the workhorse face is opted back in
+        explicitly. Only the page h1 (33:507) is Poppins on this page. */}
+    <h2 class="c-head">{CONTACT.formHeading}</h2>
 
-    <div class="mt-7 space-y-5">
-      {
-        FIELDS.map((field) => (
-          <div>
-            <label for={`field-${field.name}`} class="block text-small font-medium text-fg-muted">
-              {field.label}
-              {!field.required && <span class="text-fg-quiet"> (optional)</span>}
-            </label>
+    {
+      FIELDS.map((field) => (
+        <div class="c-row">
+          <label for={`field-${field.name}`} class="c-label">
+            {field.label}
+          </label>
 
-            {field.type === 'select' ? (
+          {field.type === 'select' ? (
+            <span class="c-select-wrap">
               <select
                 id={`field-${field.name}`}
                 name={field.name}
-                class="field mt-2"
+                class="c-field c-select"
                 data-label={field.label}
                 data-required={field.required ? 'true' : undefined}
                 aria-describedby={`error-${field.name}`}
+                required={field.required}
               >
-                <option value="">Select one</option>
-                {field.options?.map((option) => <option value={option}>{option}</option>)}
+                {/* 33:535 draws "Now" in the filled-value colour. Opening on it
+                    would attribute an answer to a visitor who never touched the
+                    control, so the resting state is an empty option instead. */}
+                <option value="">{CONTACT.selectPlaceholder}</option>
+                {field.options?.map((option) => (
+                  <option value={option}>{option}</option>
+                ))}
               </select>
-            ) : field.type === 'textarea' ? (
-              <textarea
-                id={`field-${field.name}`}
-                name={field.name}
-                rows={field.rows ?? 6}
-                placeholder={field.placeholder}
-                class="field mt-2 resize-y"
-                data-label={field.label}
-                data-required={field.required ? 'true' : undefined}
-                aria-describedby={`error-${field.name}`}
-              />
-            ) : (
-              <input
-                id={`field-${field.name}`}
-                type={field.type}
-                name={field.name}
-                placeholder={field.placeholder}
-                autocomplete={field.autocomplete}
-                class="field mt-2"
-                data-label={field.label}
-                data-required={field.required ? 'true' : undefined}
-                aria-describedby={`error-${field.name}`}
-              />
-            )}
+              <ContactSelectArrow />
+            </span>
+          ) : field.type === 'textarea' ? (
+            <textarea
+              id={`field-${field.name}`}
+              name={field.name}
+              placeholder={field.placeholder}
+              class="c-field c-textarea"
+              data-label={field.label}
+              data-required={field.required ? 'true' : undefined}
+              aria-describedby={`error-${field.name}`}
+            />
+          ) : (
+            <input
+              id={`field-${field.name}`}
+              type={field.type}
+              name={field.name}
+              placeholder={field.placeholder}
+              autocomplete={field.autocomplete}
+              class="c-field"
+              data-label={field.label}
+              data-required={field.required ? 'true' : undefined}
+              aria-describedby={`error-${field.name}`}
+            />
+          )}
 
-            <p id={`error-${field.name}`} data-error-for={field.name} class="mt-2 text-micro text-accent-hi" hidden />
-          </div>
-        ))
-      }
-    </div>
+          <p id={`error-${field.name}`} data-error-for={field.name} class="c-error" hidden />
+        </div>
+      ))
+    }
 
     {/* Formspree's honeypot convention. Hidden from people, tempting to bots. */}
-    <div class="hidden" aria-hidden="true">
+    <div class="c-gotcha" aria-hidden="true">
       <label for="field-gotcha">Leave this field empty</label>
       <input id="field-gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
     </div>
 
-    <button
-      type="submit"
-      data-submit
-      data-sending={CONTACT.submittingLabel}
-      class="btn btn-primary mt-7 w-full"
-    >
+    {/* 33:527 / 33:528 / 33:529 */}
+    <button type="submit" data-submit data-sending={CONTACT.submittingLabel} class="c-submit">
       {CONTACT.submitLabel}
     </button>
 
-    <div
-      data-form-error
-      hidden
-      tabindex="-1"
-      role="alert"
-      class="mt-5 rounded-card border border-accent/40 bg-inset p-4"
-    >
-      <p class="text-small font-semibold text-fg">{CONTACT.error.heading}</p>
-      <p class="mt-1 text-small text-fg-muted">{errorFallback}</p>
+    <div data-form-error hidden tabindex="-1" role="alert" class="c-alert">
+      <p class="c-alert-head">{CONTACT.error.heading}</p>
+      <p class="c-alert-body">{errorFallback}</p>
     </div>
   </form>
 
-  {/* Revealed in place of the form on success. */}
-  <div data-form-success hidden class="surface p-6 sm:p-8">
-    <h2 data-success-heading tabindex="-1" class="text-h3 text-fg">{CONTACT.success.heading}</h2>
-    <p class="mt-3 text-body text-fg-muted">{CONTACT.success.body}</p>
-    <a href={CONTACT.success.link.href} class="link-arrow mt-5 text-small">
+  {/* Revealed in place of the form on success. The Figma has no node for this
+      state — it draws the resting form only — so the panel reuses the card's
+      geometry and the copy already in the content module. */}
+  <div data-form-success hidden class="c-card">
+    <h2 data-success-heading tabindex="-1" class="c-head c-head-success">
+      {CONTACT.success.heading}
+    </h2>
+    <p class="c-success-body">{CONTACT.success.body}</p>
+    <a href={CONTACT.success.link.href} class="link-arrow c-success-link">
       {CONTACT.success.link.label}
       <span aria-hidden="true">&rarr;</span>
     </a>
   </div>
+
+  {/* Not in the Figma. AGENTS.md rule 5 requires the availability line under
+      every call to action, and the submit button is this page's CTA. Placed
+      below the card rather than inside it so the card keeps its 539x697. */}
+  <p class="c-avail">{AVAILABILITY.short}</p>
 </div>
 
 <script>
@@ -129,34 +142,246 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
 </script>
 
 <style>
-  .field {
-    display: block;
+  .c-root {
+    /* 33:513 — 1.036px, rounded to the nearest device pixel. */
+    --c-field-border: 0.0625rem;
+  }
+
+  /* 33:538 — 539 x 697, 3px accent stroke, 21px radius, page-coloured fill.
+     The design's insets differ per axis: 44px top/bottom and 48px left/right,
+     both measured from the outer edge, so inside a 3px border the padding is
+     41px / 45px. That puts the contents at x=899 and y=207, 443 wide — 33:539
+     exactly. Height falls out of the flow at 697.22 against the node's 697. */
+  .c-card {
+    box-sizing: border-box;
     width: 100%;
-    border-radius: 0.625rem;
-    border: 1px solid var(--color-line-strong);
     background-color: var(--color-ink);
-    padding: 0.7rem 0.85rem;
+    border: 0.1875rem solid var(--color-accent);
+    border-radius: 1.3125rem;
+    padding: 2.5625rem 2.8125rem;
+  }
+
+  /* AUTHORED. At 390px the design's 48px side insets would spend 26% of the
+     card on chrome. Capped below 48rem so it can never reach the copied
+     layout, which starts at 90rem. */
+  @media (max-width: 47.99rem) {
+    .c-card {
+      padding: 1.75rem 1.5rem;
+      border-radius: 1rem;
+    }
+  }
+
+  /* 33:511 — 38px in a 44px box, top-aligned, Roboto Condensed Bold.
+     `min-height` rather than `height`: at >=90rem the string is 204px in a
+     443px box so it cannot wrap and the box is 44px either way, but on a
+     narrow card a fixed height would let a second line spill out. */
+  .c-head {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 2.375rem;
+    line-height: 1;
+    min-height: 2.75rem;
     color: var(--color-fg);
-    font-size: var(--text-small);
-    font-family: inherit;
+  }
+
+  /* The success heading is a different, longer string with no 44px box behind
+     it — it should sit tight to its own text. */
+  .c-head-success {
+    min-height: 0;
+  }
+
+  /* 14px between the heading and the first row, and between rows. */
+  .c-row {
+    margin-top: 0.875rem;
+  }
+
+  /* 33:518 / 33:519 / 33:521 / 33:523 / 33:525 — 18px Roboto Condensed Bold,
+     accent, in an 18px box.
+     ⚠ DO NOT PAIR WITH `--leading-fx-18` (21px). These nodes measure exactly
+     18px tall at 18px, i.e. an explicit 100% leading, not Figma's Auto. 21px
+     would add 3px to each of five rows and walk the whole stack down: the
+     label→control gap of 8px would have to become 5 to keep the first input
+     at y=291. */
+  .c-label {
+    display: block;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1;
+    color: var(--color-accent);
+  }
+
+  /* 33:513 / 33:520 / 33:522 / 33:524 — 443 x 35, 5.181px radius, 11px inset so
+     the value sits at x=911 as the design has it. */
+  .c-field {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 2.1875rem;
+    margin-top: 0.5rem;
+    padding: 0 0.6875rem;
+    background-color: var(--color-raised);
+    border: var(--c-field-border) solid var(--color-accent);
+    border-radius: 0.3238rem;
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 1.125rem;
+    line-height: 1;
     color-scheme: dark;
     transition: border-color var(--motion-base) var(--ease-out-soft);
   }
 
-  .field::placeholder {
-    color: var(--color-fg-quiet);
+  /* ⚠ REPORTED DEVIATION FROM 1:1. The design's placeholder ink (33:532–33:537)
+     is #515151, which is 1.96:1 on the #242424 field — a fail, not a near miss.
+     There is no placeholder exemption in WCAG 1.4.3: placeholder text is text,
+     and it is the only instruction in the field before the visitor types.
+     --color-fg-placeholder is the design value raised to #959595, 5.18:1. */
+  .c-field::placeholder {
+    color: var(--color-fg-placeholder);
+    opacity: 1;
   }
 
-  .field:focus {
-    border-color: var(--color-accent);
-  }
-
-  .field[aria-invalid='true'] {
+  .c-field:focus {
     border-color: var(--color-accent-hi);
   }
 
-  button[disabled] {
+  .c-field[aria-invalid='true'] {
+    border-color: var(--color-accent-hi);
+  }
+
+  /* 33:526 — 443 x 168. 14px top inset puts the first line at y=606 (33:537). */
+  .c-textarea {
+    height: 10.5rem;
+    padding: 0.875rem 0.6875rem;
+    resize: vertical;
+  }
+
+  /* The 8px label gap moves onto the wrapper so the arrow's offset is measured
+     from the control's own top edge, not from a collapsed margin. */
+  .c-select-wrap {
+    display: block;
+    position: relative;
+    margin-top: 0.5rem;
+  }
+
+  .c-select-wrap .c-field {
+    margin-top: 0;
+  }
+
+  .c-select {
+    appearance: none;
+    /* Room for the marker at 33:536, which the design's short value never
+       reaches. Authored: the Figma has no long option to test against. */
+    padding-right: 1.75rem;
+  }
+
+  /* While the empty option is selected the control shows placeholder ink, the
+     same as every other resting field on the card. `novalidate` on the form
+     does not affect :invalid matching. */
+  .c-select:invalid {
+    color: var(--color-fg-placeholder);
+  }
+
+  /* 33:536 is positioned by ContactSelectArrow's own scoped style — a rule
+     written here cannot reach it. Astro scopes CSS per component, so the
+     `.c-arrow[data-astro-cid-…]` selector this file compiles to never matches
+     an element rendered by the child. It laid out in flow instead, pushing the
+     last three nodes 10.5px down. */
+
+  .c-error {
+    margin-top: 0.4rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--color-accent-hi);
+  }
+
+  .c-gotcha {
+    display: none;
+  }
+
+  /* 33:527 — 443 x 35.234, 32.821px radius, accent fill, Poppins Bold 12.436px.
+     22px below the textarea. */
+  .c-submit {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 2.2021rem;
+    margin-top: 1.375rem;
+    border-radius: 2.0513rem;
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.7773rem;
+    line-height: 1;
+    text-align: center;
+    cursor: pointer;
+    transition:
+      background-color var(--motion-base) var(--ease-out-soft),
+      transform var(--motion-fast) var(--ease-out-soft);
+  }
+
+  .c-submit:hover {
+    background-color: var(--color-accent-hi);
+  }
+
+  .c-submit:active {
+    transform: translateY(1px);
+  }
+
+  .c-submit[disabled] {
     opacity: 0.6;
     cursor: progress;
+  }
+
+  .c-alert {
+    margin-top: 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+    border-radius: 0.625rem;
+    padding: 1rem;
+  }
+
+  /* Explicit leading on both alert lines: they are authored, not Figma nodes,
+     and without it they would inherit 1.68 below 90rem and the frame's 7/6
+     above it — the same copy changing shape across the breakpoint. */
+  .c-alert-head {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: var(--color-fg);
+  }
+
+  .c-alert-body {
+    margin-top: 0.25rem;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-fg-muted);
+  }
+
+  .c-success-body {
+    margin-top: 0.75rem;
+    font-family: var(--font-sans);
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: var(--color-fg-muted);
+  }
+
+  .c-success-link {
+    margin-top: 1.25rem;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+
+  /* Availability line — not a Figma node; see the markup comment above. */
+  .c-avail {
+    margin-top: 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--color-fg-muted);
   }
 </style>

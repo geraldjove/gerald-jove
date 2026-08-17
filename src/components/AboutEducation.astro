@@ -1,0 +1,168 @@
+---
+/**
+ * Education & Training — Figma node `33:172` (1440 x 1024).
+ *
+ * ⚠ AUTHORED DEVIATION, and the only one on this page at >=1440.
+ * In the Figma the left half of this section (x=50..621) is a collage of
+ * institution logos and campus photographs — nodes `33:214`–`33:217`, which are
+ * permanently excluded from this repository (AGENTS.md rule 4). The text block
+ * sits at x=705 because it is balanced against that collage. With the collage
+ * gone, holding x=705 would leave a 705px hole down the left of the section and
+ * read as a missing asset. The 671px block is therefore CENTRED on the frame
+ * (x=384.5), which shifts every node in this section left by 320.5px. Vertical
+ * positions are unchanged and exact.
+ *
+ * The rail markers `33:194`–`33:198` are plain 41px rings — circle r=19,
+ * stroke #00AAFF width 3, i.e. a 3px border on a 41px box. They carry no
+ * numerals, so this is a <ul>, not an <ol>.
+ *
+ * ⚠ The institution names are Roboto Condensed Bold *Italic* 24px. AGENTS.md
+ * records that no italic face is loaded and that the synthesised oblique is
+ * visibly wrong at this size; the decision to subset, load, or drop the italic
+ * is Gerald's and belongs in the shared font layer, not here.
+ */
+import { ABOUT } from '@/content/about'
+---
+
+<section class="about-education">
+  <div class="about-education__inner">
+    <h2 class="about-education__heading">
+      {
+        ABOUT.education.heading.map((run) => (
+          <span class:list={[run.accent && 'about-education__accent']}>{run.text}</span>
+        ))
+      }
+    </h2>
+
+    <ul class="about-education__list">
+      {
+        ABOUT.education.entries.map((entry) => (
+          <li class="about-education__entry">
+            <span class="about-education__marker" aria-hidden="true" />
+            <div>
+              <h3 class="about-education__title">{entry.title}</h3>
+              <p class="about-education__institution">{entry.institution}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* --- Authored below 90rem ------------------------------------------------ */
+  .about-education {
+    background-color: var(--color-raised);
+    padding-block: var(--a-pad-block);
+  }
+
+  .about-education__inner {
+    width: 100%;
+    max-width: calc(var(--fx-content) + 2 * var(--spacing-gutter));
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  /* 33:173 — Roboto Condensed Bold 64px */
+  .about-education__heading {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-64);
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap;
+  }
+
+  .about-education__accent {
+    color: var(--color-accent);
+  }
+
+  /* 33:202 */
+  .about-education__list {
+    margin-top: 2.25rem;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    row-gap: 2.25rem; /* 105 pitch - 69 entry = 36 */
+  }
+
+  /* 33:190–33:193 */
+  .about-education__entry {
+    display: grid;
+    grid-template-columns: 2.5625rem 1fr; /* 41 marker */
+    column-gap: 0.875rem; /* 760 - 746 = 14 */
+    align-items: start;
+  }
+
+  /* 33:194–33:198 */
+  .about-education__marker {
+    box-sizing: border-box;
+    width: 2.5625rem; /* 41 */
+    height: 2.5625rem;
+    margin-top: 0.875rem; /* 390 - 376 */
+    border: 0.1875rem solid var(--color-accent); /* stroke 3 */
+    border-radius: 50%;
+  }
+
+  /* 33:179 / 33:182 / 33:184 / 33:186 — Roboto Condensed Bold 30px */
+  .about-education__title {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-30);
+    line-height: var(--leading-fx);
+    color: var(--color-accent);
+    text-wrap: wrap;
+  }
+
+  /* 33:181 / 33:183 / 33:185 / 33:187 — Roboto Condensed Bold Italic 24px */
+  .about-education__institution {
+    margin-top: 0.375rem;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-style: italic;
+    font-size: var(--text-fx-24);
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap;
+  }
+
+  /* --- Figma-exact at >=90rem, except the horizontal shift noted above ------ */
+  @media (min-width: 90rem) {
+    .about-education {
+      height: 64rem; /* 33:172 — 1024 */
+      padding-block: 0;
+    }
+
+    .about-education__inner {
+      width: 41.9375rem; /* 33:203 — 671 */
+      max-width: none;
+      padding-inline: 0;
+      padding-top: 16.5625rem; /* 33:173 — y=265 */
+    }
+
+    /* Leading is absolute here, not a ratio — Figma rounds it to a whole pixel
+       per size, so 64px is 75 and NOT 64 x 7/6 = 74.667. See about.astro. */
+    .about-education__heading {
+      height: 4.6875rem; /* 33:173 — 75 */
+      font-size: 4rem;
+      line-height: var(--leading-fx-64); /* 75 */
+    }
+
+    .about-education__list {
+      margin-top: 2.25rem; /* 265 + 75 + 36 = 376, node 33:202 y */
+    }
+
+    .about-education__title {
+      height: 2.1875rem; /* 35 */
+      font-size: 1.875rem; /* 30 */
+      line-height: var(--leading-fx-30); /* 35 */
+    }
+
+    .about-education__institution {
+      margin-top: 0.375rem; /* 376 + 35 + 6 = 417 */
+      font-size: 1.5rem; /* 24 */
+      line-height: var(--leading-fx-24); /* 28 */
+    }
+  }
+</style>

@@ -1,36 +1,191 @@
 ---
+/**
+ * /contact — a 1:1 reproduction of Figma frame `33:792` (page frame `33:505`,
+ * 1440 x 1024) at >=90rem. Below 90rem the Figma supplies no design, so the
+ * layout there is authored; every such value is marked `AUTHORED` below.
+ *
+ * ── Coordinate map, all values relative to the 1440 page frame ─────────────
+ *   33:506  left column   x  50   y 301   769 x 422   (centred text)
+ *   33:507    h1          x  50   y 301   769 wide, Poppins Bold 64/64
+ *   33:508    body        x 172   y 479   525 wide, Roboto Condensed 24/24
+ *   33:538  form card     x 851   y 163   539 x 697, 3px accent, r21
+ *   33:539    contents    x 899   y 207   443 x 609.234
+ *   33:639  navbar                 y   0   85 tall
+ *
+ * The page sits on the shared layer rather than reimplementing it: `.fx-frame`
+ * carries the section height and `.shell` is the one 1340px content box, so this
+ * page cannot drift from Nav and Footer.
+ *
+ * Every Figma x becomes `figmaX - 50` inside the shell. Every y is used AS DRAWN,
+ * with no nav offset: at >=90rem Nav.astro is `fx:absolute fx:inset-x-0`, so the
+ * navbar overlays the frame at y=0 exactly as `33:639` does and contributes no
+ * flow height. `<main>` therefore starts at y=0 and the frame is the full 64rem.
+ * ⚠ These coordinates previously subtracted `var(--fx-nav-h)`, which was right
+ * while the header was in flow; once it became absolute that subtraction
+ * double-counted and pulled the whole page up by exactly 85px — the card landed
+ * at y=78 instead of 163. Measured, not inferred. If Nav ever returns to flow,
+ * this is the file that has to change with it.
+ */
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import Icon from '@/components/Icon.astro'
 import ContactForm from '@/components/ContactForm.astro'
 
-import { META, AVAILABILITY } from '@/content/site'
+import { META } from '@/content/site'
 import { CONTACT } from '@/content/contact'
 ---
 
 <BaseLayout title={META.contact.title} description={META.contact.description}>
-  <section class="shell py-section">
-    <div class="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-      <div>
-        <h1 class="text-h1 text-fg">{CONTACT.h1}</h1>
-        <p class="measure mt-5 text-lead text-fg-muted">{CONTACT.subheadline}</p>
+  <section class="fx-frame contact-section" style="--fx-h: 64rem">
+    <div class="shell contact-frame">
+      {/* 33:506 */}
+      <div class="contact-intro">
+        {/* 33:507 — the accent run starts mid-sentence, inside one text node. */}
+        <h1 class="fx-display contact-h1">
+          {CONTACT.h1.lead}<span class="contact-h1-accent">{CONTACT.h1.accent}</span>
+        </h1>
 
-        <p class="mt-8 text-small text-fg-quiet">{AVAILABILITY.long}</p>
-
-        <p class="mt-6 text-small text-fg-subtle">
-          {CONTACT.alternative.prefix}{' '}
-          <a
-            href={CONTACT.alternative.href}
-            rel="noopener"
-            target="_blank"
-            class="link-arrow align-baseline"
-          >
-            {CONTACT.alternative.label}
-            <Icon name="arrow-right" size={14} />
-          </a>
-        </p>
+        {/* 33:508 — one paragraph per line, separated by a blank 24px line. */}
+        <div class="contact-body">
+          {CONTACT.body.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
       </div>
 
-      <ContactForm />
+      {/* 33:538 */}
+      <div class="contact-card-slot">
+        <ContactForm />
+      </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .contact-section {
+    /* AUTHORED below 90rem: the Figma frame has no padding of its own, so the
+       stacked layout needs its own vertical rhythm. */
+    padding-block: var(--spacing-section) var(--spacing-section-lg);
+  }
+
+  /* --- 33:507 / 33:508 --------------------------------------------------- */
+
+  .contact-intro {
+    max-width: 48.0625rem; /* 769 */
+    margin-inline: auto; /* AUTHORED below 90rem; the column is left-aligned at 1440 */
+    text-align: center;
+  }
+
+  /* `.fx-display` in the markup carries BOTH Poppins and the leading — 33:507
+     is one of the 19 enumerated Poppins nodes, and global.css defaults h1–h6 to
+     Roboto Condensed. Do not set font-family or line-height here: the shared
+     class binds them together on purpose, and a scoped rule would outrank it.
+     `.fx-frame :where(h1…p)` supplies text-wrap: wrap at >=90rem, which stops
+     `balance` re-breaking the two lines away from the design's own break. */
+  .contact-h1 {
+    font-weight: 700;
+    /* The shared step for this node's 64px, replacing an authored clamp that
+       reached the same 4rem ceiling by a different ramp (37.2px at 390 against
+       the scale's 31px). One fewer authored decision, and the ramp below 1440
+       is now documented in global.css rather than here. */
+    font-size: var(--text-fx-64);
+    letter-spacing: 0;
+    color: var(--color-fg);
+  }
+
+  .contact-h1-accent {
+    color: var(--color-accent);
+  }
+
+  .contact-body {
+    max-width: 32.8125rem; /* 525 */
+    margin-inline: auto;
+    /* AUTHORED: 50px is the Figma gap between the h1's last baseline row and
+       the body's box top; below 90rem it scales with the clamped heading. */
+    margin-top: clamp(1.75rem, 0.6rem + 3vw, 3.125rem);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    color: var(--color-fg);
+  }
+
+  /* ⚠ DO NOT PAIR THIS WITH `--leading-fx-24`. 33:508 is line-height **1.0**,
+     i.e. 24/24 — the node carries an explicit tight leading, not Figma's Auto.
+     The size step `--text-fx-24` is commented in global.css as "body copy, e.g.
+     33:508", so the size/leading pairing convention points a loaded gun at this
+     exact node: `--leading-fx-24` is 28px and would add 36px of height.
+     Evidence: the node box is 244px for 10 rendered lines at 24px. 9 gaps x 24
+     plus the last line's 28.13px content area = 244.13 ✓. At 28px leading it
+     would be 280.1 ✗. Confirmed against a render of 33:506 — ink tops land
+     within 0.3px, and paragraph pitch measures 48 = 2 x 24.
+     Below 90rem 1.5 is AUTHORED; 24/24 is unreadable at the clamped sizes. */
+  .contact-body p {
+    /* AUTHORED clamp; 1.5rem is the node value. */
+    font-size: clamp(1.0625rem, 0.9rem + 0.7vw, 1.5rem);
+    line-height: 1.5;
+  }
+
+  .contact-body p + p {
+    margin-top: 0.75rem; /* AUTHORED */
+  }
+
+  /* --- 33:538 ------------------------------------------------------------ */
+
+  .contact-card-slot {
+    max-width: 33.6875rem; /* 539 */
+    margin-inline: auto; /* AUTHORED below 90rem */
+    margin-top: var(--spacing-section-sm); /* AUTHORED */
+  }
+
+  /* --- The copied layout ------------------------------------------------- */
+
+  @media (min-width: 90rem) {
+    /* Height comes from --fx-h on the element; .fx-frame applies it here. */
+    .contact-section {
+      padding-block: 0;
+    }
+
+    /* .shell is already exactly 1340px and centred at this width, so the box's
+       left edge is Figma x=50 and its right edge x=1390. */
+    .contact-frame {
+      position: relative;
+      height: 100%;
+    }
+
+    .contact-intro {
+      position: absolute;
+      left: 0; /* 33:506 x=50 */
+      top: 18.8125rem; /* 33:506 y=301, as drawn — the navbar overlays, see header */
+      width: 48.0625rem;
+      max-width: none;
+      margin-inline: 0;
+    }
+
+    .contact-h1 {
+      /* Two lines at 64/64. Fixing the height keeps 33:508 at y=479 even if the
+         heading ever takes a third line, rather than pushing the page apart. */
+      height: 8rem;
+      margin: 0;
+    }
+
+    .contact-body {
+      /* 479 - (301 + 128) */
+      margin-top: 3.125rem;
+      max-width: none;
+      width: 32.8125rem;
+    }
+
+    .contact-body p {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .contact-body p + p {
+      margin-top: 1.5rem; /* the blank 24px line between paragraphs */
+    }
+
+    .contact-card-slot {
+      position: absolute;
+      left: 50.0625rem; /* 33:538 x=851, i.e. 851 - 50 inside the shell */
+      top: 10.1875rem; /* 33:538 y=163, as drawn — the navbar overlays, see header */
+      width: 33.6875rem;
+      max-width: none;
+      margin: 0;
+    }
+  }
+</style>

@@ -1,87 +1,72 @@
 ---
-import { Image } from 'astro:assets'
-
+/**
+ * /about — a 1:1 rebuild of Figma `6Lgtxs8zSUzruc8zu8tY0T`, frame `33:284`
+ * (1440 x 6440). Five sections, then the shared Footer.
+ *
+ * The design ends at "A Little More About Me" with no closing CTA, and ships
+ * that way deliberately. Because there is no CTA on this page there is also no
+ * availability line — AGENTS.md rule 5 attaches it to CTAs, not to pages.
+ *
+ * Section stack, with Figma frame heights:
+ *   32:90   About Section          1024   AboutHero
+ *   33:116  My Story               1985   AboutStory
+ *   33:121  Services / What I Do   1024   AboutCapabilities
+ *   33:172  Education              1024   AboutEducation
+ *   33:246  A Little More About Me 1024   AboutMore
+ *   33:730  Footer                  359   the shared Footer, not this frame's
+ */
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import CtaBlock from '@/components/CtaBlock.astro'
+
+import AboutHero from '@/components/AboutHero.astro'
+import AboutStory from '@/components/AboutStory.astro'
+import AboutCapabilities from '@/components/AboutCapabilities.astro'
+import AboutEducation from '@/components/AboutEducation.astro'
+import AboutMore from '@/components/AboutMore.astro'
 
 import { META } from '@/content/site'
-import { ABOUT } from '@/content/about'
-import { blankValue } from '@/content/blanks.js'
-
-import profilePhoto from '@/assets/img/profile-photo.jpg'
-
-/** Blank #5 — the human close. Section omitted entirely until it is written. */
-const humanClose = blankValue(ABOUT.humanCloseBlank as never)
 ---
 
 <BaseLayout title={META.about.title} description={META.about.description}>
-  <section class="shell grid items-start gap-10 py-section lg:grid-cols-[1fr_15rem] lg:gap-16">
-    <div>
-      <h1 class="text-h1 text-fg">{ABOUT.h1}</h1>
-      <p class="measure mt-5 text-lead text-fg-muted">{ABOUT.subheadline}</p>
-    </div>
-
-    <Image
-      src={profilePhoto}
-      alt="Gerald Jove"
-      widths={[240, 480]}
-      sizes="(min-width: 1024px) 240px, 160px"
-      format="avif"
-      class="order-first w-40 rounded-lg border border-line object-cover lg:order-none lg:w-full"
-    />
-  </section>
-
-  <section class="border-t border-line bg-raised">
-    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
-      <p class="eyebrow reveal">01 — Story</p>
-      <div class="reveal measure">
-        <h2 class="text-h2 text-fg">{ABOUT.story.heading}</h2>
-        <div class="mt-6 space-y-5">
-          {ABOUT.story.body.map((para) => <p class="text-body text-fg-muted">{para}</p>)}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="border-t border-line">
-    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
-      <p class="eyebrow reveal">02 — Capability</p>
-      <div class="reveal">
-        <h2 class="text-h2 text-fg">{ABOUT.capabilities.heading}</h2>
-
-        <dl class="mt-8 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-3">
-          {
-            ABOUT.capabilities.groups.map((group) => (
-              <div class="bg-ink p-6">
-                <dt class="text-h3 text-fg">{group.label}</dt>
-                <dd class="mt-3 text-small text-fg-subtle">{group.body}</dd>
-              </div>
-            ))
-          }
-        </dl>
-      </div>
-    </div>
-  </section>
-
-  <section class="border-t border-line bg-raised">
-    <div class="shell grid gap-8 py-section-sm md:grid-cols-[7rem_1fr]">
-      <p class="eyebrow reveal">03 — Credentials</p>
-      <div class="reveal measure">
-        <h2 class="text-h3 text-fg">{ABOUT.credentials.heading}</h2>
-        <p class="mt-3 text-body text-fg-muted">{ABOUT.credentials.body}</p>
-      </div>
-    </div>
-  </section>
-
-  {
-    humanClose && (
-      <section class="border-t border-line">
-        <div class="shell py-section-sm">
-          <p class="measure reveal text-lead text-fg-muted">{humanClose}</p>
-        </div>
-      </section>
-    )
-  }
-
-  <CtaBlock heading="Let’s find out where your bottleneck actually is." />
+  <div class="about-page">
+    <AboutHero />
+    <AboutStory />
+    <AboutCapabilities />
+    <AboutEducation />
+    <AboutMore />
+  </div>
 </BaseLayout>
+
+<style>
+  /**
+   * One page-local value. Everything else — surfaces, accent, foreground, the
+   * `--text-fx-*` ramp, `--fx-content`, `--spacing-gutter`, and now the leading
+   * and the portrait disc — comes from `global.css`.
+   *
+   * The two values that used to be declared here were promoted to shared tokens
+   * on 2026-08-18 and the components reference those directly:
+   *   --a-leading      -> --leading-fx           (7/6, and `.fx-frame` applies
+   *                       it by default at >=90rem)
+   *   --a-portrait-bg  -> --color-portrait-disc  (#d9d9d9, node 33:105)
+   *
+   * ⚠ Leading must be set explicitly on every block on this page, and the rule
+   * for which value is in AGENTS.md under "Leading is `round(fontSize x
+   * 2400/2048)`, per size" — not repeated here, because a second copy of a rule
+   * that took three corrections to get right is a drift risk, not a convenience.
+   *
+   * What is specific to this page:
+   *   - At >=90rem each block takes a `--leading-fx-<px>` token beside its
+   *     pinned font-size. Below 90rem the type is fluid, no Figma value exists
+   *     to match, and the `--leading-fx` ratio is the right fallback.
+   *   - These sections do NOT use `.fx-frame`, so they never inherit its
+   *     default — and `global.css` puts `line-height: 1.68` on `body`, which
+   *     would render `33:227` at 121px instead of 84. Nothing here may inherit.
+   *   - Three nodes the design overrides carry their own value and take no
+   *     token: `33:110` and `33:112` at 1, `33:123` at 68px (its own node
+   *     value, which is not what the rounding rule would give).
+   */
+  .about-page {
+    /* AUTHORED, and applied below 90rem only. At and above it every section
+       carries its Figma frame height instead and this is switched off. */
+    --a-pad-block: clamp(4rem, 2rem + 8vw, 8rem);
+  }
+</style>

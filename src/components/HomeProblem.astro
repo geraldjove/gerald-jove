@@ -1,0 +1,115 @@
+---
+/**
+ * "The Problem" — Figma node `7:26`, 1440 x 1024, fill #161616.
+ * Three centred text nodes: eyebrow 22:30, heading 22:31, body 22:33.
+ */
+import HomeLines from './HomeLines.astro'
+import { PROBLEM } from '@/content/home'
+---
+
+<section class="fx-frame problem" style="--fx-h: 64rem" data-node="7:26">
+  <div class="problem__canvas">
+    <p class="problem__eyebrow" data-node="22:30">{PROBLEM.eyebrow}</p>
+
+    <h2 class="problem__h2" data-node="22:31">
+      <HomeLines lines={PROBLEM.h2.lines} />
+    </h2>
+
+    <div class="problem__body" data-node="22:33">
+      {PROBLEM.body.paragraphs.map((runs) => <p>{runs.map((run) => <span set:text={run.t} />)}</p>)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .problem {
+    background-color: var(--color-ink); /* 7:26 fill #161616 */
+  }
+
+  .problem__canvas {
+    position: relative;
+    padding: 5rem var(--spacing-gutter);
+    text-align: center;
+  }
+
+  .problem__eyebrow {
+    margin: 0;
+    font-family: var(--font-sans); /* Roboto Condensed */
+    font-weight: 700;
+    font-size: var(--text-fx-18); /* 22:30 18px */
+    line-height: var(--leading-fx);
+    color: var(--color-accent);
+  }
+
+  .problem__h2 {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-sans); /* Roboto Condensed, not Poppins */
+    font-weight: 700;
+    font-size: var(--text-fx-64); /* 22:31 64px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap; /* global.css sets `balance` on h1-h6 */
+  }
+
+  .problem__body {
+    margin: 1.75rem auto 0;
+    max-width: 69.5rem; /* 22:33 is 1112px wide */
+    font-family: var(--font-sans);
+    font-size: var(--text-fx-24); /* 22:33 24px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+  }
+
+  .problem__body p {
+    margin: 0;
+    text-wrap: wrap; /* global.css sets `pretty` */
+  }
+
+  /* --- The design, exactly ------------------------------------------------ */
+  @media (min-width: 90rem) {
+    .problem__canvas {
+      position: absolute;
+      /* `inset: 0` + a definite width + `margin-inline: auto` centres it.
+         `min()` not a bare 90rem: a media query counts the scrollbar gutter
+         and layout does not, so on a 1440px window this box would be 1440
+         wide inside 1425 of layout and hang 7.5px off both edges. Same
+         reasoning as `.fx-canvas` in global.css. */
+      inset: 0;
+      width: min(var(--fx-frame), 100%);
+      margin-inline: auto;
+      padding: 0;
+    }
+
+    /* All three nodes are centred on x=720 in the frame. */
+    .problem__eyebrow,
+    .problem__h2,
+    .problem__body {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+    }
+
+    .problem__eyebrow {
+      top: 20.5625rem; /* 22:30 y=329 */
+      line-height: var(--leading-fx-18); /* 21px */
+    }
+
+    .problem__h2 {
+      /* 22:31 — y=350, box 884 wide. `max-content` keeps the two drawn lines
+         from becoming three if the face renders a hair wide. */
+      top: 21.875rem;
+      line-height: var(--leading-fx-64); /* 75px */
+      width: max-content;
+    }
+
+    .problem__body {
+      /* 22:33 — y=527, 1112 wide. The width is load-bearing: it is what makes
+         the paragraph break into the design's five lines. */
+      top: 32.9375rem;
+      line-height: var(--leading-fx-24); /* 28px */
+      width: 69.5rem;
+      max-width: none;
+    }
+  }
+</style>

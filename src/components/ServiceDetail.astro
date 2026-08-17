@@ -1,0 +1,324 @@
+---
+/**
+ * One service detail section — Figma `33:293`, `33:431` and `33:447`. The three
+ * are the same composition mirrored, so this is one component driven by the
+ * measured coordinates rather than three near-copies.
+ *
+ * At ≥90rem every child is placed at its Figma coordinate inside the 1340px
+ * content box (`.shell`), so each `left` is the node's Figma x minus the 50px
+ * frame gutter. Below 90rem the layout is AUTHORED and flows in one column.
+ *
+ * ⚠⚠ THE TITLE IS ROBOTO CONDENSED, NOT POPPINS. `33:295`, `33:345` and
+ * `33:396` are Bold at 72.504px — the same size as the Poppins page h1s, and
+ * bigger than anything else on the page. Size does not predict the face here
+ * and neither does the element: these are h2s in the workhorse face while the
+ * intro h1 `33:287` is the accent face. `--font-sans` IS Roboto Condensed; the
+ * token names read backwards on purpose. Do not "fix" this by copying
+ * `font-display` off ServiceIntro.astro — AGENTS.md holds the enumeration, and
+ * this is the exact node it warns about.
+ *
+ * Two measured facts that shape the markup:
+ *  - Every block's body sits exactly 93px below its heading, in all twelve
+ *    blocks across the three sections. So a block is ONE positioned box with
+ *    the heading and body in flow inside it (42px heading + 51px gap = 93).
+ *  - The CTA pill is 258.293 × 35.527 at radius 60.821 with its label inset
+ *    28.699px from the left — not centred. The inset is reproduced, because it
+ *    is what puts the label's first glyph at the drawn x.
+ */
+import { Image } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+
+import ServiceRuns from './ServiceRuns.astro'
+import { SERVICES_CTA, type ServiceDetailSection } from '@/content/services'
+import { AVAILABILITY } from '@/content/site'
+
+interface Props {
+  detail: ServiceDetailSection
+  /** Which of the design's two surfaces this frame is filled with. */
+  surface: 'ink' | 'raised'
+  /** Frame height, and the drawn geometry of its children, in Figma px. */
+  geometry: {
+    frameH: number
+    columnX: number
+    titleY: number
+    titleW: number
+    /** In block order: the heading's y, and the drawn width of the body node. */
+    blocks: Array<{ y: number; w: number }>
+    ctaY: number
+    rail: { node: string; x: number; w: number; edge: 'left' | 'right' }
+  }
+  railImage: ImageMetadata
+}
+
+const { detail, surface, geometry, railImage } = Astro.props
+const { frameH, columnX, titleY, titleW, blocks, ctaY, rail } = geometry
+
+const rem = (px: number) => `${px / 16}rem`
+
+/** The frame's own 50px gutter, subtracted so x is relative to the content box. */
+const GUTTER = 50
+
+const rootStyle = [
+  // `.fx-frame` reads --fx-h for the section height at ≥90rem.
+  `--fx-h:${rem(frameH)}`,
+  `--d-col-x:${rem(columnX - GUTTER)}`,
+  `--d-title-y:${rem(titleY)}`,
+  `--d-title-w:${rem(titleW)}`,
+  `--d-cta-y:${rem(ctaY)}`,
+  `--d-rail-x:${rem(rail.x - GUTTER)}`,
+  `--d-rail-w:${rem(rail.w)}`,
+].join(';')
+---
+
+<section
+  id={detail.id}
+  class:list={['svc-detail', 'fx-frame', `svc-detail--${surface}`, `svc-detail--rail-${rail.edge}`]}
+  data-node={detail.node}
+  style={rootStyle}
+>
+  <div class="shell svc-detail__canvas">
+    <div class="svc-detail__rail" data-node={rail.node} aria-hidden="true">
+      <Image
+        src={railImage}
+        alt=""
+        widths={[64, rail.w]}
+        sizes="(min-width: 90rem) 413px, 24px"
+        format="webp"
+      />
+    </div>
+
+    <div class="svc-detail__col">
+      <h2 class="svc-detail__title" data-node={detail.titleNode}>{detail.title}</h2>
+
+      {
+        detail.blocks.map((block, i) => (
+          <div
+            class="svc-detail__block"
+            style={`--b-y:${rem(blocks[i].y)};--b-w:${rem(blocks[i].w)}`}
+          >
+            <h3 data-node={block.headingNode}>{block.heading}</h3>
+            <ServiceRuns runs={block.runs} node={block.bodyNode} />
+          </div>
+        ))
+      }
+
+      <div class="svc-detail__cta">
+        <a href={SERVICES_CTA.href} class="fx-pill svc-detail__pill">{SERVICES_CTA.label}</a>
+        <p class="svc-detail__availability">{AVAILABILITY.short}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- Authored below 90rem ------------------------------------------------
+     The design is a 413px gradient rail beside an 859px text column, which does
+     not fit under 1440px. The rail is kept as a narrow full-height edge strip
+     on the side the design draws it: the colour signature survives, and the
+     text column clears it inside the shell gutter. */
+  /* `.fx-frame` supplies `position: relative`, the frame height at ≥90rem from
+     `--fx-h`, and the design's 7/6 leading by inheritance. `overflow: hidden`
+     is ours, to contain the authored edge strip below 90rem. */
+  /* 4rem, and it is AUTHORED — scroll behaviour is not in the Figma at all.
+     Below 90rem the header is `sticky top-0`, opaque and 64px tall (measured,
+     not assumed), so the footer's deep links to #creative-automation-systems,
+     #managed-ad-creative and #3d-product-visuals would drop each title under
+     the bar without an offset. 4rem = that 64px exactly.
+
+     ⚠ NOT `var(--fx-nav-h)`. That is 85px, the ≥90rem navbar, and at ≥90rem the
+     header is `position: absolute` and scrolls away — there is nothing for an
+     anchor to land under, so any offset there overshoots the section by its own
+     height. Zeroed in the 90rem block below. Re-check both if Nav's positioning
+     changes again. */
+  .svc-detail {
+    overflow: hidden;
+    scroll-margin-top: 4rem;
+    padding-block: clamp(3rem, 1.5rem + 6vw, 6rem);
+  }
+
+  .svc-detail--ink {
+    background-color: var(--color-ink); /* #161616 */
+  }
+
+  .svc-detail--raised {
+    background-color: var(--color-raised); /* #242424 */
+  }
+
+  .svc-detail__canvas {
+    position: relative;
+  }
+
+  .svc-detail__rail {
+    position: absolute;
+    inset-block: 0;
+    width: clamp(0.5rem, 2.5vw, 1.5rem);
+  }
+
+  /* `.shell` is full-bleed below 90rem and insets its content with padding, so
+     the strip sits at the canvas edge and the copy already clears it. */
+  .svc-detail--rail-left .svc-detail__rail {
+    left: 0;
+    right: auto;
+  }
+
+  .svc-detail--rail-right .svc-detail__rail {
+    left: auto;
+    right: 0;
+  }
+
+  .svc-detail__rail :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 33:295 / 33:345 / 33:396 — Roboto Condensed **Bold** 72.504px, #00aaff.
+     See the warning at the top of this file before changing the face.
+     `33:295` alone is centred in its 859px box in the Figma, but its text fills
+     that box to within a pixel, so it renders flush left; left-aligning all
+     three keeps the title's left edge pinned to the body column, which is what
+     the design shows and what a centred box would lose to font metrics. */
+  .svc-detail__title {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-72);
+    line-height: var(--leading-fx);
+    letter-spacing: 0;
+    color: var(--color-accent);
+    text-wrap: wrap;
+  }
+
+  .svc-detail__block {
+    margin-top: clamp(2rem, 1rem + 4vw, 3.5rem);
+  }
+
+  /* 33:298 etc — Roboto Condensed Bold 36px, #00aaff. */
+  .svc-detail__block > h3 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-36);
+    line-height: var(--leading-fx);
+    color: var(--color-accent);
+    text-wrap: wrap;
+  }
+
+  /* 51px, which with the heading's own 42px line box puts every body node
+     exactly 93px below its heading — the offset all twelve blocks share. */
+  .svc-detail__block > :global(.svc-runs) {
+    margin-top: 3.1875rem;
+  }
+
+  .svc-detail__cta {
+    margin-top: clamp(2rem, 1rem + 4vw, 3.5rem);
+  }
+
+  /* 33:340 / 33:355 / 33:406 with labels 33:341 / 33:356 / 33:407.
+     AUTHORED below 90rem: the drawn pill is 35.5px tall, under the 44px touch
+     target, so it grows and centres its label there. */
+  .svc-detail__pill {
+    min-height: 2.75rem;
+    padding-inline: 1.75rem;
+    font-size: var(--text-fx-16);
+  }
+
+  /* AUTHORED — the Figma draws only the button. AGENTS.md rule 5 puts the
+     availability line under every call to action regardless. */
+  .svc-detail__availability {
+    margin-top: 1rem;
+    font-family: var(--font-sans);
+    font-size: var(--text-fx-17);
+    line-height: var(--leading-fx);
+    color: var(--color-fg-quiet);
+  }
+
+  /* --- The design, exactly, at ≥90rem -------------------------------------- */
+  @media (min-width: 90rem) {
+    .svc-detail {
+      padding-block: 0; /* height comes from --fx-h via .fx-frame */
+      /* The header is `position: absolute` here, so it leaves flow and scrolls
+         away. Nothing persistent sits over an anchor target, and any offset
+         would push the section that far past the top. */
+      scroll-margin-top: 0;
+    }
+
+    .svc-detail__canvas {
+      height: 100%;
+    }
+
+    /* Written with the same two-class specificity as the authored edge-strip
+       rules above, so these actually win rather than losing to them. */
+    .svc-detail--rail-left .svc-detail__rail,
+    .svc-detail--rail-right .svc-detail__rail {
+      left: var(--d-rail-x);
+      right: auto;
+      width: var(--d-rail-w);
+    }
+
+    /* The text column is a zero-size anchor; its children carry the drawn
+       offsets, because the design spaces them freely rather than in a flow. */
+    .svc-detail__col {
+      position: absolute;
+      left: var(--d-col-x);
+      top: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .svc-detail__title {
+      position: absolute;
+      left: 0;
+      top: var(--d-title-y);
+      width: var(--d-title-w);
+      font-size: 4.5315rem; /* 72.504 */
+
+      /* 85px, read from the node: `33:295`, `33:345` and `33:396` are each a
+         single 72.504px line in an 85px box (get_metadata). There is no
+         --leading-fx-72 token because 72.504 is the only size at this value.
+
+         Set explicitly rather than inherited, because the frame's --leading-fx
+         ratio gives 84.588 here. ⚠ The 85 does NOT prove which leading model
+         Figma used — round(72.504 × 1.171875) = 85 and round(72.504 × 7/6) = 85
+         both land on it, so this node cannot discriminate. It is pinned to the
+         measured box either way, which is what a 1:1 copy needs.
+
+         Absolute, so it belongs in this block only; below 90rem the type is
+         fluid and the ratio is the correct fallback. */
+      line-height: 5.3125rem;
+    }
+
+    .svc-detail__block {
+      position: absolute;
+      left: 0;
+      top: var(--b-y);
+      width: var(--b-w);
+      margin-top: 0;
+    }
+
+    .svc-detail__block > h3 {
+      width: max-content;
+      max-width: 100%;
+      font-size: 2.25rem; /* 36 */
+    }
+
+    /* `max-content` because the column anchor is zero-width: without it the
+       shrink-to-fit box collapses and the availability line under the pill
+       wraps at about 190px. The pill's own width is fixed either way. */
+    .svc-detail__cta {
+      position: absolute;
+      left: 0;
+      top: var(--d-cta-y);
+      width: max-content;
+      margin-top: 0;
+    }
+
+    .svc-detail__pill {
+      justify-content: flex-start;
+      width: 16.1433rem; /* 258.293 */
+      height: 2.2204rem; /* 35.527 */
+      min-height: 0;
+      padding-inline: 1.7937rem 0; /* label inset 28.699 */
+      border-radius: 3.8013rem; /* 60.821 */
+      font-size: 1.08025rem; /* 17.284 */
+    }
+  }
+</style>

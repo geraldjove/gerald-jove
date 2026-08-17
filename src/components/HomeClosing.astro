@@ -1,0 +1,205 @@
+---
+/**
+ * Closing call to action — Figma node `8:32`, 1440 x 1024.
+ *
+ * The frame's own fill is #242424 and node 24:230 lays #161616 over its right
+ * half. The footer drawn inside that right half is an older variant of the
+ * shared footer and is deliberately not reproduced — `BaseLayout` renders the
+ * real `Footer` after this section.
+ *
+ * Node 24:197 is the one Poppins heading on this page that is not the page H1.
+ */
+import HomeLines from './HomeLines.astro'
+import { CLOSING } from '@/content/home'
+import { AVAILABILITY } from '@/content/site'
+---
+
+<section class="fx-frame closing" style="--fx-h: 64rem" data-node="8:32">
+  <div class="closing__panel" data-node="24:230"></div>
+
+  <div class="closing__canvas">
+    <div class="closing__copy" data-node="24:207">
+      {/* `fx-display` — 24:197 is the one Poppins node on this page that is not
+          the page H1. Face and line-height 1 both come from that class. */}
+      <h2 class="fx-display closing__h2" data-node="24:197">
+        <HomeLines lines={CLOSING.h2.lines} />
+      </h2>
+
+      <div class="closing__body" data-node="24:199">
+        <p class="closing__opener">{CLOSING.opener}</p>
+        {CLOSING.paragraphs.map((para) => <p>{para}</p>)}
+      </div>
+
+      <a class="fx-pill closing__cta" href={CLOSING.cta.href} data-node="24:201">
+        <span set:text={CLOSING.cta.label} />
+      </a>
+
+      {/* 24:205 — AGENTS.md rule 5: the sentence is site.ts's, the asterisk is
+          the design's own footnote marker. */}
+      <p class="closing__availability" data-node="24:205">*{AVAILABILITY.short}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .closing {
+    background-color: var(--color-raised); /* 8:32 fill #242424 */
+    overflow: hidden;
+  }
+
+  /* 24:230 — the darker right half. Below 1440 there is no second column for it
+     to mark, so it is not drawn. */
+  .closing__panel {
+    display: none;
+    background-color: var(--color-ink); /* #161616 */
+  }
+
+  .closing__canvas {
+    position: relative;
+    padding: 4.5rem var(--spacing-gutter) 5rem;
+  }
+
+  /* Face and line-height come from `.fx-display`. */
+  .closing__h2 {
+    font-weight: 700;
+    font-size: var(--text-fx-70); /* 24:197 69.618px */
+    color: var(--color-fg);
+    text-wrap: wrap; /* global.css sets `balance` on h1-h6 */
+    margin: 0;
+  }
+
+  .closing__body {
+    margin-top: 2rem;
+    max-width: 30.8766rem; /* 24:199 is 494.026px wide */
+    font-family: var(--font-sans); /* Roboto Condensed */
+    font-size: var(--home-text-17); /* 17.284px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+  }
+
+  .closing__body p {
+    margin: 0;
+    text-wrap: wrap; /* global.css sets `pretty` */
+  }
+
+  /* Every paragraph inside 24:199 is one blank line from the one before it. */
+  .closing__body p + p {
+    margin-top: 1.1719em;
+    margin-top: 1lh;
+  }
+
+  .closing__opener {
+    font-weight: 700;
+    font-size: 1.3333em; /* 23.045px against the block's 17.284px */
+  }
+
+  .closing__cta {
+    margin-top: 2.25rem;
+    /* 24:203 sits 28.699px inside a 258.293px pill and 34px short of its right
+       edge, so the label is placed from the left rather than centred. */
+    justify-content: flex-start;
+    padding-inline: 1.7937rem;
+    min-height: 2.2204rem; /* 24:202 h = 35.527 */
+    border-radius: 3.8013rem; /* 60.821px */
+    font-size: var(--home-text-17); /* 24:203 17.284px */
+    white-space: nowrap;
+  }
+
+  .closing__availability {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-style: italic; /* no italic face is loaded; this is a synthesised oblique */
+    font-size: var(--text-fx-11); /* 24:205 11.5px */
+    line-height: 1;
+    color: var(--color-fg);
+    text-wrap: wrap;
+  }
+
+  /* --- The design, exactly ------------------------------------------------ */
+  @media (min-width: 90rem) {
+    .closing__panel {
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: calc(50% + 0.0625rem); /* 24:230 x=721 in a 1440 frame */
+      right: 0;
+    }
+
+    .closing__canvas {
+
+      position: absolute;
+
+      /* `inset: 0` + a definite width + `margin-inline: auto` centres it.
+
+         `min()` not a bare 90rem: a media query counts the scrollbar gutter
+
+         and layout does not, so on a 1440px window this box would be 1440
+
+         wide inside 1425 of layout and hang 7.5px off both edges. Same
+
+         reasoning as `.fx-canvas` in global.css. */
+
+      inset: 0;
+
+      width: min(var(--fx-frame), 100%);
+
+      margin-inline: auto;
+      padding: 0;
+    }
+
+    /* 24:207 — x=50, y=219. */
+    .closing__copy {
+      position: absolute;
+      left: 3.125rem;
+      top: 13.6875rem;
+      width: 39.3081rem; /* 628.929 */
+    }
+
+    .closing__h2 {
+      /* 24:197 — x=50.93, three drawn lines. `max-content` stops a hairline of
+         render width turning them into four. */
+      position: absolute;
+      left: 0.0581rem;
+      top: 0;
+      width: max-content;
+    }
+
+    .closing__body {
+      position: absolute;
+      left: 0.0581rem; /* 24:199 x=50.93 */
+      top: 15.2431rem; /* y=462.889 against 219 */
+      line-height: var(--leading-fx-17); /* 20px */
+      margin-top: 0;
+      width: 30.8766rem; /* 494.026 */
+      max-width: none;
+    }
+
+    .closing__opener {
+      line-height: var(--home-leading-23); /* 27px — the 23.045px opener run */
+    }
+
+    .closing__cta {
+      position: absolute;
+      left: 0; /* 24:201 x=50 */
+      top: 32.2266rem; /* y=734.626 against 219 */
+      line-height: var(--leading-fx-17); /* 20px */
+      margin-top: 0;
+      width: 16.1433rem; /* 258.293 */
+      height: 2.2204rem;
+    }
+
+    .closing__availability {
+      position: absolute;
+      left: 0; /* 24:205 x=50 */
+      /* One line in the design (h=12 at 11.5px). The synthesised oblique runs a
+         few px wider than the design's real Medium Italic, which is enough to
+         wrap it inside the 227px box; the box is a measure, not a boundary. */
+      white-space: nowrap;
+      top: 35.125rem; /* y=781 against 219 */
+      margin-top: 0;
+      width: 14.1875rem; /* 227 */
+    }
+  }
+</style>

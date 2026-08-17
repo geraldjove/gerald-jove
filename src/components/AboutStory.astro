@@ -1,0 +1,127 @@
+---
+/**
+ * My Story — Figma node `33:116` (1440 x 1985).
+ *
+ * ⚠ `33:119` is ONE Figma text node holding the whole story, with each sentence
+ * on its own line and a blank line between. It is rebuilt as one <p> per
+ * sentence — thirty of them, then the larger accent closing line — split only
+ * at those existing blank lines. The blank line is reproduced as a margin of
+ * exactly one 24px line box (24 x 7/6 = 28), so the vertical rhythm matches the
+ * single node it came from.
+ *
+ * The copy, including the date in `story.body[23]`, is transcribed verbatim.
+ * See the warning in `src/content/about.ts`.
+ */
+import { ABOUT } from '@/content/about'
+---
+
+<section class="about-story">
+  <div class="about-story__inner">
+    <h2 class="about-story__heading">
+      {
+        ABOUT.story.heading.map((run) => (
+          <span class:list={[run.accent && 'about-story__accent']}>{run.text}</span>
+        ))
+      }
+    </h2>
+
+    <div class="about-story__body">
+      {ABOUT.story.body.map((line) => <p>{line}</p>)}
+      <p class="about-story__close">{ABOUT.story.close}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- Authored below 90rem ------------------------------------------------ */
+  .about-story {
+    background-color: var(--color-raised);
+    padding-block: var(--a-pad-block);
+  }
+
+  .about-story__inner {
+    width: 100%;
+    max-width: calc(var(--fx-content) + 2 * var(--spacing-gutter));
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+    text-align: center;
+  }
+
+  /* 33:117 — Roboto Condensed Bold 64px */
+  .about-story__heading {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-64);
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap;
+  }
+
+  .about-story__accent {
+    color: var(--color-accent);
+  }
+
+  /* 33:119 */
+  .about-story__body {
+    --size: var(--text-fx-24);
+    --lh: calc(var(--size) * var(--leading-fx));
+    margin-top: 2.125rem;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--size);
+    line-height: var(--lh);
+    color: var(--color-fg);
+  }
+
+  .about-story__body > p {
+    text-wrap: wrap;
+  }
+
+  /* The blank line between sentences, measured on the 24px run so the larger
+     closing line does not inherit a larger gap than the design draws. */
+  .about-story__body > * + * {
+    margin-top: var(--lh);
+  }
+
+  /* Sets its own leading — it must not inherit the 24px line box above it. */
+  .about-story__close {
+    font-weight: 700;
+    font-size: var(--text-fx-36);
+    line-height: var(--leading-fx);
+    color: var(--color-accent);
+  }
+
+  /* --- Figma-exact at >=90rem ---------------------------------------------- */
+  @media (min-width: 90rem) {
+    .about-story {
+      height: 124.0625rem; /* 33:116 — 1985 */
+      padding-block: 0;
+    }
+
+    .about-story__inner {
+      width: 83.9375rem; /* 33:120 — 1343, centred on the frame */
+      max-width: none;
+      padding-inline: 0;
+      padding-top: 4.875rem; /* 33:117 — y=78 */
+    }
+
+    /* Leading is absolute here, not a ratio: Figma rounds it to a whole pixel
+       per size, so 64px is 75 and NOT 64 x 7/6 = 74.667. See about.astro. */
+    .about-story__heading {
+      height: 4.6875rem; /* 33:117 — 75 */
+      font-size: 4rem;
+      line-height: var(--leading-fx-64); /* 75 */
+    }
+
+    .about-story__body {
+      --size: 1.5rem; /* 33:119 — 24 */
+      --lh: var(--leading-fx-24); /* 28 */
+      margin-top: 2.125rem; /* 78 + 75 + 34 = 187, node 33:119 y */
+    }
+
+    .about-story__close {
+      font-size: 2.25rem; /* 36 */
+      line-height: var(--leading-fx-36); /* 42 */
+    }
+  }
+</style>

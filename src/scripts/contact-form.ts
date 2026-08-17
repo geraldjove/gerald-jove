@@ -21,7 +21,7 @@ function init(): void {
   const controls = Array.from(
     form.querySelectorAll<Control>('[data-label]'),
   )
-  const submitLabel = submit.textContent?.trim() ?? 'Send it over'
+  const submitLabel = submit.textContent?.trim() ?? 'Send Message'
 
   const setFieldError = (control: Control, message: string | null): void => {
     const slot = form.querySelector<HTMLElement>(`[data-error-for="${control.name}"]`)
@@ -42,10 +42,10 @@ function init(): void {
 
       let message: string | null = null
       if (required && !value) {
-        // Generic wording on purpose: several labels are questions ("What do you
-        // need?"), and "<label> is required." reads as broken English against
-        // them. The message is tied to its field by aria-describedby, so the
-        // field's own label already supplies the context.
+        // Generic wording on purpose: two labels are questions ("When do you
+        // need this?", "What's slowing you down?"), and "<label> is required."
+        // reads as broken English against them. The message is tied to its
+        // field by aria-describedby, so the label already supplies the context.
         message = control.tagName === 'SELECT' ? 'Please select an option.' : 'This field is required.'
       } else if (control.getAttribute('type') === 'email' && value && !EMAIL.test(value)) {
         message = 'Enter a valid email address.'

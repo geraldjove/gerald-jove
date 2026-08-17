@@ -44,3 +44,13 @@ tasks/
 
 # Astro generated types
 .astro/
+
+# Scratch space for throwaway working files — screenshot downloads, probe
+# harnesses, render checks. Never a source of truth.
+#
+# ⚠ SAFETY, NOT TIDINESS. `.scratch/quarantine/` currently holds an image
+# exported from Figma node `30:2` that contains client-engagement material —
+# a screen capture from a client engagement, which AGENTS.md rule 4 forbids in
+# this PUBLIC repository. Without this line `git add .` stages it. Do not
+# remove this line, and do not move anything out of quarantine.
+.scratch/

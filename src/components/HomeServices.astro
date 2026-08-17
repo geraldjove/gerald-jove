@@ -1,0 +1,365 @@
+---
+/**
+ * "Three ways I can help" — Figma node `8:27`, 1440 x 1024, fill #242424.
+ *
+ * Three cards, nodes 22:48 / 22:50 / 22:60. Their widths and inner insets are
+ * all slightly different in the design (415/416/457 wide; 26.3/20.1/17.6 inset),
+ * so each card gets its own nth-child block rather than one shared rule.
+ */
+import HomeLines from './HomeLines.astro'
+import { SERVICES_SECTION } from '@/content/home'
+
+const { cards, cardCta } = SERVICES_SECTION
+---
+
+<section class="fx-frame services" style="--fx-h: 64rem" data-node="8:27">
+  <div class="services__canvas">
+    <h2 class="services__h2" data-node="22:36">
+      <HomeLines lines={SERVICES_SECTION.h2.lines} />
+    </h2>
+
+    <div class="services__grid">
+      {
+        cards.map((card) => (
+          <article class="card" data-node={card.node}>
+            <h3 class="card__title">{card.title}</h3>
+            <p class="card__lede">{card.lede}</p>
+
+            <div class="card__body">
+              {card.paragraphs.map((para) => (
+                <p>{para}</p>
+              ))}
+            </div>
+
+            <p class="card__price">
+              <span>{card.price.prefix}</span>
+              <span class="card__amount">{card.price.value}</span>
+            </p>
+
+            {card.timeline && <p class="card__timeline">{card.timeline}</p>}
+
+            <a class="fx-pill card__cta" href={cardCta.href}>
+              <span class="card__sr">{card.title}: </span>
+              {cardCta.label}
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .services {
+    background-color: var(--color-raised); /* 8:27 fill #242424 */
+  }
+
+  .services__canvas {
+    position: relative;
+    padding: 5rem var(--spacing-gutter);
+  }
+
+  .services__h2 {
+    margin: 0;
+    font-family: var(--font-sans); /* Roboto Condensed */
+    font-weight: 700;
+    font-size: var(--text-fx-64); /* 22:36 64px */
+    line-height: 1.0625; /* 22:36 sets 68px on 64px, not auto */
+    color: var(--color-fg);
+    text-align: center;
+    text-wrap: wrap; /* global.css sets `balance` on h1-h6 */
+  }
+
+  .services__grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  @media (min-width: 48rem) {
+    .services__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .services__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .card {
+    position: relative;
+    padding: 1.5rem;
+    background-color: var(--color-ink); /* 22:37 fill #161616 */
+    /* An inset shadow, not a border: a real border would shrink the padding box
+       and move every absolutely positioned child inside the card by its width. */
+    box-shadow: inset 0 0 0 0.1004rem var(--color-accent); /* 22:37 stroke 1.607px */
+    border-radius: 0.73675rem; /* 11.788px */
+  }
+
+  .card__title {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-30); /* 22:38 / 22:52 30px */
+    line-height: var(--leading-fx);
+    color: var(--color-accent);
+    text-wrap: wrap;
+  }
+
+  /* 22:62 is 30.34px, not 30 — the only card title that differs. */
+  .card:nth-child(3) .card__title {
+    font-size: var(--home-text-30b);
+  }
+
+  .card__lede {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-24); /* 22:39 24px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap;
+  }
+
+  .card__body {
+    margin: 1.25rem 0 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-fx-18); /* 22:40 18px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+  }
+
+  .card__body p {
+    margin: 0;
+    text-wrap: wrap; /* global.css sets `pretty` */
+  }
+
+  /* One blank line between paragraphs, as drawn inside 22:40 / 22:53 / 22:63. */
+  .card__body p + p {
+    margin-top: 1.1719em;
+    margin-top: 1lh;
+  }
+
+  .card__price {
+    margin: 1.5rem 0 0;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-40); /* 22:42 40px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap;
+  }
+
+  .card__amount {
+    color: var(--color-accent);
+  }
+
+  .card__timeline {
+    margin: 0.25rem 0 0;
+    font-family: var(--font-sans);
+    font-size: var(--home-text-12); /* 22:43 12px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap;
+  }
+
+  .card__cta {
+    margin-top: 1.25rem;
+    width: 6.8125rem; /* 22:45 109px */
+    height: 2rem; /* 32px */
+    border-radius: 4.9256rem; /* 78.809px */
+    /* AUTHORED floor: 11.033px is too small to read below the design width. */
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .card__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* --- The design, exactly ------------------------------------------------ */
+  @media (min-width: 90rem) {
+    .services__canvas {
+      position: absolute;
+      /* `inset: 0` + a definite width + `margin-inline: auto` centres it.
+         `min()` not a bare 90rem: a media query counts the scrollbar gutter
+         and layout does not, so on a 1440px window this box would be 1440
+         wide inside 1425 of layout and hang 7.5px off both edges. Same
+         reasoning as `.fx-canvas` in global.css. */
+      inset: 0;
+      width: min(var(--fx-frame), 100%);
+      margin-inline: auto;
+      padding: 0;
+    }
+
+    .services__h2 {
+      /* 22:36 — x=432 y=147 w=576, centred on x=720. */
+      position: absolute;
+      left: 50%;
+      top: 9.1875rem;
+      transform: translateX(-50%);
+      width: max-content;
+    }
+
+    .services__grid {
+      display: block;
+      margin-top: 0;
+    }
+
+    .card {
+      position: absolute;
+      top: 16.6875rem; /* 267 — all three cards */
+      height: 38.1875rem; /* 611 */
+      padding: 0;
+    }
+
+    .card:nth-child(1) {
+      left: 3.375rem; /* 22:37 x=54 */
+      width: 25.9375rem; /* 415 */
+    }
+
+    .card:nth-child(2) {
+      left: 30.6875rem; /* 22:49 x=491 */
+      width: 26rem; /* 416 */
+    }
+
+    .card:nth-child(3) {
+      left: 58rem; /* 22:59 x=928 */
+      width: 28.5625rem; /* 457 */
+    }
+
+    .card__title,
+    .card__lede,
+    .card__body,
+    .card__price,
+    .card__timeline,
+    .card__cta {
+      position: absolute;
+      margin: 0;
+    }
+
+    /* Vertical placement is shared; card 3's body and card 1's price differ and
+       are overridden in their own blocks below. */
+    .card__title {
+      top: 1.507rem; /* 291.112 - 267 */
+      line-height: var(--leading-fx-30); /* 35px */
+    }
+
+    .card__lede {
+      top: 5.523rem; /* 355.368 - 267 */
+      line-height: var(--leading-fx-24); /* 28px */
+    }
+
+    .card__body {
+      top: 11.401rem; /* 449.416 - 267 */
+      line-height: var(--leading-fx-18); /* 21px */
+    }
+
+    .card__price {
+      top: 29.1875rem; /* 734 - 267 */
+      line-height: var(--leading-fx-40); /* 47px */
+    }
+
+    .card__cta {
+      top: 34.3125rem; /* 816 - 267 */
+      line-height: var(--leading-fx-11); /* 13px */
+      font-size: var(--home-text-11a); /* 22:46 11.033px */
+    }
+
+    /* Card 1 — 22:48. Insets 26.256 / 26; its price sits 8px higher to make
+       room for the timeline line, which only this card has. */
+    .card:nth-child(1) .card__title {
+      left: 1.641rem;
+      width: 22.25rem; /* 356 */
+    }
+
+    .card:nth-child(1) .card__lede {
+      left: 1.641rem;
+      width: 20.017rem; /* 320.273 */
+    }
+
+    .card:nth-child(1) .card__body {
+      left: 1.625rem;
+      width: 22.6723rem; /* 362.756 */
+    }
+
+    .card:nth-child(1) .card__price {
+      left: 1.625rem;
+      top: 28.6875rem; /* 22:42 y=726 */
+      width: 12.75rem; /* 204 */
+    }
+
+    .card:nth-child(1) .card__timeline {
+      left: 1.625rem;
+      top: 31.9228rem; /* 22:43 y=777.765 */
+      line-height: var(--home-leading-12); /* 14px */
+      width: 8.75rem; /* 140 */
+    }
+
+    .card:nth-child(1) .card__cta {
+      left: 1.625rem;
+    }
+
+    /* Card 2 — 22:50. Inset 20.062 / 20. */
+    .card:nth-child(2) .card__title {
+      left: 1.2539rem;
+      width: 16.0625rem; /* 257 */
+    }
+
+    .card:nth-child(2) .card__lede {
+      left: 1.2539rem;
+      width: 23.476rem; /* 375.616 */
+    }
+
+    .card:nth-child(2) .card__body {
+      left: 1.25rem;
+      width: 22.6723rem; /* 362.756 */
+    }
+
+    .card:nth-child(2) .card__price {
+      left: 1.25rem;
+      width: 19.8125rem; /* 317 */
+    }
+
+    .card:nth-child(2) .card__cta {
+      left: 1.25rem;
+    }
+
+    /* Card 3 — 22:60. Inset 17.62 / 18. */
+    .card:nth-child(3) .card__title {
+      left: 1.1013rem;
+      width: 22.5625rem; /* 361 */
+      line-height: var(--home-leading-30b); /* 36px — 22:62 is 30.34px, not 30 */
+    }
+
+    .card:nth-child(3) .card__lede {
+      left: 1.1013rem;
+      width: 26.4231rem; /* 422.769 */
+    }
+
+    .card:nth-child(3) .card__body {
+      left: 1.125rem;
+      top: 11.3118rem; /* 22:63 y=447.988, 1.4px above the other two */
+      width: 26.25rem; /* 420 */
+    }
+
+    .card:nth-child(3) .card__price {
+      left: 1.125rem;
+      width: 19.8125rem; /* 317 */
+    }
+
+    .card:nth-child(3) .card__cta {
+      left: 1.125rem;
+    }
+  }
+</style>

@@ -1,49 +1,246 @@
 /* ---------------------------------------------------------------------------
    geraldjove.com — design system
-   Palette and typefaces are locked (#0b1120 / #009efa / Archivo / Space Grotesk).
-   Everything else — scale, rhythm, surfaces, motion — is defined here rather
-   than chosen ad hoc at the call site. See docs/design-system.md.
 
-   Fonts are self-hosted (audit D5). Each @font-face is unicode-range scoped, so
-   an English page downloads only the latin subset.
+   TWO LAYERS LIVE HERE, AND THEY ARE NOT THE SAME THING.
+
+   1. `--fx-*` / `text-fx-*` / `.fx-*` — the FIGMA layer. Every value is a
+      measured node value from Figma file 6Lgtxs8zSUzruc8zu8tY0T, converted
+      px / 16 → rem, with the node id in a comment. This is what the four
+      rebuilt pages, Nav and Footer are made of.
+   2. Everything else — the LEGACY layer that /work, /work/<slug>, /thank-you
+      and /404 still use. Those routes are out of scope for the 1:1 rebuild,
+      so every token name they reference is kept. Values were re-pointed onto
+      the new palette so they still pass contrast; names did not change.
+
+   Palette and typefaces changed 2026-08-17 to the Figma's. The design won:
+   #161616 / #242424 / #00aaff, Poppins + Roboto Condensed. Contrast for every
+   pairing is measured in the comments below; the floor is 4.5:1.
+
+   ⚠ Which face goes where is an ENUMERATION, not a rule — see AGENTS.md. The
+   base rule below puts h1–h6 in --font-sans (Roboto Condensed) because that is
+   what carries almost every heading in the design. Poppins is opted into with
+   `font-display`, only on the 19 enumerated nodes.
+
+   Fonts are self-hosted; `font-src` is 'self' and the CSP forbids the Google
+   hosts. Poppins has no variable build, so only the two static weights the
+   design uses are imported. No italic face is loaded — see AGENTS.md.
 --------------------------------------------------------------------------- */
-@import '@fontsource-variable/archivo/wght.css';
-@import '@fontsource-variable/space-grotesk/wght.css';
+@import '@fontsource/poppins/latin-500.css';
+@import '@fontsource/poppins/latin-700.css';
+@import '@fontsource-variable/roboto-condensed/wght.css';
 @import 'tailwindcss';
 
 @theme {
   /* --- Colour -------------------------------------------------------------
-     Every text token is measured against every surface it can sit on; the
-     dimmest pairing anywhere is 4.99:1, against a 4.5:1 AA floor. Ratios in
-     docs/design-system.md. White on accent fill is 2.89:1 and therefore never
-     used — accent buttons take accent-ink. */
-  --color-ink: #0b1120;
-  --color-raised: #101a2e;
-  --color-card: #16203a;
-  --color-inset: #1d2947;
+     Measured contrast, computed from the sRGB relative-luminance formula.
+     Surfaces: ink #161616, raised/card #242424, inset #2e2e2e.
 
-  --color-fg: #f5f8fc;
-  --color-fg-muted: #c2cee1;
-  --color-fg-subtle: #9aa8bf;
-  /* 4.99:1 on the lightest surface (inset). An earlier #7f8da6 measured 4.81 on
-     `card` but only 4.29 on `inset` — safe only because nothing happened to use
-     that pair. Tokens should hold on every surface, not by luck. */
-  --color-fg-quiet: #8b99b1;
+       #ffffff  on ink 18.10  raised 15.52  inset 13.58
+       #d4d4d4  on ink 12.21  raised 10.47  inset  9.16
+       #a8a8a8  on ink  7.61  raised  6.53  inset  5.71
+       #959595  on ink  5.68  raised  4.87  inset  4.53   ← the floor case
+       #00aaff  on ink  7.06  raised  6.06  inset  5.30
+       #000000  on accent #00aaff 8.19
 
-  --color-accent: #009efa;
-  --color-accent-hi: #38b0fb;
-  --color-accent-lo: #0072c6;
-  --color-accent-ink: #05101f;
+     ⚠ The Figma's own placeholder / helper-text grey is #515151, which is
+     1.96:1 on #242424 — a fail, not a near miss. It is raised to #959595 here.
+     That is a deliberate, reported deviation from 1:1; see the report. */
+  --color-ink: #161616; /* Figma page background, sampled from 33:505 */
+  --color-raised: #242424; /* Figma raised surface: footer band 33:730, input fills */
+  --color-card: #242424; /* the design has only two surfaces; card aliases raised */
+  --color-inset: #2e2e2e; /* AUTHORED — no third surface exists in the Figma. Legacy routes only. */
+
+  --color-fg: #ffffff; /* Figma */
+  --color-fg-muted: #d4d4d4; /* AUTHORED legacy — the Figma has no second text grey */
+  --color-fg-subtle: #a8a8a8; /* AUTHORED legacy */
+  --color-fg-quiet: #959595; /* AUTHORED legacy — 4.53:1 on the lightest surface */
+  --color-fg-placeholder: #959595; /* Figma #515151 raised for contrast; see above */
+
+  /* The light disc/panel that sits BEHIND a portrait cut-out. Appears three
+     times in the design — 22:178 (Process), 24:194 (About Strip), 33:105
+     (About hero) — so it is a real palette member, not a one-off.
+     ⚠ DECORATIVE ONLY. It is a light surface in a dark design and NOTHING may
+     sit on it: white is 1.41:1, accent 1.82:1, fg-quiet 2.12:1 — all fail.
+     Only ink (12.82:1) or black (14.88:1) would pass, and the design puts no
+     text here at all. If a label ever lands on this disc, it needs ink. */
+  --color-portrait-disc: #d9d9d9;
+
+  --color-accent: #00aaff; /* Figma, sampled — NOT the old #009efa */
+  --color-accent-hi: #33bbff; /* AUTHORED hover state; the Figma draws no hover */
+  --color-accent-lo: #0088cc; /* AUTHORED */
+  --color-accent-ink: #000000; /* Figma: the pill labels are pure black, 8.19:1 */
 
   --color-line: rgba(255, 255, 255, 0.09);
   --color-line-strong: rgba(255, 255, 255, 0.17);
 
-  /* --- Type ---------------------------------------------------------------
-     Fluid modular scale. Tracking tightens as size grows; leading loosens as
-     size shrinks. Body sits at 17px because the copy is long-form. */
-  --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  /* --- Typefaces ----------------------------------------------------------
+     ⚠ The names read backwards against their content, and that is deliberate
+     and long-standing: --font-display is the accent/UI face (Poppins) and
+     --font-sans is the workhorse (Roboto Condensed). */
+  --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Roboto Condensed Variable', 'Roboto Condensed', ui-sans-serif, system-ui, sans-serif;
 
+  /* --- Figma type scale ---------------------------------------------------
+     One token per distinct font-size in the design, NAMED BY ITS FIGMA PIXEL
+     VALUE on purpose. A semantic name ("h2", "lead") would invite the exact
+     mistake AGENTS.md records for the typefaces — picking a value because the
+     element looks like a heading instead of because the node says so.
+
+     Each token is a ramp pinned at both ends: it equals the Figma value
+     exactly at a 1440px viewport and above, and falls to an AUTHORED minimum
+     at 390px. Everything below 1440 is ours; the design does not exist there.
+
+     Utilities: text-fx-72, text-fx-24, … (Tailwind generates them from the
+     --text-* namespace). Line-height is deliberately NOT set — the Figma uses
+     auto leading, which is `line-height: normal`. Use `leading-auto`. */
+  --text-fx-11: 0.71875rem; /* 11.5px, flat — 32:88, 24:205 */
+  --text-fx-12: clamp(0.75rem, 0.739879rem + 0.0415vw, 0.77725rem); /* 12.436px — 33:752, 33:756 */
+  --text-fx-16: clamp(0.9375rem, 0.901518rem + 0.1476vw, 1.034375rem); /* 16.55px — nav button I33:611;33:608 */
+  --text-fx-17: clamp(0.96875rem, 0.92383rem + 0.1843vw, 1.089687rem); /* 17.435px — footer 33:735–33:749, 33:757 */
+  --text-fx-18: clamp(1rem, 0.953571rem + 0.1905vw, 1.125rem); /* 18px — nav links I33:611;33:93–96 */
+  --text-fx-24: clamp(1.0625rem, 0.9rem + 0.6667vw, 1.5rem); /* 24px — body copy, e.g. 33:508 */
+  --text-fx-30: clamp(1.25rem, 1.017857rem + 0.9524vw, 1.875rem); /* 30px */
+  --text-fx-34: clamp(1.3125rem, 1.010714rem + 1.2381vw, 2.125rem); /* 34px — footer tagline 33:732 */
+  --text-fx-36: clamp(1.375rem, 1.05rem + 1.3333vw, 2.25rem); /* 36px */
+  --text-fx-38: clamp(1.4375rem, 1.089286rem + 1.4286vw, 2.375rem); /* 38px */
+  --text-fx-40: clamp(1.5rem, 1.128571rem + 1.5238vw, 2.5rem); /* 40px — also covers 40.116px (33:751) */
+  --text-fx-49: clamp(1.6875rem, 1.176786rem + 2.0952vw, 3.0625rem); /* 49px */
+  --text-fx-62: clamp(1.875rem, 1.132143rem + 3.0476vw, 3.875rem); /* 62px */
+  --text-fx-64: clamp(1.9375rem, 1.171429rem + 3.1429vw, 4rem); /* 64px — contact h1 33:507 */
+  --text-fx-70: clamp(2rem, 1.127143rem + 3.581vw, 4.35rem); /* 69.6px — home closing h2 24:197 */
+  --text-fx-72: clamp(2.125rem, 1.231157rem + 3.667vw, 4.5315rem); /* 72.504px — h1s 2:3, 33:110, 33:287 */
+
+  /* --- Leading -----------------------------------------------------------
+     ⚠ `line-height: normal` does NOT reproduce this design, and the difference
+     is not a rounding error. Measured in Chrome against the shipped font files:
+
+       Roboto Condensed        normal      Figma (7/6)   drift
+       24px × 3 lines          87.000      84.000        +3.0
+       30px × 1 line           37.000      35.000        +2.0
+       36px × 1 line           43.000      42.000        +1.0
+       18px × 9 lines         198.000     189.000        +9.0
+
+     The browser's `normal` on the VARIABLE build computes to ~1.208, and the
+     drift is cumulative — 9px on a nine-line list. Any section height derived
+     from Figma y-positions is wrong under `normal`.
+
+     ⚠ **Figma is not applying a ratio at all. It rounds to a whole pixel per
+     font size:  lineHeight = round(fontSize × 2400/2048).**
+
+     2400/2048 = 1.171875 is the STATIC Roboto Condensed hhea ratio,
+     (1900 + 500) / 2048 — the font Figma renders with. The rounding is what
+     made this argument run for so long, because it produces two different
+     "obvious" ratios depending on which sizes you happen to sample:
+
+       px    raw      rounded    7/6 gives   7/6 error per line
+       18    21.094   21         21.000      0.000   ← 7/6 looks exact here
+       24    28.125   28         28.000      0.000   ←
+       30    35.156   35         35.000      0.000   ←
+       36    42.188   42         42.000      0.000   ←
+       64    75.000   75         74.667      0.333   ← and wrong here
+
+     **7/6 is a coincidence, not a design decision.** It agrees with the rounded
+     value at exactly 18 / 24 / 30 / 36 and diverges at 34, 38, 40, 49, 62 and
+     64 — six of the ten heading sizes. Anyone sampling only body copy concludes
+     7/6; anyone sampling only headings concludes 1.171875. Both were measured
+     correctly and neither generalises.
+
+     ✅ **How to tell an Auto node from a typed one — the class name does it.**
+     `get_design_context` emits `leading-[normal]` for Auto and `leading-none`
+     (or an explicit px) for a typed value, and that has held on every node
+     examined here:
+       leading-[normal] → Auto → 33:130 (18→21), 33:227 (24→28), 33:173 (64→75)
+       leading-none     → typed → 33:511 is text-[38px] with a **44px** box,
+                          where Auto would be 45; the footer links are 17.435px
+                          in 17px boxes, where Auto would be 20; the Poppins
+                          headings are line-height 1.
+     Only Auto nodes test the model. A typed node looks like counter-evidence
+     and is not — that is what made this argument circular for three rounds.
+     ⚠ It also means `33:511` needs **44**, not `--leading-fx-38`.
+
+     Verified by reading `text-[Npx]` from get_design_context and dividing the
+     node's own box height — never by inferring the size from the ratio under
+     test, which is the circular step that made this look settled early:
+       33:130  text-[18px]  9 <li>     box 189 = 9 × 21
+       33:227  text-[24px]  3 lines    box  84 = 3 × 28
+       33:129/166/170       1 line     box  35        (30px)
+       33:173  text-[64px]  1 line     box  75        (also 33:225, 33:117,
+                                                       24:187, 23:179)
+
+     7/6 is the default here because both directly-verified nodes use it.
+
+     ⚠ **The two candidates diverge by 0.125px PER LINE at 24px, so the error is
+     linear in block length and there is no safe universal bound.** The design's
+     longest text node is About's My Story, `33:119` — read from source, it is
+     **60 paragraphs at 24px plus a 36px accent line**, where the two ratios are
+     **7.5px apart**. That would fail the ±2px gate outright.
+
+     It does not, for a structural reason rather than a numeric one: the spec
+     requires `33:119` to be split into real paragraphs, and it is (45 `<p>` on
+     /about). The largest element the build actually derives from it is one or
+     two lines, where the divergence is **0.25px**. The same requirement that
+     makes the copy semantic is what keeps this node inside the gate — so do not
+     "optimise" a long block back into a single node.
+
+     `33:119` also cannot adjudicate the ratio: neither candidate produces its
+     1753px box for any integer line count (61 lines gives 1750 under 7/6 and
+     1757.8 under 1.171875), which means that box height is set by hand, not
+     derived from leading. Same caveat as `33:508`.
+
+     If a node measures 1.171875, set it on that element from its own value. */
+  /* --- Exact leading, paired 1:1 with the --text-fx-* steps ---------------
+     Absolute values, so they are only correct at ≥90rem where the type is
+     pinned. Below that the type is fluid and no Figma value exists to match —
+     use the `--leading-fx` ratio there.
+
+     Utilities: leading-fx-64, leading-fx-24, … Use the one that pairs with the
+     size step you used. ⚠ At 64px in particular the ratio default is wrong by
+     0.33px/line; every 64px section heading in the design needs this token. */
+  --leading-fx-11: 0.8125rem; /* 13px — VERIFIED (11.033px node) */
+  --leading-fx-12: 0.9375rem; /* 15px — VERIFIED (12.436px node) */
+  --leading-fx-17: 1.25rem; /* 20px — VERIFIED (17.284px and 17.435px both round to 20) */
+  --leading-fx-18: 1.3125rem; /* 21px — VERIFIED 33:130 */
+  --leading-fx-24: 1.75rem; /* 28px — VERIFIED 33:227 */
+  --leading-fx-30: 2.1875rem; /* 35px — VERIFIED 33:129 / 33:166 / 33:170 */
+  --leading-fx-34: 2.5rem; /* 40px — derived, not verified */
+  --leading-fx-36: 2.625rem; /* 42px — VERIFIED at exactly 36px */
+  /* 45px — VERIFIED 22:92 / 22:99 / 22:103 / 22:107, and this is the node that
+     pins the ROUNDING RULE ITSELF. 38 × 1.171875 = 44.531 — a fraction of .53,
+     closer to .5 than any other size in the design, every other one being at
+     least .09 away. `22:92` is text-[38px] with leading-[normal] and a 45px
+     box, so the half-way case rounds UP. With 40 → 47 ruling out floor and
+     49.04 → 57 (from .469) ruling out ceil, the rule is plain round-half-up
+     and every regime is now closed. */
+  --leading-fx-38: 2.8125rem;
+  --leading-fx-40: 2.9375rem; /* 47px — VERIFIED (also covers 40.116px) */
+  --leading-fx-49: 3.5625rem; /* 57px — VERIFIED (49.04px node) */
+  --leading-fx-62: 4.5625rem; /* 73px — derived, not verified */
+  --leading-fx-64: 4.6875rem; /* 75px — VERIFIED 33:173 / 33:225 / 33:117 / 24:187 / 23:179 */
+
+  /* ⚠ These pair with the --text-fx-* STEP, not with an arbitrary size, and the
+     rounding is not linear — a node a fraction off the step can round the other
+     way. The homepage's 36.78px node takes **43**, not the 42 that pairs with
+     the 36px step, and its 21.278px node takes 25. If a page uses an exact node
+     value outside this scale (the `--home-text-*` tokens do), compute its own
+     leading as round(px × 1.171875); do not reach for the nearest token. */
+
+  /* Ratio fallback, and the default `.fx-frame` applies at ≥90rem. Kept at 7/6
+     rather than 1.171875 because it is EXACT at 18 and 24 — the two sizes that
+     carry multi-line body copy, where error accumulates — and off by at most
+     0.67px/line on a heading, which is one or two lines. Below 90rem it is the
+     only sensible value, since the type there is fluid and authored anyway.
+     Prefer a --leading-fx-<px> token wherever the size is pinned. */
+  --leading-fx: 1.1666667;
+  --leading-auto: normal; /* escape hatch; prefer leading-fx */
+
+  /* The one breakpoint that separates copied from authored. `fx:` is the
+     Tailwind variant for it — `fx:absolute`, `fx:h-[32.5rem]`, `fx:flex`.
+     Do NOT introduce a second breakpoint that also switches layout mode. */
+  --breakpoint-fx: 90rem;
+
+  /* --- Legacy type scale --------------------------------------------------
+     Still referenced by /work, /work/<slug>, /thank-you, /404 and the four
+     components they share. Do not use these on a rebuilt page. */
   --text-eyebrow: 0.75rem;
   --text-eyebrow--line-height: 1.2;
   --text-eyebrow--letter-spacing: 0.2em;
@@ -74,15 +271,14 @@
   --text-h1: clamp(2.125rem, 1.55rem + 2.5vw, 3.5rem);
   --text-h1--line-height: 1.08;
   --text-h1--letter-spacing: -0.028em;
-  --text-h1--font-weight: 800;
+  --text-h1--font-weight: 700;
 
   --text-display: clamp(2.5rem, 1.4rem + 4.9vw, 5rem);
   --text-display--line-height: 1.02;
   --text-display--letter-spacing: -0.035em;
-  --text-display--font-weight: 800;
+  --text-display--font-weight: 700;
 
-  /* --- Spacing rhythm -----------------------------------------------------
-     Sections are not uniform: weight in the page hierarchy sets the interval. */
+  /* --- Spacing rhythm ----------------------------------------------------- */
   --spacing-gutter: clamp(1.25rem, 0.9rem + 1.6vw, 2.5rem);
   --spacing-section-sm: clamp(3rem, 2.2rem + 3.2vw, 4.5rem);
   --spacing-section: clamp(4.5rem, 3.2rem + 5.2vw, 7.5rem);
@@ -103,8 +299,51 @@
   --motion-base: 260ms;
   --motion-slow: 560ms;
 
+  /* ⚠ `ch` is font-relative, so a condensed face gives a NARROWER column at the
+     same ch count. Roboto Condensed buys no extra line length here. Legacy. */
   --measure: 66ch;
-  --shell: 76rem;
+
+  /* --- The Figma coordinate system ---------------------------------------
+     The design is one 1440px frame per page and there is nothing below it.
+     `min-width: 90rem` is the ONLY line between copied and authored. Do not
+     add a second breakpoint that also switches layout mode. */
+  --fx-frame: 90rem; /* 1440px — the frame width */
+  --fx-content: 83.75rem; /* 1340px — content box, x=50→1390 (footer group 33:731) */
+  --fx-gutter: 3.125rem; /* 50px — frame edge to content box */
+  --fx-nav-row: 75.0625rem; /* 1201px — the nav's own centred row, NOT the content box */
+  /* 85px — navbar height (33:611).
+
+     ⚠⚠ THE HEADER CHANGES POSITIONING MODE AT 90rem, AND THAT MAKES EVERY
+     NAV-RELATED OFFSET A CONDITIONAL, NEVER A GLOBAL ANSWER.
+
+         <90rem   sticky, opaque, in flow, 64px    → offsets ARE needed
+         ≥90rem   absolute, transparent, no flow   → offsets MUST be zero
+
+     So any scroll offset, sticky compensation or nav-height arithmetic has to
+     be written per side of the breakpoint. Applying it globally breaks the top;
+     removing it globally breaks the bottom. Both halves of that have already
+     happened: `contact.astro` and `index.astro` each carried a global −85px
+     subtraction and sat 85px high, and the correct `scroll-margin-top` on
+     `ServiceDetail.astro` is `4rem` below 90rem and `0` above — dropping it
+     outright would hide three footer deep-link targets behind the sticky bar at
+     every width under 1440.
+
+     ⚠ NEVER SUBTRACT THIS FROM A Y COORDINATE AT ≥90rem. The header is
+     `position: absolute` there and contributes no flow height, so a page that
+     subtracts it sits 85px too high. This has already happened twice —
+     `index.astro` and `contact.astro` both carried the offset, and it was
+     correct only during the brief window when the header was still in flow.
+     The token's existence is what invites the subtraction, and the failure is
+     invisible to size-based assertions: every element keeps its right width
+     and height while the whole page is translated. Assert POSITION against
+     absolute document coordinates, not each section's own top. */
+  --fx-nav-h: 5.3125rem;
+
+  /* `.shell` resolves to exactly the Figma content measure at ≥90rem. It is the
+     ONE place the content width is set, so Nav, Footer, the rebuilt pages and
+     the legacy routes cannot drift apart — the failure that cost a full round
+     of rework on the discarded pass. */
+  --shell: var(--fx-content);
 }
 
 @layer base {
@@ -115,23 +354,31 @@
 
   body {
     background-color: var(--color-ink);
-    color: var(--color-fg-muted);
+    color: var(--color-fg);
     font-family: var(--font-sans);
     font-size: var(--text-body);
     line-height: 1.68;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* ⚠ This MASKS horizontal overflow. `documentElement.scrollWidth` will
+       equal `clientWidth` even when a child overflows, so it is not a valid
+       overflow test. Measure by walking element bounding rects instead. */
     overflow-x: hidden;
   }
 
+  /* ⚠ Roboto Condensed, not Poppins. In the design Roboto Condensed carries
+     every heading at every size except 19 enumerated nodes — including h2s at
+     72.504px, the same size as the Poppins h1s. Opt into Poppins with
+     `font-display` per node; never by how big or important the heading looks.
+     AGENTS.md holds the enumeration. */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
     color: var(--color-fg);
     text-wrap: balance;
   }
@@ -140,7 +387,7 @@
     text-wrap: pretty;
   }
 
-  /* Visible focus for every interactive element. The accent is 6.52:1 on the
+  /* Visible focus for every interactive element. The accent is 7.06:1 on the
      page background, well past the 3:1 required for non-text UI. */
   :focus-visible {
     outline: 2px solid var(--color-accent-hi);
@@ -158,26 +405,142 @@
     max-width: 100%;
     height: auto;
   }
+
+  /* ⚠ An imported SVG is not an <img>, so the rule above does not reach it.
+     Size inline SVG on BOTH axes or it reserves its intrinsic height. */
 }
 
 @layer components {
-  /* --- Layout ------------------------------------------------------------ */
+  /* --- Layout ------------------------------------------------------------
+     One container. At ≥90rem it is exactly 1340px wide with 50px of frame
+     margin either side — the Figma's own content box. Below that it keeps the
+     same measure as a cap and falls back to fluid gutters. */
   .shell {
     width: 100%;
-    max-width: var(--shell);
+    max-width: calc(var(--shell) + 2 * var(--spacing-gutter));
     margin-inline: auto;
     padding-inline: var(--spacing-gutter);
+  }
+
+  @media (min-width: 90rem) {
+    .shell {
+      width: var(--fx-content);
+      max-width: none;
+      padding-inline: 0;
+    }
   }
 
   .measure {
     max-width: var(--measure);
   }
 
+  /* --- Figma section frame ------------------------------------------------
+     Each Figma section frame becomes `<section class="fx-frame" style="--fx-h: …">`.
+     At ≥90rem the height is the frame's own height in rem, so absolutely
+     positioned children land where the design puts them. Below 90rem the
+     height is auto and the content flows — that layout is AUTHORED. */
+  .fx-frame {
+    position: relative;
+  }
+
+  @media (min-width: 90rem) {
+    .fx-frame {
+      height: var(--fx-h, auto);
+
+      /* The design's leading, applied by DEFAULT rather than opted into.
+         `body` carries 1.68, which is right for the authored layout below
+         90rem and wrong for every Figma-derived height above it. Descendants
+         inherit this from the frame, so a section is correct without anyone
+         remembering to do anything. Exceptions opt OUT at the element, from
+         their own node value — see .fx-display, which is line-height 1. */
+      line-height: var(--leading-fx);
+    }
+
+    /* ⚠ `text-wrap: balance` and `pretty` actively rewrite where lines break.
+       That is a good default for the authored layout and a defect in a 1:1
+       copy: the Figma's line breaks ARE the design, and a rebalanced heading
+       silently disagrees with the node it was measured from. `:where()` keeps
+       specificity at 0 so a page can still opt back in per element. */
+    .fx-frame :where(h1, h2, h3, h4, h5, h6, p) {
+      text-wrap: wrap;
+    }
+  }
+
+  /* --- Figma frame canvas -------------------------------------------------
+     The 1440px coordinate box inside a full-bleed `.fx-frame`, for sections
+     that position children at raw frame x-coordinates rather than inside the
+     1340px `.shell`.
+
+     ⚠ `width: 90rem` alone is a trap, and it is not theoretical — it put 11
+     overflowing elements on the homepage. A media query measures the viewport
+     INCLUDING the scrollbar gutter; layout measures the content box EXCLUDING
+     it. So on Windows and Linux a 1440px window fires `min-width: 90rem` while
+     giving layout only 1425px, and a centred 1440px canvas hangs 7.5px off
+     BOTH edges — shifting every child 7.5px left of its Figma x.
+
+     `min(90rem, 100%)` collapses the canvas to the real layout width in that
+     15px band instead. The left edge stays exact and the right margin absorbs
+     the difference (50px → 35px), which beats putting every element 7.5px out.
+     At clientWidth ≥ 1440 the two are identical and the copy is exact. */
+  .fx-canvas {
+    position: relative;
+    width: min(90rem, 100%);
+    margin-inline: auto;
+  }
+
+  /* --- Poppins headings ---------------------------------------------------
+     ONE opt-in carrying BOTH facts that always co-occur on the 19 enumerated
+     Poppins nodes: the face, and line-height 1. Splitting them into two
+     opt-ins is how the wrong face shipped last round — and a heading with the
+     right face and the frame's 7/6 leading would stack just as wrong as one
+     with the wrong face.
+
+     Verified by baseline pitch on 33:287: 72.5px between baselines at
+     72.504px. `line-height: normal` for Poppins measures 1.484, which would be
+     48% too loose. Below 90rem the 1.1 is AUTHORED — line-height 1 on a
+     wrapped 34px heading is too tight to read. */
+  .fx-display {
+    font-family: var(--font-display);
+    line-height: 1.1;
+  }
+
+  @media (min-width: 90rem) {
+    .fx-display {
+      line-height: 1;
+    }
+  }
+
+  /* --- Figma nav row ------------------------------------------------------
+     ⚠ The navbar is NOT on the 1340px content grid. In the design it is a
+     centred 1201px row (Home starts at x=120, the pill ends at x=1321), which
+     sits 70px inboard of the page content on every frame. That is the design,
+     not the bug AGENTS.md warns about — verified against all four instances
+     33:611 / 33:621 / 33:630 / 33:639, which are identical.
+
+     `justify-content: space-between` rather than the Figma's fixed 200px gap:
+     the design has four links and we ship five, so the gap cannot survive. The
+     row's outer edges do, which is what is measurable. */
+  .fx-nav-row {
+    width: var(--fx-nav-row);
+    max-width: 100%;
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
   /* --- Surfaces -----------------------------------------------------------
-     Three levels, with rules. Cards use `surface`; anything that must lift off
-     a card uses `surface-inset`. The old build applied a frosted-glass
-     treatment to almost everything, which flattened the hierarchy it was
-     supposed to create. */
+     The design has two surfaces and uses a **3px** accent border, not a third
+     fill, wherever it needs a card to lift: contact card 33:538 is ink with a
+     #00aaff outline at 0.1875rem.
+     ⚠ Corrected 2026-08-18 — this comment previously said 1px, read from
+     metadata. `page-contact` sampled the node's own render instead: three
+     contiguous rgb(0,170,255) pixels before the rgb(22,22,22) fill, at scale 1
+     on a 539 × 697 node, so image pixels are design pixels. The implementation
+     was always 3px; only this line was wrong, and it is the line another page
+     copies when it needs a card to lift. Same lesson as the font metadata:
+     render, don't read. `.surface-inset` is legacy for the untouched routes. */
   .surface {
     background-color: var(--color-card);
     border: 1px solid var(--color-line);
@@ -205,7 +568,8 @@
   }
 
   /* --- Buttons ------------------------------------------------------------
-     Accent is reserved for the primary action. It is not decoration. */
+     Accent is reserved for the primary action. It is not decoration.
+     Poppins Bold on black is the design's own treatment (I33:611;33:608). */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -247,6 +611,30 @@
   .btn-secondary:hover {
     border-color: var(--color-accent);
     color: var(--color-accent-hi);
+  }
+
+  /* --- Figma pill ---------------------------------------------------------
+     The design's own button: 142 × 45 at radius 118.214 (I33:611;33:606–608),
+     Poppins Bold 16.55px, black on accent. Width comes from the call site —
+     the nav pill is 142px, the footer Submit 139.382px, the contact Send
+     Message 443px, so only the shared treatment lives here. */
+  .fx-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7.388375rem; /* 118.214px — I33:611;33:607 */
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color var(--motion-base) var(--ease-out-soft);
+  }
+
+  .fx-pill:hover {
+    background-color: var(--color-accent-hi);
   }
 
   .link-arrow {

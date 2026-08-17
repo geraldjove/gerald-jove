@@ -1,0 +1,163 @@
+---
+/**
+ * Services intro — Figma node `33:285` (1440 × 1024), the first frame of
+ * frame `33:504`.
+ *
+ * At ≥90rem every child sits at its Figma coordinate inside the 1340px content
+ * box (`.shell`), so each `left` below is the node's Figma x minus the frame's
+ * 50px gutter. Below 90rem the layout is AUTHORED — the design does not exist
+ * there — and the three elements simply stack.
+ *
+ * The navbar is drawn inside this frame in the Figma (`33:630`) and is NOT
+ * rendered here; `BaseLayout` supplies the shared `Nav` above `<main>`.
+ *
+ * ⚠ `33:287` is the ONE Poppins node on this page. The three detail titles are
+ * the same 72.504px size in Roboto Condensed — see ServiceDetail.astro.
+ */
+import { Image } from 'astro:assets'
+
+import { SERVICES_PAGE } from '@/content/services'
+/**
+ * JPEG, deliberately, even though `33:292` is a cut-out with real alpha — do not
+ * "restore" the PNG. AGENTS.md's rule that cut-outs stay PNG/WebP exists so a
+ * transparent edge is never flattened onto the wrong colour. Here it is
+ * flattened onto exactly #161616, which is `--color-ink`, which is this
+ * section's own background (see `.svc-intro` below), so nothing is lost.
+ *
+ * Verified rather than assumed, because the manifest's Δ column reads 17.38 for
+ * this row against 0.25–1.84 for every other: that 17.38 is the alpha flatten,
+ * not quality. Compositing the PNG onto #161616 and diffing against the JPEG
+ * gives a mean absolute difference of 0.39, with 0.74% of pixels off by more
+ * than 8/255 — edge ringing, invisible at render size.
+ *
+ * ⚠ The one thing that would break this: moving the intro onto any background
+ * other than `--color-ink`. A #161616 rectangle would appear behind the art.
+ */
+import heroImage from '@/assets/img/services-hero.jpg'
+---
+
+<section class="svc-intro fx-frame" style="--fx-h: 64rem" data-node="33:285">
+  <div class="shell svc-intro__canvas">
+    <h1 class="svc-intro__title fx-display" data-node="33:287">
+      {/* Two colour runs on two lines. `display: block` rather than a natural
+          wrap, so a hairline of render width cannot move the break. */}
+      <span>{SERVICES_PAGE.h1.lead}</span>
+      <span class="svc-intro__accent">{SERVICES_PAGE.h1.accent}</span>
+    </h1>
+
+    <p class="svc-intro__sub" data-node="33:288">{SERVICES_PAGE.subheadline.text}</p>
+
+    <div class="svc-intro__art" data-node="33:292">
+      {/* `loading="eager"` overrides astro:assets' lazy default: 33:292 is drawn
+          at y=189 inside a 1024px frame, so it is above the fold and the LCP
+          candidate on this route. The three rails stay lazy — they start 1024px
+          down. */}
+      <Image
+        src={heroImage}
+        alt={SERVICES_PAGE.image.alt}
+        widths={[420, 800, 1538]}
+        sizes="(min-width: 90rem) 769px, 90vw"
+        format="webp"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- Authored below 90rem ------------------------------------------------ */
+  /* `.fx-frame` supplies `position: relative`, the 64rem frame height at ≥90rem
+     from `--fx-h`, and the design's 7/6 leading by inheritance. */
+  .svc-intro {
+    background-color: var(--color-ink); /* 33:285 fill #161616 */
+    padding-block: clamp(3rem, 1.5rem + 6vw, 6rem);
+  }
+
+  .svc-intro__canvas {
+    position: relative;
+  }
+
+  /* 33:287 — Poppins Bold 72.504px. `.fx-display` carries the face AND the
+     leading, which always co-occur on the 19 Poppins nodes: line-height 1 at
+     ≥90rem (measured — the two drawn baselines are 72.5px apart) and an
+     AUTHORED 1.1 below it, where a wrapped heading at line-height 1 is too
+     tight. Do not re-declare either here; that is how they drift apart. */
+  .svc-intro__title {
+    font-weight: 700;
+    font-size: var(--text-fx-72);
+    letter-spacing: 0;
+    color: var(--color-fg);
+    text-wrap: wrap; /* the global `balance` would re-break the drawn lines */
+  }
+
+  .svc-intro__title > span {
+    display: block;
+  }
+
+  .svc-intro__accent {
+    color: var(--color-accent); /* 33:287 second run, #00aaff */
+  }
+
+  /* 33:288 — Roboto Condensed Regular 24px, line-height 1. Measured, not
+     assumed: the two drawn lines are exactly 24px apart, so this block is set
+     tighter than the frame's inherited 7/6 (`--leading-fx`) that every detail
+     block uses. This is the node opting out, per its own value. */
+  .svc-intro__sub {
+    margin-top: 1.9375rem;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--text-fx-24);
+    line-height: 1;
+    color: var(--color-fg);
+  }
+
+  .svc-intro__art {
+    margin-top: 2.5rem;
+    aspect-ratio: 769 / 647; /* 33:292 */
+  }
+
+  .svc-intro__art :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* --- The design, exactly, at ≥90rem -------------------------------------- */
+  @media (min-width: 90rem) {
+    .svc-intro {
+      padding-block: 0; /* height 64rem (33:285 h=1024) comes from --fx-h */
+    }
+
+    .svc-intro__canvas {
+      height: 100%;
+    }
+
+    .svc-intro__title {
+      position: absolute;
+      left: 0.0625rem; /* 33:287 x=51, less the 50px frame gutter */
+      top: 24.0625rem; /* 33:287 y=385 */
+      width: 35.125rem; /* 33:287 w=562 */
+      font-size: 4.5315rem; /* 33:287 — 72.504 */
+    }
+
+    .svc-intro__sub {
+      position: absolute;
+      left: 0; /* 33:288 x=50 */
+      top: 36.6875rem; /* 33:288 y=587 */
+      width: 35.1875rem; /* 33:288 w=563 */
+      margin-top: 0;
+      font-size: 1.5rem; /* 33:288 — 24 */
+    }
+
+    .svc-intro__art {
+      position: absolute;
+      left: 35.6875rem; /* 33:292 x=621 */
+      top: 11.8125rem; /* 33:292 y=189 */
+      width: 48.0625rem; /* 33:292 w=769 */
+      height: 40.4375rem; /* 33:292 h=647 */
+      margin-top: 0;
+      aspect-ratio: auto;
+    }
+  }
+</style>

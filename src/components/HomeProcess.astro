@@ -1,0 +1,362 @@
+---
+/**
+ * "How We Work Together" — Figma node `8:29`, 1440 x 1024, fill #242424.
+ *
+ * A photo panel bleeding off the left edge (27:3, which the frame clips at
+ * 1024), and a numbered rail on the right: a dotted accent line (22:120) behind
+ * four circles (22:90 / 96 / 100 / 104) carrying their numbers.
+ *
+ * The Figma also has a #d9d9d9 rectangle (22:178) under the photo. It is not
+ * reproduced: the export is opaque and covers the panel at every width, so the
+ * grey is scaffolding rather than design.
+ */
+import { Image } from 'astro:assets'
+
+import HomeLines from './HomeLines.astro'
+import { PROCESS } from '@/content/home'
+
+import processPanel from '@/assets/img/home-process-bg.jpg'
+---
+
+<section class="fx-frame process" style="--fx-h: 64rem" data-node="8:29">
+  <div class="process__panel" data-node="27:3">
+    <Image
+      src={processPanel}
+      alt={PROCESS.panelAlt}
+      widths={[334, 668]}
+      sizes="(min-width: 90rem) 41.75rem, 100vw"
+      format="webp"
+      quality={80}
+      class="process__panel-img"
+    />
+  </div>
+
+  <div class="process__canvas">
+    <h2 class="process__h2" data-node="22:88">
+      <HomeLines lines={PROCESS.h2.lines} />
+    </h2>
+
+    <div class="process__rail" data-node="22:175">
+      {/* 22:120 — a 5px accent line, round cap, dash 1 / gap 15, drawn behind
+          the circles. Decorative: the numbers carry the sequence. */}
+      <svg
+        class="process__line"
+        width="5"
+        height="753"
+        viewBox="0 0 5 753"
+        fill="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <line
+          x1="2.5"
+          y1="2.5"
+          x2="2.5"
+          y2="750.5"
+          stroke="currentColor"
+          stroke-width="5"
+          stroke-linecap="round"
+          stroke-dasharray="1 15"></line>
+      </svg>
+
+      <ol class="process__steps">
+        {
+          PROCESS.steps.map((step, i) => (
+            <li class="step" data-node={step.node}>
+              <span class="step__circle" aria-hidden="true">
+                <span class="step__num">{i + 1}</span>
+              </span>
+              <h3 class="step__label">{step.label}</h3>
+              <p class="step__body">{step.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .process {
+    background-color: var(--color-raised); /* 8:29 fill #242424 */
+    overflow: hidden;
+  }
+
+  /* AUTHORED: below 1440 the panel becomes a band above the steps rather than a
+     full-height column, which is a layout the design does not describe. */
+  .process__panel {
+    height: clamp(11rem, 38vw, 20rem);
+  }
+
+  .process__panel-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .process__canvas {
+    position: relative;
+    padding: 3.5rem var(--spacing-gutter) 5rem;
+  }
+
+  .process__h2 {
+    margin: 0;
+    font-family: var(--font-sans); /* Roboto Condensed */
+    font-weight: 700;
+    font-size: var(--text-fx-64); /* 22:88 64px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-align: center;
+    text-wrap: wrap; /* global.css sets `balance` on h1-h6 */
+  }
+
+  .process__rail {
+    position: relative;
+    margin-top: 2.5rem;
+  }
+
+  .process__line {
+    display: none;
+    color: var(--color-accent);
+  }
+
+  .process__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .step {
+    position: relative;
+    padding-left: 5.5rem;
+  }
+
+  .step__circle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: 4.25rem;
+    height: 4.25rem;
+    /* An inset shadow, not a border, so the number inside keeps the circle's own
+       coordinate system. Matches the Figma's centred 2px stroke on r=66.877. */
+    box-shadow: inset 0 0 0 0.125rem var(--color-accent); /* 22:90 stroke 2px */
+    border-radius: 50%;
+    background-color: var(--color-raised); /* the circles are filled #242424 */
+  }
+
+  .step__num {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-62); /* 22:91 62px */
+    line-height: var(--leading-fx);
+    color: var(--color-accent);
+  }
+
+  .step__label {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-38); /* 22:92 38px */
+    line-height: var(--leading-fx);
+    color: var(--color-accent);
+    text-wrap: wrap;
+  }
+
+  .step__body {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-fx-18); /* 22:112 18px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap; /* global.css sets `pretty` */
+  }
+
+  /* --- The design, exactly ------------------------------------------------ */
+  @media (min-width: 90rem) {
+    /* 668px wide at 1440. Above that it keeps bleeding off the left edge while
+       the centred canvas stays put, which is AUTHORED — the design stops at
+       1440. `calc(50% - 52px)` is exactly 668 at 1440. */
+    .process__panel {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      height: auto;
+      width: calc(50% - 3.25rem);
+    }
+
+    .process__canvas {
+
+      position: absolute;
+
+      /* `inset: 0` + a definite width + `margin-inline: auto` centres it.
+
+         `min()` not a bare 90rem: a media query counts the scrollbar gutter
+
+         and layout does not, so on a 1440px window this box would be 1440
+
+         wide inside 1425 of layout and hang 7.5px off both edges. Same
+
+         reasoning as `.fx-canvas` in global.css. */
+
+      inset: 0;
+
+      width: min(var(--fx-frame), 100%);
+
+      margin-inline: auto;
+      padding: 0;
+    }
+
+    .process__h2 {
+      /* 22:88 — x=764 y=66 w=592, centred on x=1060, not on the frame. */
+      position: absolute;
+      left: 66.25rem;
+      top: 4.125rem;
+      line-height: var(--leading-fx-64); /* 75px */
+      transform: translateX(-50%);
+      width: max-content;
+    }
+
+    .process__rail {
+      position: static;
+      margin-top: 0;
+    }
+
+    .process__line {
+      display: block;
+      position: absolute;
+      left: 49.5313rem; /* 22:120 x=795, minus half the 5px stroke */
+      top: 12.4375rem; /* y=199 */
+      width: 0.3125rem; /* 5 */
+      height: 47.0625rem; /* 753 */
+    }
+
+    .process__steps {
+      display: block;
+    }
+
+    /* Each step is pinned to the canvas origin; the nth-child blocks below
+       carry the real y for each of its three parts. */
+    .step {
+      position: absolute;
+      left: 0;
+      top: 0;
+      padding-left: 0;
+    }
+
+    .step__circle {
+      /* 22:90 / 96 / 100 / 104 — all at x=730, 135.754 square. */
+      display: block;
+      left: 45.625rem;
+      width: 8.4846rem;
+      height: 8.4846rem;
+    }
+
+    .step__num {
+      /* 22:91 etc — a 29.663px box centred on x=795.81, i.e. 2px left of the
+         circle's own centre. Placed, not centred, for that reason. */
+      position: absolute;
+      left: 3.1864rem; /* 780.983 - 730 */
+      width: 1.8539rem; /* 29.663 */
+      line-height: var(--leading-fx-62); /* 73px */
+      text-align: center;
+    }
+
+    .step__label,
+    .step__body {
+      position: absolute;
+      margin: 0;
+    }
+
+    .step__label {
+      left: 55rem; /* 880 */
+      line-height: var(--leading-fx-38); /* 45px */
+    }
+
+    .step__body {
+      left: 55.0106rem; /* 880.169 */
+      line-height: var(--leading-fx-18); /* 21px */
+      width: 31.8644rem; /* 509.831 */
+    }
+
+    /* Step 1 — 22:119 */
+    .step:nth-child(1) .step__circle {
+      top: 12.125rem; /* 194 */
+    }
+
+    .step:nth-child(1) .step__num {
+      top: 1.75rem; /* 222 - 194 */
+    }
+
+    .step:nth-child(1) .step__label {
+      top: 12.625rem; /* 202 */
+      width: 4.5625rem; /* 73 */
+    }
+
+    .step:nth-child(1) .step__body {
+      top: 16.125rem; /* 258 */
+    }
+
+    /* Step 2 — 22:118 */
+    .step:nth-child(2) .step__circle {
+      top: 25rem; /* 400 */
+    }
+
+    .step:nth-child(2) .step__num {
+      top: 1.9375rem; /* 431 - 400 */
+    }
+
+    .step:nth-child(2) .step__label {
+      top: 26.125rem; /* 418 */
+      width: 4.8125rem; /* 77 */
+    }
+
+    .step:nth-child(2) .step__body {
+      top: 29.625rem; /* 474 */
+    }
+
+    /* Step 3 — 22:117 */
+    .step:nth-child(3) .step__circle {
+      top: 38.0389rem; /* 608.623 */
+    }
+
+    .step:nth-child(3) .step__num {
+      top: 1.9611rem; /* 640 - 608.623 */
+    }
+
+    .step:nth-child(3) .step__label {
+      top: 39.1875rem; /* 627 */
+      width: 5.125rem; /* 82 */
+    }
+
+    .step:nth-child(3) .step__body {
+      top: 42.6875rem; /* 683 */
+    }
+
+    /* Step 4 — 22:116. Its body sits 49px under the label, not 56. */
+    .step:nth-child(4) .step__circle {
+      top: 51rem; /* 816 */
+    }
+
+    .step:nth-child(4) .step__num {
+      top: 2rem; /* 848 - 816 */
+    }
+
+    .step:nth-child(4) .step__label {
+      top: 51.75rem; /* 828 */
+      width: 24.8125rem; /* 397 */
+    }
+
+    .step:nth-child(4) .step__body {
+      left: 55rem; /* 22:115 x=880, not 880.169 */
+      top: 54.8125rem; /* 877 */
+      width: 31.875rem; /* 510 */
+    }
+  }
+</style>

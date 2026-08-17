@@ -1,0 +1,205 @@
+---
+/**
+ * What I Do — Figma node `33:121` (1440 x 1024).
+ *
+ * ⚠ `33:130` and `33:167` are bulleted lists collapsed into a single Figma text
+ * node each; they are rebuilt as real <ul>/<li>.
+ *
+ * ⚠ `33:171` — the Tools card — is NOT bulleted in the design. It is two
+ * labelled prose runs ("For creative work:" / "For development:"). It is marked
+ * up as a real list of those two groups, with markers switched off, because
+ * adding bullets would show marks the design does not draw. That is the only
+ * way to satisfy both "rebuild as a real list" and 1:1.
+ */
+import { ABOUT } from '@/content/about'
+
+const { heading, cards, tools } = ABOUT.capabilities
+---
+
+<section class="about-capabilities">
+  <div class="about-capabilities__inner">
+    <h2 class="about-capabilities__heading">
+      {
+        heading.map((run) => (
+          <span class:list={[run.accent && 'about-capabilities__accent']}>{run.text}</span>
+        ))
+      }
+    </h2>
+
+    <div class="about-capabilities__grid">
+      {
+        cards.map((card) => (
+          <article class="about-card">
+            <h3 class="about-card__label">{card.label}</h3>
+            <ul class="about-card__list">
+              {card.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+
+      <article class="about-card">
+        <h3 class="about-card__label">{tools.label}</h3>
+        <ul class="about-card__groups">
+          {
+            tools.groups.map((group) => (
+              <li>
+                <p class="about-card__group-label">{group.label}</p>
+                <p>{group.body}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- Authored below 90rem ------------------------------------------------ */
+  .about-capabilities {
+    background-color: var(--color-ink);
+    padding-block: var(--a-pad-block);
+  }
+
+  .about-capabilities__inner {
+    width: 100%;
+    max-width: calc(var(--fx-content) + 2 * var(--spacing-gutter));
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  /* 33:123 — Roboto Condensed Bold 64px, line-height 68 (not `normal`) */
+  .about-capabilities__heading {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-64);
+    line-height: 1.0625;
+    color: var(--color-fg);
+    text-align: center;
+    text-wrap: wrap;
+  }
+
+  .about-capabilities__accent {
+    color: var(--color-accent);
+  }
+
+  .about-capabilities__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 3rem; /* 33:222 — 48 between cards */
+    margin-top: 2.0625rem;
+  }
+
+  /* 33:124 / 33:165 / 33:169 */
+  .about-card {
+    box-sizing: border-box;
+    background-color: var(--color-ink);
+    border: 0.100438rem solid var(--color-accent); /* 1.607 */
+    border-radius: 0.73675rem; /* 11.788 */
+    /* 24 and 26 from the card's OUTER edge, less the 1.607 border. */
+    padding: 1.399563rem 1.399563rem 1.399563rem 1.524563rem;
+  }
+
+  /* 33:129 / 33:166 / 33:170 — Roboto Condensed Bold 30px */
+  .about-card__label {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-30);
+    line-height: var(--leading-fx);
+    color: var(--color-accent);
+    text-wrap: wrap;
+  }
+
+  /* 33:130 / 33:167 — Roboto Condensed Regular 18px */
+  .about-card__list {
+    margin-top: 0.625rem;
+    padding-left: 1.6875rem; /* 27 — the marker indent Figma draws */
+    list-style: disc;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--text-fx-18);
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+  }
+
+  /* 33:171 — two labelled groups, no markers. */
+  .about-card__groups {
+    --size: var(--text-fx-18);
+    --lh: calc(var(--size) * var(--leading-fx));
+    margin-top: 0.625rem;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--size);
+    line-height: var(--lh);
+    color: var(--color-fg);
+  }
+
+  .about-card__groups > li + li,
+  .about-card__groups > li > * + * {
+    margin-top: var(--lh); /* one blank 18px line */
+  }
+
+  .about-card__group-label {
+    font-weight: 700;
+  }
+
+  .about-card__groups p {
+    text-wrap: wrap;
+  }
+
+  /* --- Figma-exact at >=90rem ---------------------------------------------- */
+  @media (min-width: 90rem) {
+    .about-capabilities {
+      height: 64rem; /* 33:121 — 1024 */
+      padding-block: 0;
+    }
+
+    .about-capabilities__inner {
+      width: 58.875rem; /* 33:222 — 942, centred on the frame (x=249..1191) */
+      max-width: none;
+      padding-inline: 0;
+      padding-top: 18.1875rem; /* 33:123 — y=291 */
+    }
+
+    .about-capabilities__heading {
+      width: 36rem; /* 33:123 — 576 */
+      height: 3.875rem; /* 33:123 — 62 */
+      margin-inline: auto;
+      font-size: 4rem;
+      line-height: 4.25rem; /* 68 */
+    }
+
+    .about-capabilities__grid {
+      grid-template-columns: repeat(3, 17.625rem); /* 282 */
+      justify-content: space-between;
+      margin-top: 2.0625rem; /* 291 + 62 + 33 = 386, node 33:222 y */
+    }
+
+    .about-card {
+      height: 21.75rem; /* 348 */
+    }
+
+    /* Leading is absolute here, not a ratio — Figma rounds it to a whole pixel
+       per size. See about.astro. */
+    .about-card__label {
+      height: 2.1875rem; /* 33:129 — 35 */
+      font-size: 1.875rem; /* 30 */
+      line-height: var(--leading-fx-30); /* 35 */
+    }
+
+    .about-card__list {
+      font-size: 1.125rem; /* 33:130 — 18 */
+      line-height: var(--leading-fx-18); /* 21 */
+    }
+
+    .about-card__groups {
+      --size: 1.125rem; /* 33:171 — 18 */
+      --lh: var(--leading-fx-18); /* 21 */
+    }
+  }
+</style>

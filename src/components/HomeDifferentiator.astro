@@ -1,0 +1,106 @@
+---
+/**
+ * "Why I Do Both" — Figma node `8:30`, 1440 x 1024, fill #161616.
+ * Three nodes, all centred on x=720: 23:179, 23:181, 23:183.
+ */
+import HomeLines from './HomeLines.astro'
+import { DIFFERENTIATOR } from '@/content/home'
+---
+
+<section class="fx-frame diff" style="--fx-h: 64rem" data-node="8:30">
+  <div class="diff__canvas">
+    <h2 class="diff__h2" data-node="23:179">
+      <HomeLines lines={DIFFERENTIATOR.h2.lines} />
+    </h2>
+
+    <p class="diff__lede" data-node="23:181">{DIFFERENTIATOR.lede}</p>
+    <p class="diff__body" data-node="23:183">{DIFFERENTIATOR.body}</p>
+  </div>
+</section>
+
+<style>
+  .diff {
+    background-color: var(--color-ink); /* 8:30 fill #161616 */
+  }
+
+  .diff__canvas {
+    position: relative;
+    padding: 5rem var(--spacing-gutter);
+    text-align: center;
+  }
+
+  .diff__h2 {
+    margin: 0;
+    font-family: var(--font-sans); /* Roboto Condensed */
+    font-weight: 700;
+    font-size: var(--text-fx-64); /* 23:179 64px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap; /* global.css sets `balance` on h1-h6 */
+  }
+
+  .diff__lede {
+    margin: 1rem 0 0;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--home-text-36); /* 23:181 36.78px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap; /* global.css sets `pretty` */
+  }
+
+  .diff__body {
+    margin: 1.25rem auto 0;
+    max-width: 61rem; /* 23:183 is 976px wide */
+    font-family: var(--font-sans);
+    font-size: var(--text-fx-18); /* 18px */
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap;
+  }
+
+  /* --- The design, exactly ------------------------------------------------ */
+  @media (min-width: 90rem) {
+    .diff__canvas {
+      position: absolute;
+      /* `inset: 0` + a definite width + `margin-inline: auto` centres it.
+         `min()` not a bare 90rem: a media query counts the scrollbar gutter
+         and layout does not, so on a 1440px window this box would be 1440
+         wide inside 1425 of layout and hang 7.5px off both edges. Same
+         reasoning as `.fx-canvas` in global.css. */
+      inset: 0;
+      width: min(var(--fx-frame), 100%);
+      margin-inline: auto;
+      padding: 0;
+    }
+
+    .diff__h2,
+    .diff__lede,
+    .diff__body {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+    }
+
+    .diff__h2 {
+      top: 24.1875rem; /* 23:179 y=387 */
+      line-height: var(--leading-fx-64); /* 75px */
+      width: max-content;
+    }
+
+    .diff__lede {
+      top: 30.125rem; /* 23:181 y=482, a single 750px-wide line */
+      line-height: var(--home-leading-36); /* 43px */
+      width: max-content;
+    }
+
+    .diff__body {
+      /* 23:183 — y=545 and 976 wide; the width is what gives it four lines. */
+      top: 34.0625rem;
+      line-height: var(--leading-fx-18); /* 21px */
+      width: 61rem;
+      max-width: none;
+    }
+  }
+</style>

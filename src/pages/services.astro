@@ -1,123 +1,117 @@
 ---
+/**
+ * /services — a 1:1 rebuild of Figma `6Lgtxs8zSUzruc8zu8tY0T`, frame `33:504`
+ * (1440 × 7837). Four sections, then the shared Footer.
+ *
+ * Section stack, with the Figma frame heights:
+ *   33:285  Services Section              1024   ServiceIntro
+ *   33:293  Creative Automation Systems   2069   ServiceDetail
+ *   33:431  Managed Ad Creative           2069   ServiceDetail
+ *   33:447  3D Product Visuals & CGI Ads  2316   ServiceDetail
+ *   33:700  Footer                         359   the shared Footer, not this frame
+ *
+ * Every number in the `geometry` objects below is a Figma node value in px,
+ * converted to rem at the call site. They stay here rather than inside
+ * ServiceDetail so the three sections can be read against the coordinate map
+ * in one place.
+ *
+ * ⚠ "What I don't do" is deliberately absent. The Figma has no such section,
+ * and the block that used to live here was written against the old copy
+ * document, not the design.
+ *
+ * ⚠ The three detail titles are ROBOTO CONDENSED at 72.504px, not Poppins. Only
+ * the intro h1 `33:287` is Poppins. See the warning in ServiceDetail.astro.
+ */
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import Icon from '@/components/Icon.astro'
 
-import { META, PRIMARY_CTA, AVAILABILITY } from '@/content/site'
-import { SERVICES, SERVICES_PAGE } from '@/content/services'
-import { blankValue } from '@/content/blanks.js'
+import ServiceIntro from '@/components/ServiceIntro.astro'
+import ServiceDetail from '@/components/ServiceDetail.astro'
+
+import { META } from '@/content/site'
+import { SERVICE_DETAILS } from '@/content/services'
+
+import railAutomation from '@/assets/img/services-rail-automation.jpg'
+import railManaged from '@/assets/img/services-rail-managed.jpg'
+import rail3d from '@/assets/img/services-rail-3d.jpg'
 
 /**
- * Resolve each service's "what you get" list and price line up front, dropping
- * anything still blank. Blanks #2 (retainer volume), #3 (3D starting price) and
- * #7 (minimum term) all land here — each is omitted, never guessed.
+ * Frame geometry, in Figma px. `columnX` and `rail.x` are frame coordinates;
+ * ServiceDetail subtracts the frame's 50px gutter to reach the content box.
+ * `blocks` is in block order — the heading's y, and the drawn width of the body
+ * node beneath it. Every body sits 93px below its heading in all twelve blocks.
  */
-const services = SERVICES.map((service) => ({
-  ...service,
-  included: service.detail.included
-    .map((item) => (item.blank ? blankValue(item.blank as never) : item.text))
-    .filter((text): text is string => Boolean(text)),
-  priceLine: service.detail.timelineAndPrice
-    ? service.detail.timelineAndPrice
-    : service.detail.timelineBlank
-      ? blankValue(service.detail.timelineBlank as never)
-      : null,
-}))
+const GEOMETRY = [
+  {
+    // 33:293 — Creative Automation Systems
+    surface: 'raised' as const,
+    railImage: railAutomation,
+    geometry: {
+      frameH: 2069,
+      columnX: 507, // group 33:430
+      titleY: 87, // 33:295
+      titleW: 859,
+      blocks: [
+        { y: 223, w: 859 }, // 33:298 / 33:300
+        { y: 451, w: 859 }, // 33:301 / 33:302
+        { y: 1015, w: 859 }, // 33:303 / 33:304
+        { y: 1383, w: 859 }, // 33:305 / 33:306
+      ],
+      ctaY: 1947, // 33:339
+      rail: { node: '33:807', x: 53, w: 413, edge: 'left' as const },
+    },
+  },
+  {
+    // 33:431 — Managed Ad Creative
+    surface: 'ink' as const,
+    railImage: railManaged,
+    geometry: {
+      frameH: 2069,
+      columnX: 50, // group 33:446
+      titleY: 127, // 33:345
+      titleW: 859,
+      blocks: [
+        { y: 260, w: 859 }, // 33:346 / 33:350
+        { y: 434, w: 859 }, // 33:347 / 33:351
+        { y: 830, w: 859 }, // 33:348 / 33:352
+        { y: 1350, w: 859 }, // 33:349 / 33:353
+      ],
+      ctaY: 1908, // 33:354
+      rail: { node: '33:808', x: 977, w: 413, edge: 'right' as const },
+    },
+  },
+  {
+    // 33:447 — 3D Product Visuals & CGI Ads
+    surface: 'raised' as const,
+    railImage: rail3d,
+    geometry: {
+      frameH: 2316,
+      columnX: 517, // group 33:462
+      titleY: 84, // 33:396
+      titleW: 873,
+      blocks: [
+        { y: 217, w: 808 }, // 33:397 / 33:401 — 808, not 859, in the design
+        { y: 646, w: 859 }, // 33:398 / 33:402
+        { y: 1216, w: 859 }, // 33:399 / 33:403
+        { y: 1736, w: 859 }, // 33:400 / 33:404
+      ],
+      ctaY: 2197, // 33:405
+      rail: { node: '33:809', x: 50, w: 413, edge: 'left' as const },
+    },
+  },
+]
 ---
 
 <BaseLayout title={META.services.title} description={META.services.description}>
-  <section class="shell py-section">
-    <h1 class="text-h1 text-fg">{SERVICES_PAGE.h1}</h1>
-    <p class="measure mt-5 text-lead text-fg-muted">{SERVICES_PAGE.subheadline}</p>
-  </section>
+  <ServiceIntro />
 
   {
-    services.map((service, i) => (
-      <section
-        id={service.slug}
-        class:list={[
-          'scroll-mt-20 border-t border-line',
-          i % 2 === 0 ? 'bg-raised' : '',
-        ]}
-      >
-        <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
-          <p class="eyebrow reveal">{String(i + 1).padStart(2, '0')}</p>
-
-          <div class="reveal">
-            <h2 class="text-h2 text-fg">{service.name}</h2>
-
-            <div class="measure mt-8 space-y-8">
-              <div>
-                <h3 class="text-h3 text-fg">Who it’s for</h3>
-                <p class="mt-3 text-body text-fg-muted">{service.detail.forWhom}</p>
-              </div>
-
-              <div>
-                <h3 class="text-h3 text-fg">The problem</h3>
-                <p class="mt-3 text-body text-fg-muted">{service.detail.problem}</p>
-              </div>
-
-              <div>
-                <h3 class="text-h3 text-fg">{service.detail.whatIDo.heading}</h3>
-                <p class="mt-3 text-body text-fg-muted">{service.detail.whatIDo.body}</p>
-              </div>
-
-              {service.included.length > 0 && (
-                <div>
-                  <h3 class="text-h3 text-fg">What you get</h3>
-                  <ul class="mt-4 space-y-3">
-                    {service.included.map((text) => (
-                      <li class="flex gap-3 text-body text-fg-muted">
-                        <Icon name="check" size={18} class="mt-1 shrink-0 text-accent" />
-                        <span>{text}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {service.detail.howItWorks && (
-                <div>
-                  <h3 class="text-h3 text-fg">How it works</h3>
-                  <p class="mt-3 text-body text-fg-muted">{service.detail.howItWorks}</p>
-                </div>
-              )}
-
-              {/* Price line omitted entirely while its figure is unresolved. */}
-              {service.priceLine && (
-                <div class="surface-inset p-5">
-                  <h3 class="text-h3 text-fg">Timeline and price</h3>
-                  <p class="mt-2 text-body text-fg-muted">{service.priceLine}</p>
-                </div>
-              )}
-
-              <div>
-                <a href={PRIMARY_CTA.href} class="btn btn-primary">
-                  {PRIMARY_CTA.label}
-                  <Icon name="arrow-right" size={16} />
-                </a>
-                <p class="mt-4 text-micro text-fg-quiet">{AVAILABILITY.short}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    SERVICE_DETAILS.map((detail, i) => (
+      <ServiceDetail
+        detail={detail}
+        surface={GEOMETRY[i].surface}
+        geometry={GEOMETRY[i].geometry}
+        railImage={GEOMETRY[i].railImage}
+      />
     ))
   }
-
-  {/* Kept deliberately: the copy notes this is what makes the rest credible. */}
-  <section class="border-t border-line">
-    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
-      <p class="eyebrow reveal">Limits</p>
-      <div class="reveal measure">
-        <h2 class="text-h2 text-fg">{SERVICES_PAGE.exclusions.heading}</h2>
-        <p class="mt-5 text-body text-fg-muted">{SERVICES_PAGE.exclusions.body}</p>
-      </div>
-    </div>
-  </section>
-
-  {/*
-    No extra closing CTA here on purpose. The copy document gives each service
-    its own "Book a 20-minute fit call", and inventing a fourth heading to fill
-    the slot would be writing copy rather than implementing it.
-  */}
 </BaseLayout>

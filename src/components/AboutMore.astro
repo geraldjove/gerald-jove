@@ -1,0 +1,106 @@
+---
+/**
+ * A Little More About Me — Figma node `33:246` (1440 x 1024).
+ *
+ * The last section of the frame. The design ends here: there is no closing CTA,
+ * and shipping it that way is deliberate and confirmed.
+ *
+ * `33:227` is one text node holding two sentences separated by a blank line;
+ * it is rebuilt as two <p> with a one-line-box gap.
+ */
+import { ABOUT } from '@/content/about'
+---
+
+<section class="about-more">
+  <div class="about-more__inner">
+    <h2 class="about-more__heading">
+      {
+        ABOUT.more.heading.map((run) => (
+          <span class:list={[run.accent && 'about-more__accent']}>{run.text}</span>
+        ))
+      }
+    </h2>
+
+    <div class="about-more__body">
+      {ABOUT.more.body.map((para) => <p>{para}</p>)}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- Authored below 90rem ------------------------------------------------ */
+  .about-more {
+    background-color: var(--color-ink);
+    padding-block: var(--a-pad-block);
+  }
+
+  .about-more__inner {
+    width: 100%;
+    max-width: calc(var(--fx-content) + 2 * var(--spacing-gutter));
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  /* 33:225 — Roboto Condensed Bold 64px */
+  .about-more__heading {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: var(--text-fx-64);
+    line-height: var(--leading-fx);
+    color: var(--color-fg);
+    text-wrap: wrap;
+  }
+
+  .about-more__accent {
+    color: var(--color-accent);
+  }
+
+  /* 33:227 — Roboto Condensed Regular 24px */
+  .about-more__body {
+    --size: var(--text-fx-24);
+    --lh: calc(var(--size) * var(--leading-fx));
+    margin-top: 2.75rem;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--size);
+    line-height: var(--lh);
+    color: var(--color-fg);
+  }
+
+  .about-more__body > p {
+    text-wrap: wrap;
+  }
+
+  .about-more__body > p + p {
+    margin-top: var(--lh);
+  }
+
+  /* --- Figma-exact at >=90rem ---------------------------------------------- */
+  @media (min-width: 90rem) {
+    .about-more {
+      height: 64rem; /* 33:246 — 1024 */
+      padding-block: 0;
+    }
+
+    .about-more__inner {
+      width: 81.625rem; /* 33:247 — 1306, x=67..1373, centred on the frame */
+      max-width: none;
+      padding-inline: 0;
+      padding-top: 25.6875rem; /* 33:225 — y=411 */
+    }
+
+    /* Leading is absolute here, not a ratio — Figma rounds it to a whole pixel
+       per size, so 64px is 75 and NOT 64 x 7/6 = 74.667. See about.astro. */
+    .about-more__heading {
+      height: 4.6875rem; /* 33:225 — 75 */
+      font-size: 4rem;
+      line-height: var(--leading-fx-64); /* 75 */
+    }
+
+    .about-more__body {
+      --size: 1.5rem; /* 24 */
+      --lh: var(--leading-fx-24); /* 28 */
+      margin-top: 2.75rem; /* 411 + 75 + 44 = 530, node 33:227 y */
+    }
+  }
+</style>

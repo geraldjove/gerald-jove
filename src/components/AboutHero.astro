@@ -1,0 +1,187 @@
+---
+/**
+ * About hero — Figma node `32:90` (1440 x 1024).
+ *
+ * At >=90rem every value below is the Figma coordinate divided by 16. Below
+ * 90rem the layout is authored: one column, heading first, portrait last.
+ *
+ * The circular portrait is rebuilt in CSS rather than imported as SVG. The
+ * three vector layers in the Figma group are, verbatim:
+ *   `33:105` / `33:104`  circle r=327.5 fill #D9D9D9  -> the clip + backdrop
+ *   `33:114`             circle r=322.5 stroke #00AAFF width 10 -> the ring,
+ *                        whose outer edge is exactly the 655px box edge, i.e.
+ *                        `border: 10px solid` with `box-sizing: border-box`.
+ */
+import { Image } from 'astro:assets'
+
+import { ABOUT } from '@/content/about'
+import portrait from '@/assets/img/about-portrait.png'
+---
+
+<section class="about-hero">
+  <div class="about-hero__inner">
+    <h1 class="about-hero__title">
+      {
+        ABOUT.hero.heading.map((run) => (
+          <span class:list={[run.accent && 'about-hero__accent']}>{run.text}</span>
+        ))
+      }
+    </h1>
+
+    <div class="about-hero__body">
+      {ABOUT.hero.body.map((para) => <p>{para}</p>)}
+    </div>
+
+    <div class="about-hero__portrait">
+      <div class="about-hero__clip">
+        <Image
+          src={portrait}
+          alt={ABOUT.hero.portraitAlt}
+          widths={[320, 640, 1280]}
+          sizes="(min-width: 90rem) 638px, 66vw"
+          format="webp"
+          loading="eager"
+          decoding="sync"
+          fetchpriority="high"
+        />
+      </div>
+      <div class="about-hero__ring" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- Authored below 90rem ------------------------------------------------ */
+  .about-hero {
+    background-color: var(--color-ink);
+    padding-block: var(--a-pad-block);
+  }
+
+  .about-hero__inner {
+    width: 100%;
+    max-width: calc(var(--fx-content) + 2 * var(--spacing-gutter));
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  /* 33:110 — Poppins Bold 72.504px. `font-display` is the accent face; see the
+     enumeration in AGENTS.md. The global `h1 { text-wrap: balance }` would
+     rebalance the four lines the design draws, so it is switched off. */
+  .about-hero__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-fx-72);
+    line-height: 1;
+    color: var(--color-fg);
+    text-wrap: wrap;
+    letter-spacing: 0;
+  }
+
+  .about-hero__accent {
+    color: var(--color-accent);
+  }
+
+  /* 33:112 — Roboto Condensed Regular 24px, line-height 1 (not `normal`; the
+     hero body is the one body block in this frame set tight). The blank line
+     between the two sentences is exactly one line box. */
+  .about-hero__body {
+    --size: var(--text-fx-24);
+    margin-top: 1.9375rem;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: var(--size);
+    line-height: 1;
+    color: var(--color-fg);
+  }
+
+  .about-hero__body > p {
+    text-wrap: wrap;
+  }
+
+  .about-hero__body > p + p {
+    margin-top: var(--size);
+  }
+
+  /* `--d` is the circle's diameter, and everything inside is derived from it so
+     the ring stays proportional at every width instead of only at 1440. */
+  .about-hero__portrait {
+    --d: min(66vw, 40.9375rem);
+    position: relative;
+    width: var(--d);
+    height: var(--d);
+    margin: 3rem auto 0;
+  }
+
+  .about-hero__clip {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: var(--color-portrait-disc);
+  }
+
+  /* 33:91 — the photo is a 9:16 cut-out laid over the grey disc, not a fill.
+     Its box is 637.297 x 1132.973 at x=+17.7027, y=0 within the 655px circle,
+     which is 97.297% x 172.973% offset 2.7027% — the percentage form keeps the
+     same crop below 90rem, where the circle is fluid. */
+  .about-hero__clip :global(img) {
+    position: absolute;
+    left: 2.7027%;
+    top: 0;
+    width: 97.2977%;
+    height: 172.9730%;
+    max-width: none;
+    object-fit: cover;
+  }
+
+  /* 33:114 — stroke 10 on a 655 circle, kept as that ratio at every width. */
+  .about-hero__ring {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    border: calc(var(--d) * 0.0152672) solid var(--color-accent);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* --- Figma-exact at >=90rem ---------------------------------------------- */
+  @media (min-width: 90rem) {
+    .about-hero {
+      height: 64rem; /* 32:90 — 1024 */
+      padding-block: 0;
+    }
+
+    .about-hero__inner {
+      position: relative;
+      width: 83.75rem; /* the frame's 1340 content measure, x=50..1390 */
+      max-width: none;
+      height: 100%;
+      padding-inline: 0;
+    }
+
+    .about-hero__title {
+      position: absolute;
+      left: 0.0625rem; /* 33:110 — x=51 */
+      top: 18.6875rem; /* 33:110 — y=299 */
+      width: 42.1875rem; /* 33:110 — 675 */
+      font-size: 4.5315rem; /* 33:110 — 72.504 */
+    }
+
+    .about-hero__body {
+      --size: 1.5rem; /* 33:112 — 24 */
+      position: absolute;
+      left: 0; /* 33:112 — x=50 */
+      top: 39.125rem; /* 33:112 — y=626 */
+      width: 40.9375rem; /* 33:112 — 655 */
+      margin-top: 0;
+    }
+
+    .about-hero__portrait {
+      --d: 40.9375rem; /* 33:108 — 655, so the ring resolves to exactly 10 */
+      position: absolute;
+      left: 42.8125rem; /* 33:108 — x=735 */
+      top: 11.5625rem; /* 33:108 — y=185 */
+      margin: 0;
+    }
+  }
+</style>

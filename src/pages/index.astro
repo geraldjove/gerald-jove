@@ -1,225 +1,102 @@
 ---
-import { getCollection } from 'astro:content'
-import { Image, getImage } from 'astro:assets'
-
-import BaseLayout from '@/layouts/BaseLayout.astro'
-import Icon from '@/components/Icon.astro'
-import ServiceCard from '@/components/ServiceCard.astro'
-import CaseTeaser from '@/components/CaseTeaser.astro'
-import CtaBlock from '@/components/CtaBlock.astro'
-
-import { META, PRIMARY_CTA, AVAILABILITY } from '@/content/site'
-import { SERVICES } from '@/content/services'
-import {
-  HERO,
-  PROBLEM,
-  SERVICES_SECTION,
-  PROOF,
-  PROCESS,
-  DIFFERENTIATOR,
-  ABOUT_STRIP,
-  CLOSING,
-} from '@/content/home'
-
-import posterSource from '@/assets/img/product-animation-poster.jpg'
-import productMouse from '@/assets/img/product-mouse.jpg'
-import productHairdryer from '@/assets/img/product-hairdryer.jpg'
-import profilePhoto from '@/assets/img/profile-photo.jpg'
-
-const cases = (await getCollection('work', ({ data }) => !data.draft)).sort(
-  (a, b) => a.data.order - b.data.order,
-)
-
 /**
- * Poster for the product animation. The clip is self-hosted, stripped of audio
- * and re-encoded (2.7 MB -> 257 KB), and does not autoplay: audit L4 flagged an
- * autoplaying remote MP4 on mobile. `preload="none"` means nothing downloads
- * until someone presses play, so the mobile cost is the poster alone.
+ * Homepage — a 1:1 reproduction of Figma `6Lgtxs8zSUzruc8zu8tY0T` frame `32:84`
+ * (Homepage, 1440 x 8341) at >=90rem. Below 90rem the design does not exist, so
+ * that layout is authored by us and is called out as such in each component.
+ *
+ * The eight sections map to the eight child frames of `32:84`, in order:
+ *   1:2 Hero · 7:26 The Problem · 8:27 Services · 8:28 Proof
+ *   8:29 Process · 8:30 Differentiator · 8:31 About Strip · 8:32 CTA
+ *
+ * The footer drawn inside 8:32 is an older variant; BaseLayout's shared Footer
+ * renders instead.
  */
-const poster = await getImage({ src: posterSource, format: 'jpeg', width: 560, quality: 78 })
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+import HomeHero from '@/components/HomeHero.astro'
+import HomeProblem from '@/components/HomeProblem.astro'
+import HomeServices from '@/components/HomeServices.astro'
+import HomeProof from '@/components/HomeProof.astro'
+import HomeProcess from '@/components/HomeProcess.astro'
+import HomeDifferentiator from '@/components/HomeDifferentiator.astro'
+import HomeAboutStrip from '@/components/HomeAboutStrip.astro'
+import HomeClosing from '@/components/HomeClosing.astro'
+
+import { META } from '@/content/site'
 ---
 
 <BaseLayout title={META.home.title} description={META.home.description}>
-  {/* ---- Hero -------------------------------------------------------- */}
-  <section class="shell grid items-center gap-12 py-section lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
-    <div>
-      <h1 class="text-display text-fg">{HERO.h1}</h1>
+  <div class="home">
+    <HomeHero />
+    <HomeProblem />
+    <HomeServices />
+    <HomeProof />
+    <HomeProcess />
+    <HomeDifferentiator />
+    <HomeAboutStrip />
+    <HomeClosing />
+  </div>
+</BaseLayout>
 
-      <p class="measure mt-7 text-lead text-fg-muted">{HERO.subheadline}</p>
+<style>
+  /**
+   * Nine of the Figma's font sizes on this page have no `--text-fx-*` token in
+   * global.css, so they are declared here instead of editing the shared layer.
+   * Each is built to the same ramp shape as the shared ones — exactly the Figma
+   * value at a 1440px viewport, falling to an authored minimum at 390px — and
+   * each carries the node it was measured from.
+   *
+   * Custom properties inherit, so every `Home*` component reads these without
+   * importing anything.
+   */
+  .home {
+    /**
+     * Leading. Figma takes the STATIC Roboto Condensed hhea ratio 2400/2048 and
+     * rounds to a whole pixel PER SIZE — see the rule in AGENTS.md. So each of
+     * the sizes above pairs with an exact leading, and at >=90rem the components
+     * use `--leading-fx-*` from global.css wherever the size has a shared token.
+     * The six below are the homepage-only sizes, same rule, node ids attached.
+     *
+     * ⚠ These are px-derived and correct ONLY at the design size. Below 90rem
+     * the `--home-text-*` and `--text-fx-*` sizes clamp down, so the components
+     * fall back to the unitless `--leading-fx` there. Never promote one of these
+     * out of the `@media (min-width: 90rem)` block.
+     *
+     * ⚠ Do not "simplify" these to a single ratio. This page carried a flat
+     * 1.171875 and then a flat 7/6, and both looked right against the nodes that
+     * happened to get sampled: at 18/24/30/36 the rounded value IS 7/6 exactly,
+     * so body copy proves 7/6 and headings disprove it. Across the eleven nodes
+     * on this frame with a known size and line count, the per-size rule is exact
+     * on ten; 7/6 is exact on four and runs 0.67px per line short at 38, 62 and
+     * 64px. A node whose height divides evenly under both is not evidence.
+     */
+    --home-leading-12: 0.875rem; /* 14px — 12px, node 22:43 */
+    --home-leading-13: 1rem; /* 16px — 13.792px, node 22:72 */
+    --home-leading-21: 1.5625rem; /* 25px — 21.278px, node 4:6 */
+    --home-leading-23: 1.6875rem; /* 27px — 23.045px, the opener run in 24:199 */
+    --home-leading-30b: 2.25rem; /* 36px — 30.34px, node 22:62 */
+    --home-leading-36: 2.6875rem; /* 43px — 36.78px, nodes 22:76, 22:85, 23:181 */
 
-      <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
-        <a href={PRIMARY_CTA.href} class="btn btn-primary">
-          {PRIMARY_CTA.label}
-          <Icon name="arrow-right" size={16} />
-        </a>
-        <a href={HERO.secondaryCta.href} class="link-arrow text-small">
-          {HERO.secondaryCta.label}
-          <Icon name="arrow-right" size={16} />
-        </a>
-      </div>
+    --home-text-13: clamp(0.75rem, 0.7084rem + 0.17067vw, 0.862rem); /* 13.792px — 22:72 */
+    --home-text-17: clamp(1rem, 0.970194rem + 0.12229vw, 1.08025rem); /* 17.284px — 24:199, 24:203 */
+    --home-text-21: clamp(1.0625rem, 0.963188rem + 0.40743vw, 1.329875rem); /* 21.278px — 4:6 */
+    --home-text-30b: clamp(1.25rem, 1.009963rem + 0.98476vw, 1.89625rem); /* 30.34px — 22:62 */
+    --home-text-36: clamp(1.375rem, 1.0319rem + 1.4076vw, 2.29875rem); /* 36.78px — 22:76, 22:85, 23:181 */
 
-      <p class="mt-6 text-micro text-fg-quiet">{AVAILABILITY.long}</p>
-    </div>
-
-    <figure class="mx-auto w-full max-w-[17rem] lg:max-w-none">
-      <video
-        class="w-full rounded-lg border border-line bg-raised"
-        controls
-        preload="none"
-        playsinline
-        loop
-        muted
-        width="540"
-        height="960"
-        poster={poster.src}
-      >
-        <source src="/media/product-animation.mp4" type="video/mp4" />
-      </video>
-      <figcaption class="mt-3 text-micro text-fg-quiet">Product animation · 9:16</figcaption>
-    </figure>
-  </section>
-
-  {/* ---- The problem -------------------------------------------------- */}
-  <section class="border-t border-line bg-raised">
-    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
-      <p class="eyebrow reveal">01 — Problem</p>
-      <div class="reveal">
-        <h2 class="text-h2 text-fg">{PROBLEM.h2}</h2>
-        <div class="measure mt-6 space-y-5">
-          {PROBLEM.body.map((para) => <p class="text-body text-fg-muted">{para}</p>)}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {/* ---- Services ----------------------------------------------------- */}
-  <section class="border-t border-line">
-    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
-      <p class="eyebrow reveal">02 — Services</p>
-      <div>
-        <div class="reveal">
-          <h2 class="text-h2 text-fg">{SERVICES_SECTION.h2}</h2>
-          <p class="measure mt-4 text-lead text-fg-muted">{SERVICES_SECTION.intro}</p>
-        </div>
-
-        <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {SERVICES.map((service, i) => <ServiceCard service={service} index={i} />)}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {/* ---- Proof --------------------------------------------------------
-       Renders whatever case studies exist. The copy document supplies one
-       usable teaser; the second is blank #4 and is simply absent rather than
-       stubbed with a placeholder card. */}
-  {
-    cases.length > 0 && (
-      <section class="border-t border-line bg-raised">
-        <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
-          <p class="eyebrow reveal">03 — Proof</p>
-          <div>
-            <h2 class="reveal text-h2 text-fg">{PROOF.h2}</h2>
-            <div class="mt-10 grid gap-5 md:grid-cols-2">
-              {cases.map((entry, i) => (
-                <CaseTeaser
-                  title={entry.data.title}
-                  teaser={entry.data.teaser}
-                  slug={entry.id}
-                  service={entry.data.service}
-                  result={entry.data.result}
-                  resultBlank={entry.data.resultBlank}
-                  index={i}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    )
+    /* Three sizes the design keeps small and flat. Below 90rem they are raised
+       to an authored 0.75rem floor by the components that use them. */
+    --home-text-12: 0.75rem; /* 12px — 22:43 */
+    --home-text-11a: 0.6896rem; /* 11.033px — 22:46, 33:812, 33:816 */
+    --home-text-11b: 0.6928rem; /* 11.085px — 24:192 */
   }
 
-  {/* ---- Process ------------------------------------------------------ */}
-  <section class="border-t border-line">
-    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
-      <p class="eyebrow reveal">04 — Process</p>
-      <div>
-        <h2 class="reveal text-h2 text-fg">{PROCESS.h2}</h2>
-
-        <ol class="mt-10 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2">
-          {
-            PROCESS.steps.map((step, i) => (
-              <li class="reveal bg-ink p-6 sm:p-7" style={`--reveal-delay:${i * 80}ms`}>
-                <p class="eyebrow text-fg-quiet">Step {i + 1}</p>
-                <h3 class="mt-3 text-h3 text-fg">
-                  {step.label}
-                  {step.note && <span class="ml-2 text-small font-normal text-fg-quiet">({step.note})</span>}
-                </h3>
-                <p class="mt-3 text-small text-fg-subtle">{step.body}</p>
-              </li>
-            ))
-          }
-        </ol>
-      </div>
-    </div>
-  </section>
-
-  {/* ---- Differentiator ----------------------------------------------- */}
-  <section class="border-t border-line bg-raised">
-    <div class="shell grid gap-8 py-section md:grid-cols-[7rem_1fr]">
-      <p class="eyebrow reveal">05 — Why me</p>
-      <div class="reveal">
-        <h2 class="text-h2 text-fg">{DIFFERENTIATOR.h2}</h2>
-        <div class="measure mt-6 space-y-5">
-          {DIFFERENTIATOR.body.map((para) => <p class="text-body text-fg-muted">{para}</p>)}
-        </div>
-
-        <div class="mt-10 grid grid-cols-2 gap-5 sm:max-w-lg">
-          <Image
-            src={productMouse}
-            alt="Photoreal 3D render of a wireless mouse, lit on a dark background"
-            widths={[280, 560]}
-            sizes="(min-width: 640px) 260px, 45vw"
-            format="avif"
-            class="rounded-lg border border-line"
-          />
-          <Image
-            src={productHairdryer}
-            alt="Photoreal 3D render of a hair dryer on a warm gradient background"
-            widths={[280, 560]}
-            sizes="(min-width: 640px) 260px, 45vw"
-            format="avif"
-            class="rounded-lg border border-line"
-          />
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {/* ---- About strip --------------------------------------------------- */}
-  <section class="border-t border-line">
-    <div class="shell py-section-sm">
-      <div class="reveal flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-        <Image
-          src={profilePhoto}
-          alt="Gerald Jove"
-          widths={[96, 192]}
-          sizes="96px"
-          format="avif"
-          class="h-24 w-24 shrink-0 rounded-full border border-line object-cover"
-        />
-        <div class="measure">
-          <h2 class="text-h3 text-fg">{ABOUT_STRIP.h2}</h2>
-          <p class="mt-2 text-small text-fg-subtle">{ABOUT_STRIP.body}</p>
-          <a href={ABOUT_STRIP.link.href} class="link-arrow mt-4 text-small">
-            {ABOUT_STRIP.link.label}
-            <Icon name="arrow-right" size={16} />
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {/* ---- Close --------------------------------------------------------- */}
-  <CtaBlock heading={CLOSING.h2} body={CLOSING.body} availability="short" />
-</BaseLayout>
+  /**
+   * No nav compensation here, deliberately.
+   *
+   * In the Figma the navbar is a child of the first section frame at y=0
+   * (`33:611` inside Hero `1:2`), so it costs the page no height and section one
+   * starts at page y=0. The shared `Nav` is `position: absolute` and out of
+   * flow, which already gives exactly that. If it ever returns to normal flow,
+   * every y on this page goes 85px out and the fix belongs in `Nav`, not here.
+   */
+</style>
