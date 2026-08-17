@@ -253,6 +253,21 @@ reusing an existing supplied line over writing a new one, and say so in your rep
 - `npm run build` succeeds. ⚠ **`check` passing is not the build passing** — a malformed comment has
   already produced exactly that, clean diagnostics and a compiler error. Run both.
 - 0 inline `<script>` blocks in `dist/`.
+- ⚠ **No excluded asset staged — check by CONTENT HASH, before every commit:**
+  ```bash
+  git diff --cached --name-only --diff-filter=A | grep -iE '\.(png|jpe?g|webp|svg|gif)$' \
+    | while read -r f; do
+        h=$(md5sum "$f" | cut -d' ' -f1)
+        grep -q "$h" <<< "$(md5sum .scratch/quarantine/* 2>/dev/null)" \
+          && echo "BLOCKED: $f matches a quarantined asset"
+      done   # must print nothing
+  ```
+  **This has happened.** Node `30:2` was re-exported a **third** time, staged by `git add -A`, and
+  committed — caught only by noticing its Figma layer name in the staged file list. It was removed by
+  amend before any push. **Grepping staged content for client identifiers cannot catch this**: the
+  payload is a binary image, so a text scan is structurally blind to it, and a renamed file defeats a
+  filename check. Only the content hash is reliable. The quarantined copy in `.scratch/quarantine/`
+  exists to be the reference for exactly this comparison.
 - **0 occurrences of `[object Object]` in `dist/`:**
   ```bash
   grep -rl "\[object Object\]" dist --include=*.html | wc -l   # must be 0
