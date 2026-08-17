@@ -158,6 +158,14 @@
      and is not — that is what made this argument circular for three rounds.
      ⚠ It also means `33:511` needs **44**, not `--leading-fx-38`.
 
+     ⚠ **A MIXED-FACE node is the second thing that isn't a clean probe.** `4:6`
+     is `font-['Poppins:Regular']` at 21.278px whose every span overrides to
+     Roboto Condensed, and it carries a `<br>`. Its 124px box implies 24.8/line
+     where the rule predicts 25, so it reads as a 1px counter-example — but with
+     two faces, a `leading-[0]` root and a hard break, the line count and which
+     face sets each line box are both unresolved. Before treating any node as
+     evidence, check that it is Auto, single-face, and has no explicit height.
+
      Verified by reading `text-[Npx]` from get_design_context and dividing the
      node's own box height — never by inferring the size from the ratio under
      test, which is the circular step that made this look settled early:
@@ -202,7 +210,9 @@
   --leading-fx-18: 1.3125rem; /* 21px — VERIFIED 33:130 */
   --leading-fx-24: 1.75rem; /* 28px — VERIFIED 33:227 */
   --leading-fx-30: 2.1875rem; /* 35px — VERIFIED 33:129 / 33:166 / 33:170 */
-  --leading-fx-34: 2.5rem; /* 40px — derived, not verified */
+  /* 40px — PREDICTED, no node read. Safe now that the rule itself is pinned:
+     39.844 is .84 from the tie, so no rounding rule in play changes it. */
+  --leading-fx-34: 2.5rem;
   --leading-fx-36: 2.625rem; /* 42px — VERIFIED at exactly 36px */
   /* 45px — VERIFIED 22:92 / 22:99 / 22:103 / 22:107, and this is the node that
      pins the ROUNDING RULE ITSELF. 38 × 1.171875 = 44.531 — a fraction of .53,
@@ -214,7 +224,10 @@
   --leading-fx-38: 2.8125rem;
   --leading-fx-40: 2.9375rem; /* 47px — VERIFIED (also covers 40.116px) */
   --leading-fx-49: 3.5625rem; /* 57px — VERIFIED (49.04px node) */
-  --leading-fx-62: 4.5625rem; /* 73px — derived, not verified */
+  /* 73px — PREDICTED, no node read. Safe for the same reason: 72.656 is .66
+     from the tie. These two are the only unread values left, and both sit far
+     enough from .5 that the rule decides them rather than a guess. */
+  --leading-fx-62: 4.5625rem;
   --leading-fx-64: 4.6875rem; /* 75px — VERIFIED 33:173 / 33:225 / 33:117 / 24:187 / 23:179 */
 
   /* ⚠ These pair with the --text-fx-* STEP, not with an arbitrary size, and the
