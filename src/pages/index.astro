@@ -65,14 +65,29 @@ import { META } from '@/content/site'
      * ⚠ Do not "simplify" these to a single ratio. This page carried a flat
      * 1.171875 and then a flat 7/6, and both looked right against the nodes that
      * happened to get sampled: at 18/24/30/36 the rounded value IS 7/6 exactly,
-     * so body copy proves 7/6 and headings disprove it. Across the eleven nodes
-     * on this frame with a known size and line count, the per-size rule is exact
-     * on ten; 7/6 is exact on four and runs 0.67px per line short at 38, 62 and
-     * 64px. A node whose height divides evenly under both is not evidence.
+     * so body copy proves 7/6 and headings disprove it. Across the ten clean
+     * nodes on this frame the per-size rule is exact on all ten; 7/6 is exact on
+     * four and runs 0.67px per line short at 38, 62 and 64px. A node whose height
+     * divides evenly under both is not evidence.
+     *
+     * ⚠ Before treating any node as evidence about leading, check it is Auto,
+     * single-face, and has no explicit height. All three confounds are on this
+     * page: 22:36 is a typed 68px override in a 62px box, 24:199 is a fixed box
+     * smaller than its own text, and 4:6 is mixed-face (see below).
      */
     --home-leading-12: 0.875rem; /* 14px — 12px, node 22:43 */
     --home-leading-13: 1rem; /* 16px — 13.792px, node 22:72 */
-    --home-leading-21: 1.5625rem; /* 25px — 21.278px, node 4:6 */
+    /**
+     * 25px — 21.278px, node 4:6. Its rendered block is 125px against a 124px
+     * Figma box, and that 1px is NOT the rule failing: 4:6 is a mixed-face node.
+     * Its root is Poppins Regular with `leading-[0]`, every text run inside it is
+     * Roboto Condensed, and it contains a hard `<br>` — so neither the line count
+     * nor which face sets each line box is determined, and the node cannot
+     * discriminate between leading models. 25px is right for the runs that
+     * actually render. ⚠ Do not copy the root's face onto this block; the whole
+     * hero lede would become Poppins.
+     */
+    --home-leading-21: 1.5625rem;
     --home-leading-23: 1.6875rem; /* 27px — 23.045px, the opener run in 24:199 */
     --home-leading-30b: 2.25rem; /* 36px — 30.34px, node 22:62 */
     --home-leading-36: 2.6875rem; /* 43px — 36.78px, nodes 22:76, 22:85, 23:181 */

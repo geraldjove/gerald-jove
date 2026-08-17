@@ -31,10 +31,16 @@ const { cards, cardCta } = SERVICES_SECTION
               ))}
             </div>
 
-            <p class="card__price">
-              <span>{card.price.prefix}</span>
-              <span class="card__amount">{card.price.value}</span>
-            </p>
+            {/* Guarded because the 3D card's price is blank-backed and can be
+                null. Omit the whole line rather than render an orphan "From"
+                with no amount — AGENTS.md rule 3. The other two cards carry
+                literals and are always present. */}
+            {card.price && (
+              <p class="card__price">
+                <span>{card.price.prefix}</span>
+                <span class="card__amount">{card.price.value}</span>
+              </p>
+            )}
 
             {card.timeline && <p class="card__timeline">{card.timeline}</p>}
 

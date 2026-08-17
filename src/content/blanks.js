@@ -28,13 +28,23 @@ export const blanks = {
     ref: 2,
     what: 'Monthly deliverable volume for the Managed Ad Creative retainer (e.g. "up to 100 ad variants per month")',
     blocksPublication: true,
-    value: null,
+    /* Verbatim from Figma `33:353`, filled 2026-08-18 on Gerald's instruction.
+       Two sentences in one value because the design draws two bullets; the
+       consumer splits on the sentence boundary rather than storing a list, so
+       the stored string stays comparable to the node's own text. */
+    value: 'Up to 100 creative variants per month. 2 3D animations of top performing ads per month.',
   },
   visualsStartingPrice: {
     ref: 3,
-    what: 'Starting price for 3D Product Visuals — time one job first, do not publish a guess',
+    /* Was "Starting price"; Gerald confirmed 2026-08-17 that 3D Product Visuals
+       is a monthly engagement, not a project. */
+    what: 'Monthly price for 3D Product Visuals',
     blocksPublication: true,
-    value: null,
+    /* Figma `22:64` draws "From $3,500/month" on the homepage card; `33:404`
+       draws "Starting From $3,500" on the Services detail page. The two
+       disagree and Gerald ruled for monthly, so 33:404 is the one that is
+       wrong. Filled 2026-08-18. */
+    value: 'From $3,500/month',
   },
   secondCaseStudy: {
     ref: 4,
@@ -44,7 +54,14 @@ export const blanks = {
   aboutHumanClose: {
     ref: 5,
     what: 'Two sentences of something true and non-professional for the About page — the line people quote back to you',
-    value: null,
+    /* Figma `33:227`, the "A Little More About Me" section, filled 2026-08-18.
+       The design supplies exactly what this blank was holding a slot for: two
+       sentences, non-professional. Rendered from `about.ts` `personal.body`,
+       which is the same text — this entry records that the slot is satisfied so
+       the build stops listing it as outstanding. */
+    value:
+      'In my free time, I enjoy VR games and creating fun community events where people can play, compete, and share the experience together. ' +
+      'I also love building apps when an idea hits me, even if it starts as a small experiment and turns into something much bigger.',
   },
   ogImage: {
     ref: 6,

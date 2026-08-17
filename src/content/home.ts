@@ -17,11 +17,33 @@
  *   `Run[][]` under a `paragraphs`  -> separate paragraphs that wrap naturally.
  */
 
+import { blankValue } from './blanks.js'
+
 /** A run of text inside a line. `accent` = the #00AAFF fill; `bold` = 700. */
 export type Run = {
   readonly t: string
   readonly accent?: true
   readonly bold?: true
+}
+
+/**
+ * The 3D card's price — blank #3, not written here.
+ *
+ * A function declaration, not a const, because `SERVICES_SECTION` below calls it
+ * while the module is initialising; declarations hoist and arrow consts do not.
+ *
+ * The same figure appears on the Services detail page. A value written in two
+ * files is a value that can disagree with itself, so both read the blank. `null`
+ * omits the price line rather than rendering an orphan "From".
+ */
+function visualsCardPrice(): { prefix: string; value: string } | null {
+  const stored = blankValue('visualsStartingPrice')
+  if (!stored) return null
+  /* Stored as "From $3,500/month"; the card renders the amount in an accent
+     span, so split lead-in from figure. Anything not matching that shape renders
+     whole rather than being silently mangled. */
+  const match = stored.match(/^(\D*)(\$.*)$/)
+  return match ? { prefix: match[1], value: match[2] } : { prefix: '', value: stored }
 }
 
 /* -- Hero, node 1:2 -------------------------------------------------------- */
@@ -147,7 +169,11 @@ export const SERVICES_SECTION = {
         'Once your product is built in 3D, we can create new angles, colors, backgrounds, lighting setups, and animations without shooting the product again. ',
         'This is useful for new launches, new product colors, ads, landing pages, and social media.',
       ],
-      price: { prefix: 'From ', value: '$3,500/month' }, // 22:64
+      /* 22:64. Read from blanks.js rather than restated here — this figure also
+         appears on the Services detail page, and a value written in two files is
+         a value that can disagree with itself. `null` omits the price line
+         entirely rather than rendering an orphan "From". */
+      price: visualsCardPrice(),
       timeline: null,
     },
   ],

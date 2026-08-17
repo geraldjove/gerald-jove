@@ -358,14 +358,11 @@ export const SERVICE_DETAILS: ServiceDetailSection[] = [
           { kind: 'ul', items: [{ before: 'From ', figure: '$4,500/month' }] },
           // The blank line above this label is set at 36px in the Figma, so the
           // gap measures 42px rather than the 28px used everywhere else.
-          { kind: 'label', text: 'Monthly Output', gapPx: 42 },
-          {
-            kind: 'ul',
-            items: [
-              'Up to 100 creative variants per month.',
-              '2 3D animations of top performing ads per month.',
-            ],
-          },
+          /* Label and list are emitted together by one helper so an unfilled
+             blank removes BOTH. Emitting them separately would leave an orphan
+             "Monthly Output" heading with nothing under it, which is precisely
+             what `AGENTS.md` rule 3 forbids — the renderer has no null path. */
+          ...monthlyOutputRuns(),
         ],
       },
     ],
@@ -460,10 +457,11 @@ export const SERVICE_DETAILS: ServiceDetailSection[] = [
               'Source files for future projects',
             ],
           },
-          { kind: 'label', text: 'Price' },
-          // Figma draws "Starting From $3,500". Corrected to monthly on Gerald's
-          // confirmation — see the note at the top of this section.
-          { kind: 'ul', items: [{ before: 'From ', figure: '$3,500/month' }] },
+          /* Figma `33:404` draws "Starting From $3,500"; Gerald confirmed 3D is
+             monthly, so the value lives in blanks.js and this reads it rather
+             than restating it. Label and row are emitted together so an
+             unfilled blank removes both instead of orphaning "Price". */
+          ...visualsPriceRuns(),
         ],
       },
     ],
@@ -474,4 +472,50 @@ export const SERVICE_DETAILS: ServiceDetailSection[] = [
 export function cardPrice(service: Service): string | null {
   if (service.card.price) return service.card.price
   return service.card.priceBlank ? blankValue(service.card.priceBlank as never) : null
+}
+
+/* ---------------------------------------------------------------------------
+   Blank-backed runs.
+
+   These are function declarations, not consts, because SERVICES above spreads
+   their return values while the module is initialising — declarations hoist,
+   `const` arrow functions do not, and using one here fails at import time.
+
+   Each returns the label AND its rows together, or an empty array. That pairing
+   is the point: emitting a label separately from a blank-backed list leaves an
+   orphan heading with nothing under it when the value is unfilled, which is the
+   failure `AGENTS.md` rule 3 exists to prevent. `ServiceRuns.astro` renders runs
+   verbatim and has no null path, so the omission has to happen here.
+--------------------------------------------------------------------------- */
+
+/** Managed Ad Creative's "Monthly Output" label and rows — blank #2 (`33:353`). */
+function monthlyOutputRuns(): ServiceRun[] {
+  const value = blankValue('retainerMonthlyVolume')
+  if (!value) return []
+  /* The design draws two bullets from one text node, so the stored value is one
+     string split on the sentence boundary. A single-sentence value degrades to
+     one bullet rather than breaking. */
+  const items = value
+    .split(/(?<=\.)\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+  return [
+    // 36px blank line above this label in the Figma, so the gap is 42px not 28.
+    { kind: 'label', text: 'Monthly Output', gapPx: 42 },
+    { kind: 'ul', items },
+  ]
+}
+
+/** 3D Product Visuals' "Price" label and row — blank #3 (`22:64`, not `33:404`). */
+function visualsPriceRuns(): ServiceRun[] {
+  const value = blankValue('visualsStartingPrice')
+  if (!value) return []
+  /* The row renders its amount in an accent span, so the stored
+     "From $3,500/month" is split into lead-in and figure. Anything that does not
+     match that shape renders whole rather than being silently mangled. */
+  const match = value.match(/^(\D*)(\$.*)$/)
+  return [
+    { kind: 'label', text: 'Price' },
+    { kind: 'ul', items: [match ? { before: match[1], figure: match[2] } : value] },
+  ]
 }
