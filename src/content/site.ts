@@ -200,11 +200,21 @@ export const NEWSLETTER_ENDPOINT: string | null = null
  * cannot transmit an address anywhere.** Nothing is collected and then dropped,
  * which is the failure the old rule existed to prevent.
  *
- * ⚠ **This must not reach production in this state.** A visitor who types an
- * address and finds the button dead reads the site as broken. The preview markup
- * carries `data-newsletter="ui-only"` so the state is greppable in `dist/`;
- * AGENTS.md §3 records that grep as a pre-deploy gate. Set the endpoint (with the
- * consent line and privacy link) or set this to `false` before deploying.
+ * ⚠ **SUPERSEDED 2026-08-18 — this now SHIPS.** Gerald: *"keep the Newsletter but
+ * disable it for the time being."* The note that stood here said it must not reach
+ * production, and AGENTS.md §3 carried a grep on `data-newsletter="ui-only"` as a
+ * hard pre-deploy gate. Both are withdrawn, because the risk they described was
+ * "a visitor types an address and finds the button dead" — and the field is now
+ * `disabled` too, so there is nothing to type into.
+ *
+ * What has NOT changed: with `NEWSLETTER_ENDPOINT` null the block is a `<div>`,
+ * not a `<form>`, so no address can leave the browser by any path. Setting this
+ * to `true` while the endpoint is null is a decision about what visitors SEE,
+ * never about what is collected.
+ *
+ * `data-newsletter="ui-only"` stays in the markup as the machine-readable trace
+ * of the state. It is no longer a gate; do not delete it, and do not read its
+ * absence as approval.
  */
 export const NEWSLETTER_VISIBLE = true
 

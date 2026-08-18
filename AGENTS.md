@@ -95,20 +95,39 @@ prices, testimonials, a share image. They are unfilled because nobody has suppli
   orphan `Result:` label or a `from $—` placeholder.
 - `npm run build` prints every blank still open, and flags the ones that block publication.
 
-⚠ **One deliberate exception, and it carries its own pre-deploy gate.** Gerald asked on
-2026-08-18 for the newsletter block to be finished as UI ahead of its backend, so it now renders
-on all six pages while `NEWSLETTER_ENDPOINT` is still null. The omit-rather-than-fake principle
-is not waived, it is enforced in the markup: with no endpoint the block is a `<div>`, not a
-`<form>`, and its button is `type="button" disabled`, so **nothing can be collected or
-dropped**. What it cannot prevent is a visitor reading a dead button as a broken site, so:
+⚠ **One deliberate exception, and it SHIPS.** Gerald asked on 2026-08-18 for the newsletter block
+to be finished as UI ahead of its backend, then the same day: *"keep the Newsletter but disable it
+for the time being."* It therefore renders on all six pages while `NEWSLETTER_ENDPOINT` is null.
+
+The omit-rather-than-fake principle is not waived, it is enforced in the markup: with no endpoint
+the block is a `<div>`, not a `<form>`, and **both** controls carry `disabled`. **Nothing can be
+collected, dropped, or even typed.**
+
+⚠ **The old gate here — `grep -rl 'data-newsletter="ui-only"' dist` "must print NOTHING before
+deploying" — is WITHDRAWN.** It forbade a state Gerald has since chosen. Its reasoning was that a
+visitor types an address and finds the button dead; disabling the field removes the premise. The
+replacement checks the property that actually matters, not the state's existence:
 
 ```bash
-grep -rl 'data-newsletter="ui-only"' dist   # must print NOTHING before deploying
+# In dist, the ui-only block must never be a form and must never carry an enabled control.
+grep -rl 'data-newsletter="ui-only"' dist --include=*.html | while read -r f; do
+  grep -o '<form[^>]*data-newsletter[^>]*>' "$f"
+  grep -o '<input[^>]*newsletter__field[^>]*>' "$f" | grep -v disabled
+  grep -o '<button[^>]*newsletter__submit[^>]*>' "$f" | grep -v disabled
+done   # must print nothing
 ```
 
-Clear it by setting `NEWSLETTER_ENDPOINT` (with the consent line and privacy link `site.ts`
-requires) or by setting `NEWSLETTER_VISIBLE` to false. Do not clear it by deleting the
-attribute — that is the only machine-readable trace of the state.
+⚠ **Match the whole tag — start the pattern at `<input` / `<button`, not at the class name.** Astro
+emits `disabled` BEFORE `class`, so a pattern anchored on the class name ends its match after the
+attribute it is looking for and reports every control as enabled. That exact mistake produced six
+false failures the first time this gate was run, which is trap #7 in spirit: the probe was wrong,
+the page was fine.
+
+`data-newsletter="ui-only"` stays in the markup. It is no longer a blocker but it is still the only
+machine-readable trace of the state — do not delete it, and do not read its absence as approval.
+
+To go live: set `NEWSLETTER_ENDPOINT` **with** the consent line and privacy link `site.ts` requires.
+Setting `NEWSLETTER_VISIBLE` to false hides the block entirely, which is a different decision.
 
 ### 4. Do not name clients
 
@@ -649,9 +668,18 @@ pushed, nothing deployed.** `master` still serves the old Vue site in production
 - Nothing. Every change is committed and the gates are green.
 
 ### Blockers and risks
-- ⚠ **`NEWSLETTER_ENDPOINT` is null, so the newsletter renders as inert UI.** `grep -rl
-  'data-newsletter="ui-only"' dist` returns **6 files** and §3 makes that a deploy blocker.
-- ⚠ **No environment variable is set**, so `/api/subscribe` and `/api/contact` both answer 503.
+- **The newsletter ships disabled, by decision, and is no longer a blocker.** `NEWSLETTER_ENDPOINT`
+  stays null; the block renders on all six pages as a `<div>` with both controls `disabled`. Gerald,
+  2026-08-18: *"keep the Newsletter but disable it for the time being."* §3's old grep gate is
+  withdrawn and replaced there. It goes live only with the consent line and privacy page, which he
+  is writing.
+- ⚠ **`/api/contact` still needs `HUBSPOT_PORTAL_ID=247085184` and
+  `HUBSPOT_FORM_GUID=750c1b94-c69a-41ea-9a8f-a5c2fc0a66e5` set in Vercel**, or it answers 503. The
+  two Mailchimp variables are set (Gerald, 2026-08-18) but unused while the endpoint is null, and
+  unverifiable from here — the Vercel connector cannot read env vars or even see that project.
+- ⚠ **The HubSpot `timeline` property's option values are Title Case** (`Next Quarter`), the site
+  sends the design's casing (`Next quarter`). Fix the internal values in HubSpot; labels can stay.
+  Details in `tasks/2026-08-18-integration-configuration.md`.
 - **Nothing has been deployed at all**, including `c33e8c6` on `master`, which only removes
   exposure and fixes audit findings.
 - No blank blocks publication any more — but #1 stopped blocking because its consumers were

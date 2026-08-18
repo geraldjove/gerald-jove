@@ -15,21 +15,34 @@
  *
  *   live  (`NEWSLETTER_ENDPOINT` is a string) — a real `<form method="post">`
  *         with a `type="submit"` button. This is the shipping state.
- *   preview (`NEWSLETTER_ENDPOINT` is null, `NEWSLETTER_VISIBLE` is true) — a
- *         plain `<div>`, and the button is `type="button" disabled`. There is no
- *         form element, so there is no submission, no navigation and no request:
- *         **an address typed into the field cannot leave the browser.**
+ *   disabled (`NEWSLETTER_ENDPOINT` is null, `NEWSLETTER_VISIBLE` is true) — a
+ *         plain `<div>`; **both controls carry `disabled`**. There is no form
+ *         element, so there is no submission, no navigation and no request, and
+ *         nothing can be typed in the first place.
  *
- * The preview mode exists because Gerald asked for the UI to be finished ahead of
- * the backend (2026-08-18). The old rule it replaces — “never ship a Submit button
- * that posts nowhere” — was protecting against silently collecting and dropping an
- * address; emitting no form at all protects against that more strictly than hiding
- * the block did. What it does NOT protect against is a visitor reading a dead
- * button as a broken site, so the preview markup is tagged `data-newsletter=
- * "ui-only"` and AGENTS.md §3 makes a `dist/` grep for it a pre-deploy gate.
+ * ⚠ **THE DISABLED STATE IS NOW A SHIPPING STATE, not a preview.** Gerald,
+ * 2026-08-18: *"keep the Newsletter but disable it for the time being."* It was
+ * introduced two days' worth of decisions earlier as a temporary preview, and
+ * AGENTS.md §3 carried a gate saying it must not reach production. **That gate is
+ * gone** — see §3, which now checks the property that actually matters (no form,
+ * no enabled control) instead of forbidding the state outright.
  *
- * ⚠ The button keeps its full `.fx-pill` colour when disabled — that is deliberate,
- * so the preview shows the real design. Do not add a greyed-out `:disabled` fill.
+ * The original rule — “never ship a Submit button that posts nowhere” — was
+ * protecting against silently collecting and dropping an address. Emitting no
+ * form at all protects against that more strictly than hiding the block did. The
+ * second risk, a visitor reading a dead button as a broken site, is what the
+ * `disabled` field addresses: nothing invites an address it cannot accept.
+ *
+ * `data-newsletter="ui-only"` stays on the markup. It is no longer a deploy
+ * blocker but it is still the only machine-readable trace of the state — do not
+ * remove it, and do not use its absence to mean anything.
+ *
+ * ⚠ **This instruction was reversed on 2026-08-18 and the old wording is kept so
+ * the reversal is visible:** it used to read *"the button keeps its full
+ * `.fx-pill` colour when disabled — do not add a greyed-out `:disabled` fill."*
+ * That was right for a preview being judged against the design. It is wrong for
+ * a state real visitors see, where a pill at full strength reads as pressable.
+ * Both controls now dim to 0.55. Reverting is one line in the style block.
  *
  * ⚠ Renders nothing while `NEWSLETTER_VISIBLE` is false. Hosts must check the same
  * constant before drawing their wrapper, or they leave an empty box behind.
@@ -78,11 +91,19 @@ const wrapperProps = live
         <label class="sr-only" for={id}>
           Email address
         </label>
+        {/* ⚠ `disabled` in preview mode, added 2026-08-18 when Gerald decided the
+            block SHIPS disabled ("keep the Newsletter but disable it for the
+            time being"). Until then the field accepted typing while the button
+            was dead — which is the exact experience §3's gate existed to keep
+            out of production: type an address, press, nothing happens, conclude
+            the site is broken. A disabled field cannot be typed into, so the
+            visitor learns it is not open before investing anything in it. */}
         <input
           id={id}
           type="email"
           name="email"
-          required
+          required={live}
+          disabled={!live}
           placeholder={FOOTER.newsletter.placeholder}
           class="newsletter__field"
         />
@@ -165,13 +186,24 @@ const wrapperProps = live
     font-size: var(--text-fx-12); /* 12.436px — 33:756 */
   }
 
-  /* Preview mode only. `.fx-pill` sets background and colour explicitly, so a
-     disabled button keeps the design's accent fill rather than being greyed by
-     the UA — which is what we want: the preview must show the real thing. Only
-     the cursor and the hover response change, so it does not invite a click it
-     cannot answer. Delete this rule when the endpoint lands. */
+  /* Disabled state only. The field sets its own background, so the UA cannot
+     grey it out; this dims it just enough to read as inactive while the block
+     still shows the real design. Both rules go when the endpoint lands. */
+  .newsletter__field:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  /* ⚠ REVERSED 2026-08-18, and the earlier comment here said the opposite.
+     While this was a preview it kept the full accent fill on purpose, so the
+     design could be judged as drawn. Now that the disabled block SHIPS, a pill
+     at full strength reads as pressable to a visitor who cannot press it — so it
+     dims to the same 0.55 as the field. `.fx-pill` sets its own background, so
+     the UA cannot do this for us. One line to revert if Gerald prefers the
+     design's full colour and accepts the dead click. */
   .newsletter__submit:disabled {
     cursor: not-allowed;
+    opacity: 0.55;
   }
 
   .newsletter__submit:disabled:hover {
