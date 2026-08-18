@@ -4,6 +4,13 @@
 commands, conventions, the six rules that will bite you, and the current session handoff. This file
 holds only what changes how Claude should operate in this repository.
 
+Four sections of it earn a look before you touch anything visual or infrastructural:
+**Deliberate deviations from the Figma** (an index of everything that is intentionally NOT the
+design — check it before “restoring fidelity”), **Verification harnesses** (what exists in
+`.scratch/`, and four measurement traps that have each produced a false result here),
+**Hosting** (Shopify was evaluated and rejected — do not start a Liquid port), and
+**Definition of done**.
+
 **This repository is public.** Never write commercial terms, pricing rationale, client names, or
 strategy notes into a tracked file. The private material lives in `docs/` and `tasks/`, both
 gitignored. Check `.gitignore` before creating any new top-level directory that will hold notes.
@@ -18,10 +25,14 @@ three specific habits:
 1. **Verify against the build, not the dev server.** Several defects here are invisible in
    `npm run dev` and only appear in `dist/` — inlined scripts blocked by CSP being the worst. Grep
    the build output before claiming something works.
-2. **Distinguish a real defect from a measurement artifact.** During the rebuild, a blank full-page
-   screenshot and an element that looked permanently hidden were both artifacts of screenshot timing
-   and a racing `setTimeout`, not bugs. Re-measure before reporting, and correct plainly if wrong.
-3. **Say what was not checked.** There is no test suite. "Build passes" is not "works".
+2. **Distinguish a real defect from a measurement artifact.** This has cost time repeatedly: a
+   blank screenshot, an element that looked permanently hidden, eight phantom overflow failures,
+   and a sticky pin that looked broken were **all** artifacts of the probe rather than defects.
+   AGENTS.md → Verification harnesses lists the four traps. Re-measure before reporting, and
+   correct plainly if wrong.
+3. **Say what was not checked.** There is no test suite. "Build passes" is not "works", and
+   "`npm run check` passes" is not "the build passes" — an Astro `{/* */}` comment between
+   attributes compiles fine and fails `check`, and a literal `*/` inside one fails the build only.
 
 ## Before you finish any change
 
@@ -48,6 +59,11 @@ one level deep and returns a false zero.
 - **Reaching for a framework island.** It seems like the obvious way to build the contact form. It
   breaks production via the inline hydration runtime. The form is static markup plus
   `src/scripts/contact-form.ts`.
+- **Assuming the site is still purely static.** ⚠ It has a server runtime since 2026-08-18 — two
+  Vercel Functions in `api/`, for the newsletter and the contact form. `output: 'static'` is
+  unchanged; `api/` is picked up separately. Client code posts SAME-ORIGIN to them, which is why
+  `connect-src` and `form-action` are `'self'`. Do not point a form at a vendor host without
+  widening the CSP, and prefer not to.
 - **"Fixing" the missing SPA rewrite in `vercel.json`.** Its absence is deliberate and load-bearing.
 
 ## Reference documents
@@ -58,7 +74,9 @@ Local only, both gitignored — read them before substantial work on positioning
   M1–M6, L1–L6) throughout the code comments and commit messages.
 - `docs/website-copy-2026-08-09.md` — the finished copy and the eleven deliberate blanks.
 - `docs/design-system.md` — tokens, type scale, motion, and the measured contrast table.
-- `tasks/PRE-LAUNCH-CHECKLIST.md` — what still blocks publication.
+- `tasks/PRE-LAUNCH-CHECKLIST.md` — ⚠ **stale.** It predates both the `/work` removal and the
+  backends, and still lists blanks that stopped blocking because their consumers were deleted. The
+  handoff in `AGENTS.md` is the current answer; re-check this file before trusting it.
 
 ## Session continuity
 
