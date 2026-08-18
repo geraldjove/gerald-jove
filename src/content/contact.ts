@@ -136,8 +136,13 @@ export const CONTACT = {
   selectPlaceholder: 'Select one',
 
   /**
-   * Runtime states. The Figma has no node for either — it draws the resting
-   * form only — so both are carried over unchanged from the working build.
+   * Runtime states, INLINE VARIANT.
+   *
+   * ⚠ These are no longer what a visitor with JavaScript sees. As of the
+   * 33:648 / 33:649 popups these are the fallback path only: they render in
+   * the page for a browser without `<dialog>.showModal()`, and the success
+   * panel is also what remains behind the popup once it is dismissed. The
+   * popup copy is `DIALOGS` below — change both, or the two states disagree.
    */
   success: {
     heading: 'Got it — thanks.',
@@ -152,6 +157,44 @@ export const CONTACT = {
      */
     fallbackBlank: 'contactErrorFallback',
     neutralBody: 'Try again in a moment.',
+  },
+} as const
+
+/**
+ * The two outcome popups — Figma `33:648` (Success) and `33:649` (Error).
+ *
+ * ⚠ EVERY STRING HERE IS THE FIGMA'S OWN TEXT NODE, not authored copy. The
+ * design now supplies wording for states it previously left blank, so these
+ * supersede `CONTACT.success` / `CONTACT.error` for anyone with JavaScript.
+ * The older strings are kept, not deleted — see the note on them above.
+ *
+ * ⚠ Blank #8 (`contactErrorFallback`) is NOT resolved by this. 33:592 says what
+ * failed, not how else to reach Gerald, so the popup publishes no address and
+ * the blank still blocks nothing. Resolving it stays his call.
+ */
+export const DIALOGS = {
+  success: {
+    node: '33:648',
+    heading: 'Success!', // 33:566
+    body: 'Thanks. Your message was sent. I read every message myself and normally reply within two business days.', // 33:568
+    /* 33:571. The arrow is drawn inside the text node; it is rendered as a
+       separate aria-hidden span so a screen reader does not read it as a word. */
+    action: { label: 'In the meantime, you can see how I work here', href: '/services', arrow: true },
+  },
+  error: {
+    node: '33:649',
+    heading: 'Error!', // 33:591
+    body: 'Something went wrong and your message was not sent.', // 33:592
+    /**
+     * 33:595. ⚠ REPORTED DEVIATION IN BEHAVIOUR, NOT IN COPY. The design draws
+     * this as a pill identical to the success one, but its text is a statement
+     * rather than an action, and there is nowhere for it to lead. A pill that
+     * looks pressable and does nothing is the worse of the two options, so it
+     * dismisses the popup and returns the visitor to their filled-in form —
+     * which is what "try again" means here. No `href`, so `FormDialog` renders
+     * it as a button.
+     */
+    action: { label: 'Please try again in a moment.' },
   },
 } as const
 

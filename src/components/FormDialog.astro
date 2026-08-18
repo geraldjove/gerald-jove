@@ -1,0 +1,288 @@
+---
+/**
+ * Contact-form outcome popup — Figma `33:648` (Success) and `33:649` (Error).
+ *
+ * ⚠ NATIVE `<dialog>`, ON PURPOSE. The blurred/darkened backdrop is
+ * `::backdrop`, which only exists for a dialog opened with `showModal()`. Doing
+ * this by hand would mean an overlay div, a focus trap, an Escape handler and a
+ * scroll lock — all of which the platform already ships, and all of which would
+ * be more code for a worse result. `::backdrop` also paints in the top layer, so
+ * nothing on the page can stack above it.
+ *
+ * ⚠ NO INLINE SCRIPT — AGENTS.md rule 1. Every listener lives in
+ * `src/scripts/contact-form.ts`, which is bundled and served from `'self'`.
+ *
+ * ── Geometry ──────────────────────────────────────────────────────────────
+ * Both nodes are the same 539 x 245 shell: #161616 fill, 3px accent stroke,
+ * 21px radius. Positions are absolute in the Figma; they are reproduced here as
+ * flow, because the same three-row stack lands both nodes:
+ *
+ *   outer y=32   heading, 44px box   -> padding-top 29 inside the 3px border
+ *   outer y=169  pill, 35.234 tall   -> padding-bottom 37.77
+ *   the body centres in the 93px gap between them
+ *
+ * ⚠ MEASURED, NOT ASSERTED (2026-08-18, headless Chrome against `dist`, with
+ * the card's top as the origin — `.scratch/dialog-body.mjs`). An earlier draft
+ * of this comment claimed the body landed on the design's y=103 "exactly". It
+ * did not: it sat at 87.3, because the pill carried a 22px top margin that
+ * shrank the box the body centres inside from the full 93px gap to 71px. The
+ * margin is gone and the body now takes the whole gap. Measured after the fix,
+ * with the open animation allowed to settle (it ends on scale(0.97), and
+ * measuring mid-flight reports every box 3% small — that produced a second
+ * false failure):
+ *
+ *   success  2 lines  98.3 -> 145.5   centre 121.9   (Figma centre 121)
+ *   error    1 line  110.9 -> 132.9   centre 121.9   (Figma centre 117)
+ *
+ * ⚠ REPORTED DEVIATION, 4.9px, error node only. Both nodes here centre their
+ * copy in the gap; the Figma centres the two-line success body but sets the
+ * one-line error body ~5.5px above centre. That is the design's own optical
+ * nudge on a single line, and it is not reproduced — one rule for both popups
+ * beats a 5px special case in a box that is fluid below 48rem anyway.
+ * The tops differ from the design's 103 / 108 for a separate reason: the
+ * leading deviation documented on `.d-body` makes each line taller, and a
+ * centred block grows in both directions.
+ */
+import Icon from '@/components/Icon.astro'
+
+export interface DialogAction {
+  label: string
+  /** Present => renders an anchor. Absent => renders a dismiss button. */
+  href?: string
+  /** Decorative trailing arrow, aria-hidden. Part of the text node in Figma. */
+  arrow?: boolean
+}
+
+interface Props {
+  /** Also the `data-form-dialog` value the script looks the element up by. */
+  kind: 'success' | 'error'
+  heading: string
+  body: string
+  action: DialogAction
+  closeLabel?: string
+}
+
+const { kind, heading, body, action, closeLabel = 'Close' } = Astro.props
+const headId = `dlg-${kind}-head`
+---
+
+<dialog data-form-dialog={kind} class="d-dialog" aria-labelledby={headId}>
+  <div class="d-card">
+    {/* AUTHORED — not a Figma node. Gerald asked for a blue X top-right on both
+        popups. `Icon` already carries a `close` glyph, so no new SVG. */}
+    <button type="button" data-dialog-close class="d-close" aria-label={closeLabel}>
+      <Icon name="close" size={20} />
+    </button>
+
+    {/* 33:566 / 33:591 — Roboto Condensed Bold 38px, white, 44px box.
+        `autofocus` + `tabindex="-1"`: showModal() honours autofocus, so the
+        dialog opens announcing its heading rather than its close button. */}
+    <h2 id={headId} class="d-head" tabindex="-1" autofocus>{heading}</h2>
+
+    {/* 33:568 / 33:592 — Roboto Condensed Regular 18px, white, centred. */}
+    <p class="d-body">{body}</p>
+
+    {/* 33:570+33:571 / 33:594+33:595 — 443 x 35.234 accent pill, 32.821px
+        radius, Poppins Bold 12.436px on black. Identical to the form's own
+        submit pill (33:527), which is why the metrics match it exactly. */}
+    {
+      action.href ? (
+        <a href={action.href} class="d-pill">
+          {action.label}
+          {action.arrow && <span aria-hidden="true" class="d-arrow">&rarr;</span>}
+        </a>
+      ) : (
+        <button type="button" data-dialog-close class="d-pill">
+          {action.label}
+        </button>
+      )
+    }
+  </div>
+</dialog>
+
+<style>
+  /* The dialog box is the card and nothing more: no chrome of its own, so
+     `::backdrop` covers everything up to the card's own edge. */
+  .d-dialog {
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100dvh - 2rem);
+    overflow: visible;
+  }
+
+  /* The requested backdrop: darkened AND blurred, so the popup is the only
+     thing in focus. `-webkit-` first — Safari still needs the prefix, and
+     without it the backdrop darkens but does not blur. */
+  .d-dialog::backdrop {
+    background-color: rgb(0 0 0 / 0.65);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  /* 33:542 / 33:588 — 539 x 245. Border-box so the 3px stroke sits inside the
+     539, the same contract the form card uses. */
+  .d-card {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 33.6875rem;
+    max-width: 100%;
+    min-height: 15.3125rem;
+    padding: 1.8125rem 2.28125rem 2.3606rem;
+    background-color: var(--color-ink);
+    border: 0.1875rem solid var(--color-accent);
+    border-radius: 1.3125rem;
+    text-align: center;
+  }
+
+  /* AUTHORED. At 390px the design's 36.5px side insets would eat the card. */
+  @media (max-width: 47.99rem) {
+    .d-card {
+      padding: 1.5rem 1.25rem 1.75rem;
+      border-radius: 1rem;
+    }
+  }
+
+  /* AUTHORED — the blue X. 40px hit target, inset far enough not to foul the
+     21px corner radius. Colour is the accent, per the request. */
+  .d-close {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: transparent;
+    color: var(--color-accent);
+    cursor: pointer;
+    transition:
+      color var(--motion-base) var(--ease-out-soft),
+      background-color var(--motion-base) var(--ease-out-soft);
+  }
+
+  .d-close:hover {
+    color: var(--color-accent-hi);
+    background-color: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  }
+
+  /* 33:566 / 33:591 — 38px in a 44px box, Roboto Condensed Bold.
+     `min-height`, not `height`: "Success!" cannot wrap at 539 but the card is
+     fluid below 48rem and a fixed height would let a second line spill. */
+  .d-head {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 2.375rem;
+    line-height: 1;
+    min-height: 2.75rem;
+    color: var(--color-fg);
+  }
+
+  /* The heading takes focus only so the popup announces itself, and Chrome
+     treats that autofocus as focus-visible — which drew the global accent ring
+     around "Success!" (seen in `.scratch/dlg-success-1440.png`, 2026-08-18).
+     It is `tabindex="-1"`, so no keyboard user can ever land on it by tabbing
+     and the ring points at nothing actionable. The X and the pill keep theirs. */
+  .d-head:focus-visible {
+    outline: none;
+  }
+
+  /* Takes the WHOLE gap between heading and pill and centres in it. The pill
+     deliberately carries no top margin so this box is the full 93px — see the
+     measured figures in the header comment. */
+  .d-body {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 1.125rem;
+    /* ⚠ REPORTED DEVIATION. Both nodes are Figma "leading-none" — 18px copy on
+       18px leading. That is set for a headline, not for a centred two-line
+       paragraph, where it closes the line gap to nothing. 1.4 is the leading
+       the rest of the site's body copy uses. Nothing below it moves: the pill
+       is pinned by the card's padding-bottom, not by this block's height. */
+    line-height: 1.4;
+    color: var(--color-fg);
+  }
+
+  /* 33:570 / 33:594 — 443 x 35.234, 32.821px radius, Poppins Bold 12.436px.
+     ⚠ REPORTED DEVIATION: centred. The Figma places the pill at x=53 in a 539
+     frame, leaving 53 left and 43 right. Everything else on both nodes is
+     centred, and the form's own submit pill is symmetric, so the 5px reads as
+     a nudge in the design rather than an instruction. */
+  .d-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 27.6875rem;
+    min-height: 2.2021rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+    border: 0;
+    border-radius: 2.0513rem;
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.7773rem;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--motion-base) var(--ease-out-soft),
+      transform var(--motion-fast) var(--ease-out-soft);
+  }
+
+  /* The gap Figma draws between "here" and the arrow inside 33:571. A literal
+     space in the markup is collapsed away by the compiler, so it is set here. */
+  .d-arrow {
+    margin-left: 0.3em;
+  }
+
+  .d-pill:hover {
+    background-color: var(--color-accent-hi);
+  }
+
+  .d-pill:active {
+    transform: translateY(1px);
+  }
+
+  /* The popup should arrive, not blink into place. Both the card and the
+     backdrop animate, so the blur builds with it. */
+  @media (prefers-reduced-motion: no-preference) {
+    .d-dialog[open] {
+      animation: d-rise var(--motion-base) var(--ease-out-soft);
+    }
+
+    .d-dialog[open]::backdrop {
+      animation: d-fade var(--motion-base) var(--ease-out-soft);
+    }
+  }
+
+  @keyframes d-rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem) scale(0.97);
+    }
+  }
+
+  @keyframes d-fade {
+    from {
+      opacity: 0;
+    }
+  }
+</style>

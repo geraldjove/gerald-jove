@@ -29,6 +29,57 @@ function init(): void {
   )
   const submitLabel = submit.textContent?.trim() ?? 'Send Message'
 
+  /**
+   * Outcome popups — Figma 33:648 / 33:649, rendered by FormDialog.astro.
+   *
+   * ⚠ FEATURE-DETECTED, NOT ASSUMED. `showModal` is what gives us `::backdrop`
+   * (the blur), the focus trap and Escape; without it a `<dialog>` is an inert
+   * block that `hidden` does not even hide. So every call site below falls back
+   * to the in-page panels, which is also the no-JS path and is already built.
+   */
+  const dialogs = {
+    success: root.querySelector<HTMLDialogElement>('[data-form-dialog="success"]'),
+    error: root.querySelector<HTMLDialogElement>('[data-form-dialog="error"]'),
+  }
+
+  const canOpen = (d: HTMLDialogElement | null): d is HTMLDialogElement =>
+    d !== null && typeof d.showModal === 'function'
+
+  for (const dialog of [dialogs.success, dialogs.error]) {
+    if (!canOpen(dialog)) continue
+
+    // The X, and the error popup's pill. `close()` restores focus to whatever
+    // was focused when the dialog opened, so nothing extra is needed here.
+    for (const button of dialog.querySelectorAll<HTMLElement>('[data-dialog-close]')) {
+      button.addEventListener('click', () => dialog.close())
+    }
+
+    /* Click outside to dismiss. The dialog's own box is exactly the card (the
+       component zeroes its padding and border), so an event whose target is the
+       dialog element itself landed on the backdrop, not on the card. */
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close()
+    })
+  }
+
+  /** Success: the in-page panel is the state left behind once the popup closes. */
+  const showSuccess = (): void => {
+    form.hidden = true
+    success.hidden = false
+    if (canOpen(dialogs.success)) dialogs.success.showModal()
+    else success.querySelector<HTMLElement>('[data-success-heading]')?.focus()
+  }
+
+  /** Failure: nothing typed is discarded — the form is still there behind it. */
+  const showError = (): void => {
+    if (canOpen(dialogs.error)) {
+      dialogs.error.showModal()
+      return
+    }
+    errorBox.hidden = false
+    errorBox.focus()
+  }
+
   const setFieldError = (control: Control, message: string | null): void => {
     const slot = form.querySelector<HTMLElement>(`[data-error-for="${control.name}"]`)
     if (slot) {
@@ -87,8 +138,7 @@ function init(): void {
 
     // Bots that fill the honeypot get a success state and nothing sent.
     if (String(data.get('_gotcha') ?? '')) {
-      form.hidden = true
-      success.hidden = false
+      showSuccess()
       return
     }
     data.delete('_gotcha')
@@ -106,13 +156,9 @@ function init(): void {
       })
       if (!response.ok) throw new Error(`/api/contact responded ${response.status}`)
 
-      form.hidden = true
-      success.hidden = false
-      success.querySelector<HTMLElement>('[data-success-heading]')?.focus()
+      showSuccess()
     } catch {
-      // Nothing typed is discarded — the visitor can simply press send again.
-      errorBox.hidden = false
-      errorBox.focus()
+      showError()
     } finally {
       submit.disabled = false
       submit.textContent = submitLabel

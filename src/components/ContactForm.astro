@@ -19,10 +19,11 @@
  * submit(35.234) reproduces all eleven node positions exactly, and leaves room
  * for the error slots to push content down instead of overlapping it.
  */
-import { FIELDS, CONTACT, CONTACT_ENDPOINT } from '@/content/contact'
+import { FIELDS, CONTACT, CONTACT_ENDPOINT, DIALOGS } from '@/content/contact'
 import { SITE_URL, AVAILABILITY } from '@/content/site'
 import { blankValue } from '@/content/blanks.js'
 import ContactSelectArrow from '@/components/ContactSelectArrow.astro'
+import FormDialog from '@/components/FormDialog.astro'
 
 /** Blank #8. Until Gerald picks a fallback, no contact address is published. */
 const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutralBody
@@ -135,6 +136,23 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
       every call to action, and the submit button is this page's CTA. Placed
       below the card rather than inside it so the card keeps its 539x697. */}
   <p class="c-avail">{AVAILABILITY.short}</p>
+
+  {/* 33:648 / 33:649. Both live in the markup from the start and are opened by
+      contact-form.ts — a closed <dialog> is display:none, so neither costs a
+      pixel or a tab stop until it is shown. They sit inside [data-contact-root]
+      because that is the element the script scopes all of its queries to. */}
+  <FormDialog
+    kind="success"
+    heading={DIALOGS.success.heading}
+    body={DIALOGS.success.body}
+    action={DIALOGS.success.action}
+  />
+  <FormDialog
+    kind="error"
+    heading={DIALOGS.error.heading}
+    body={DIALOGS.error.body}
+    action={DIALOGS.error.action}
+  />
 </div>
 
 <script>
