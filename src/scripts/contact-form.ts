@@ -24,6 +24,11 @@ function init(): void {
   const submit = form?.querySelector<HTMLButtonElement>('[data-submit]')
   if (!root || !form || !success || !errorBox || !submit) return
 
+  /* The static form keeps native constraint validation for the no-JS path.
+     Once enhancement is active, disable the browser bubbles so the accessible
+     inline errors below remain the single validation experience. */
+  form.noValidate = true
+
   const controls = Array.from(
     form.querySelectorAll<Control>('[data-label]'),
   )

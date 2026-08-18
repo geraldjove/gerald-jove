@@ -8,8 +8,8 @@
  * host cannot issue one), so an island would be silently blocked in production
  * while working perfectly in dev.
  *
- * Without JS the form still posts natively to Formspree and `_next` returns the
- * visitor to /thank-you, so no lead is lost. With JS the submit is intercepted,
+ * Without JS the form still posts natively to `/api/contact`, whose successful
+ * response returns the visitor to /thank-you. With JS the submit is intercepted,
  * the visitor stays on the site, and the success state replaces the form.
  *
  * ── Geometry ──────────────────────────────────────────────────────────────
@@ -35,7 +35,6 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
     class="c-card"
     action={CONTACT_ENDPOINT}
     method="POST"
-    novalidate
   >
     <input type="hidden" name="_next" value={`${SITE_URL}/thank-you`} />
 
@@ -81,6 +80,7 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
               data-label={field.label}
               data-required={field.required ? 'true' : undefined}
               aria-describedby={`error-${field.name}`}
+              required={field.required}
             />
           ) : (
             <input
@@ -93,6 +93,7 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
               data-label={field.label}
               data-required={field.required ? 'true' : undefined}
               aria-describedby={`error-${field.name}`}
+              required={field.required}
             />
           )}
 
@@ -101,7 +102,7 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
       ))
     }
 
-    {/* Formspree's honeypot convention. Hidden from people, tempting to bots. */}
+    {/* Honeypot field. Hidden from people, tempting to bots. */}
     <div class="c-gotcha" aria-hidden="true">
       <label for="field-gotcha">Leave this field empty</label>
       <input id="field-gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
@@ -295,8 +296,8 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
   }
 
   /* While the empty option is selected the control shows placeholder ink, the
-     same as every other resting field on the card. `novalidate` on the form
-     does not affect :invalid matching. */
+     same as every other resting field on the card. The enhancement switches
+     `noValidate` on at runtime but that does not affect :invalid matching. */
   .c-select:invalid {
     color: var(--color-fg-placeholder);
   }

@@ -136,6 +136,14 @@ export async function POST(request: Request): Promise<Response> {
      real visitor never sees a difference. */
   if (String(form.get('_gotcha') ?? '').trim()) return respond(wantsJson, true, 204)
 
+  /* Browser validation is a convenience, never the authority. This also keeps
+     native no-JS submissions and direct requests from creating incomplete CRM
+     records when the client enhancement is unavailable or bypassed. */
+  const requiredFields = ['name', 'email', 'timeline', 'message'] as const
+  if (requiredFields.some((name) => !String(form.get(name) ?? '').trim())) {
+    return respond(wantsJson, false, 400, 'Complete all required fields.')
+  }
+
   const email = String(form.get('email') ?? '').trim()
   if (!EMAIL.test(email)) {
     return respond(wantsJson, false, 400, 'Enter a valid email address.')
