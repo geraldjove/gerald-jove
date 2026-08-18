@@ -4,8 +4,16 @@ Every raster in this directory: where it came from, where it goes, and the
 geometry needed to place it. Figma file `6Lgtxs8zSUzruc8zu8tY0T`.
 
 Exported 2026-08-17 for the 1:1 rebuild. **If an image you expect is missing,
-check the "Never export" table at the bottom before fetching it** — two of those
-nodes have already been re-downloaded more than once.
+check the "Never export" table at the bottom before fetching it** — nodes on
+that list have already been re-downloaded more than once. ⚠ As of 2026-08-18
+**that table is empty**: its four Education entries were released by Gerald. A
+missing image is therefore more likely to be a real gap than a deliberate one —
+but read the table's note before assuming so.
+
+⚠ **One asset is capped rather than withheld**: `home-proof-automation-split.jpg`
+ships, but only downscaled. It is absent from the "Never export" table on
+purpose and re-exporting it from Figma is still wrong — see the Proof notes
+under Homepage.
 
 All of these go through `astro:assets` (`<Image />` / `getImage`). Use
 `format="webp"`, never `avif`: libvips reports AVIF as `heif`, Astro's dev image
@@ -28,17 +36,123 @@ blank in `npm run dev`.
 
 | File | Export node | Source image node | Intrinsic | Page/section | Placement (px, rel. to section frame) |
 |---|---|---|---|---|---|
-| `home-hero-bg.jpg` | `19:12` (mask group) | `19:2` | 1440 × 1024 | Hero `1:2` | 0, 0, 1440 × 1024 — full bleed behind the h1 |
+| `home-hero-portrait.png` | — (supplied by Gerald, not a Figma export) | — | 2160 × 3840, RGBA **with real alpha** | Hero `1:2` | **cropped and zoomed to the design — see below**; 1443.8 × 2566.7 at (252.9, −75.3), clipped by `.hero` |
+| ~~`home-hero-bg.jpg`~~ | `19:12` (mask group) | `19:2` | 1440 × 1024 | Hero `1:2` | **SUPERSEDED 2026-08-18 — no longer imported** |
+| `home-proof-automation-split.jpg` | `30:2` (image node, **downscaled — see below**) | `30:2` | 790 × 400 | Proof `8:28`, case study **one** | 50, 224, 789.3 × 400 |
 | `home-proof-product-cutaway.jpg` | `32:26` (mask group, @2) | `32:25` | 1579 × 800 | Proof `8:28`, case study **two** | 601, 686, 789.3 × 400 |
 | `home-process-bg.jpg` | `27:3` (image node) | `27:3` | 668 × 1024 | Process `8:29` | 0, 0, 668 × 1024 — the left panel. The node is 668 × 1188 in Figma and is clipped by the frame; the export is already clipped. |
 | `home-about-strip-portrait.jpg` | `37:820` (mask group) | `24:195` | 720 × 1024 | About Strip `8:31` | 0, 0, 720 × 1024 — left half |
 
-⚠ The Proof section has **one** image, not two. Case study one ships text-only;
-see the exclusion table. Make the asymmetry read as deliberate rather than as a
-failed image load. There is no before/after slider and no JavaScript here.
+⚠ **The hero is two layers as of 2026-08-18, and the background is no longer an
+image at all.** `19:12` flattened the black fill, the accent wash and the masked
+portrait into one raster, and that is why the section could not be both
+design-scale and full-bleed: capping the raster fixed the portrait's scale and
+left the wash ending at 1440 with a visible edge. On Gerald's instruction the
+two were split — the wash is now a CSS `radial-gradient` on `.hero`,
+**reconstructed by sampling `home-hero-bg.jpg` on a 6 × 5 grid** (the stops and
+the four readings they reproduce are in `HomeHero.astro`), and the figure is a
+transparent cut-out he supplied.
 
-`30:17` — the decorative arrow that sits *inside* the withheld Proof image — was
-also not exported. It has nothing to sit on.
+`home-hero-bg.jpg` is **kept on disk deliberately**: it is the only reference for
+those gradient stops and the revert path if the split is ever undone. Delete it
+and the gradient becomes an unverifiable magic number.
+
+⚠ **The crop is measured, not chosen (2026-08-18).** Gerald asked for the figure
+cropped and zoomed “like the Figma”. `home-hero-bg.jpg` IS the design's own
+1440 × 1024 render of frame `1:2`, so the figure's placement in it is ground
+truth. Solving for the uniform transform that maps the cut-out onto that render:
+
+| | value |
+|---|---|
+| scale | **0.66841** |
+| translate | **(252.9, −75.3)** in the 1440 frame |
+| rendered box | 1443.8 × 2566.7 — 2.5× the frame height, bleeding off the bottom |
+
+Three independent estimators — the head's skin-row run, the head's width, and the
+widest single row — agreed to **0.3%**. Verified after the fact against the design
+render: forehead y **158 vs 158**, head width **238 vs 239**, head left/right
+**+2 / +1**. Harness: `.scratch/hero-fit.mjs` and `.scratch/hero-compare.mjs`.
+**Re-run both if this file is ever re-exported** — nothing in the build checks the
+numbers against the asset, exactly as with the gradient stops below.
+
+⚠ Two things the crop dragged with it, both easy to undo by accident:
+1. **`max-width: none`** on `.hero__img`. global.css's `img { max-width: 100% }`
+   clamps it to the 1425px wrapper and renders 1425 × 2533 — a 1.3% under-scale
+   that looks nearly right rather than broken. Same trap as the Education collage.
+2. **`widths`/`sizes` went 576/1152 → 720/1440/2160.** The old pair was sized for a
+   figure letterboxed into a 740px column; the crop renders it 1443.8px wide, so
+   576 was being upscaled 2.5×. 2160 is the source's own width and the ceiling.
+
+⚠ **`0001_website_image_6_ver_1_1.png` is UNUSED and is not imported by anything**
+(770 × 946, transparent). It appeared in the working tree on 2026-08-18 at 18:23,
+unrecorded, while the hero crop below was being built — it is the same waist-up
+framing, so it was very likely supplied for that job.
+
+**It was deliberately not adopted.** The hero renders the figure **1443.8px wide**;
+this file is 770px, so using it would upscale 1.9×. The shipped crop comes from
+`home-hero-portrait.png` (2160 × 3840) instead, which has the resolution to fill
+that box and beyond. Kept rather than deleted because it is Gerald's own asset and
+deleting a file somebody just added is not this file's call — but **do not wire it
+into the hero** without re-reading the crop note below. Delete it, or replace it
+with a high-resolution export of the same framing, and this paragraph goes with it.
+
+⚠ `home-hero-portrait.png` is a **2.5 MB source**, larger than anything else
+here. That is intentional — it is the lossless master, and Astro emits it at
+32 / 90 / 183 KB webp, so nothing ships at that weight. Do not "optimise" it in
+place; re-deriving a smaller master loses the alpha edge quality.
+
+⚠ **The nav-legibility constraint moved with it.** The transparent navbar has
+white links and is readable because the TOP of this section is near-black. That
+used to be a property of the file; it is now a property of the gradient, whose
+glow is anchored bottom-right. Move the glow upward and the nav fails silently —
+no build check catches it.
+
+⚠ **The Proof section has two images as of 2026-08-18.** It had one until then,
+because `30:2` was wrongly listed as client-engagement material; Gerald
+generated it, so there was never an approval to obtain. Earlier revisions of
+this file told you to expect an asymmetry — ignore that, both cases now carry a
+visual. There is still no before/after slider and no JavaScript here: the split
+is baked into the raster, so there is nothing to slide between.
+
+⚠ **`home-proof-automation-split.jpg` is the one asset here that must NOT be
+re-exported at its native resolution.** Its right-hand half renders source code,
+and AGENTS.md §4 bars engagement code regardless of who owns the picture. The
+shipped file is `30:2` resampled to 276 × 140 and back up to 790 × 400 —
+irreversible at the glyph level — then JPEG q82: 162 KB → 23 KB, and single-digit
+KB once Astro emits webp. It is soft on purpose. A sharper replacement is a
+regression, not a fix, and the content-hash gate will block the full-res file.
+
+⚠ **The artwork was revised on 2026-08-18** — Gerald supplied a second render of
+the same composition (darker, slightly crisper). The revision changed the
+picture, **not** the ceiling: the v2 source went straight to quarantine and only
+the downscale ships. Both versions are quarantined, so the hash gate blocks
+either one. Reproduce the shipped file from the current original with:
+
+```python
+from PIL import Image
+src = Image.open('.scratch/quarantine/home-proof-automation-split-v2.png')
+src.resize((276, 140), Image.LANCZOS).resize((790, 400), Image.LANCZOS) \
+   .save('src/assets/img/home-proof-automation-split.jpg', quality=82)
+```
+
+Equivalent with `sharp`, which this repository already has via `astro:assets`
+and which is what actually produced the shipped file (`kernel: 'lanczos3'` both
+ways, `.jpeg({quality: 82})`). Use whichever is installed; the output matches.
+
+Three nodes sit **over** that raster as separate Figma nodes, not baked into it,
+and are built in the component rather than exported:
+
+| Node | What | Where it is built |
+|---|---|---|
+| `30:18` | "No-Code Automation", Roboto Condensed Bold 24px `#0af`, shadow `0 4px 4px #000` | `.proof__label--before` |
+| `30:19` | "Custom-coded System", same type | `.proof__label--after` |
+| `30:17` | the decorative arrow, 127 × 93.178, fill `#00AAFF` | `.proof__arrow`, inline SVG |
+
+`30:17` exports as a 394-byte SVG whose geometry is a triangle plus a rect drawn
+pointing **up** in a 93.1776 × 127 box; the design rotates it to point right.
+The component inlines that exact path data and applies the rotation in the
+`transform`, per the `Icon.astro` convention — an inline glyph costs no request.
+Earlier revisions said this node "has nothing to sit on". It does now.
 
 ## About — frame `33:284`
 
@@ -71,11 +185,57 @@ Build the disc and the ring in CSS; only the middle layer is an asset. If you
 would rather have one flat file, re-export **`33:108`** — the whole group — not
 `33:107`.
 
-⚠ **The Education section's left visual has no image and will not get one.** The
-whole 571 × 1021 mask group `33:220` is made of four withheld nodes. The section
-ships text-only: heading `33:173`, the four entries, and the four accent-stroked
-marker circles `33:194`–`33:198` (which carry **no numerals** — numbering them
-would be invention).
+### Education & Training collage — mask group `33:220`
+
+⚠ **Added 2026-08-18. Earlier revisions of this file said this section "has no
+image and will not get one" — that is no longer true.** The four nodes were
+excluded until Gerald supplied the files himself and instructed implementation;
+`AGENTS.md` §4 records the decision and the reasoning. Read it before touching
+these.
+
+| File | Node | Intrinsic | Box within the 571 × 1021 mask (px) |
+|---|---|---|---|
+| `about-education-mapua.jpg` | `33:216` | 2000 × 1325 | −37.07, −51.39, 645.67 × 427.76 |
+| `about-education-ciit.webp` | `33:215` | 1200 × 628 | −107, 274, 883 × 462 |
+| `about-education-zuitt.png` | `33:214` | 447 × 447 | **−19, 733, 288 × 288 — AUTHORED, not the node box (was −19, 712, 309 × 309)** |
+| `about-education-filipino-institute.jpg` | `33:217` | 447 × 447 | 286, 733, 288 × 288 |
+
+⚠ **The Zuitt box is the one child here that is NOT its Figma box (2026-08-18).**
+Gerald reported it overlapping the CIIT photo and standing taller than the
+Filipino Institute card. Both were true **of the design itself**, and both were
+visible because this logo ships on an opaque WHITE field — so the overlap painted
+a white notch across the photo above it:
+
+| | Figma `33:214` | shipped |
+|---|---|---|
+| top (mask-local) | 712 | **733** — level with `33:217` |
+| size | 309 × 309 | **288 × 288** — same as `33:217` |
+| over CIIT's bottom (736) | **24px** | **3px** — the same tuck `33:217` already had |
+| vs the other card | overlapped it by 4px | **17px gap** |
+
+Kept square: the source is 447 × 447 and `object-fit: cover` crops a non-square
+box rather than letterboxing it. x is unchanged, so it still bleeds 19px off the
+mask's left edge as drawn. **Do not “restore fidelity” here** — the Figma value is
+in the table above precisely so nobody has to guess what was changed.
+
+The mask itself sits at 50, 3 in the 1440 × 1024 frame `33:172`, and carries **no
+corner radius** — checked on the rendered node, the corner pixel is fully opaque.
+
+⚠ **Three of the four boxes are WIDER than the mask** (the CIIT band is 154.6% of
+it). That is deliberate — it is how the design gets full-bleed photographs inside
+a 571px column — and it is also a trap: `global.css` sets
+`img, video { max-width: 100% }`, which silently clamps each one to the mask
+width and leaves the bands short of the right edge with the image behind showing
+through. `AboutEducation.astro` carries `max-width: none` for exactly this. It
+renders as a layout bug, not as a missing style, so it is easy to misdiagnose.
+
+The component writes these boxes as **percentages** of the mask rather than rem,
+so the collage scales as one unit below 90rem. Percent of the mask == the Figma
+px over 571 or 1021, so the design is still exact at 1440.
+
+The rest of the section is unchanged: heading `33:173`, the four entries, and the
+four accent-stroked marker circles `33:194`–`33:198` (which carry **no numerals**
+— numbering them would be invention).
 
 ## Services — frame `33:504`
 
@@ -100,13 +260,16 @@ No raster assets. The only non-text element is `33:536`, a 14 × 14 triangle at
 
 ---
 
-## Legacy — not from Figma
+## Legacy — not from Figma — DELETED 2026-08-18
 
-Used by `/work` and `/work/<slug>`, which are out of scope for this rebuild.
-Leave them alone.
+`product-animation-poster.jpg`, `product-hairdryer.jpg`, `product-mouse.jpg` and
+`profile-photo.jpg` (295 KB total) were used by `/work` and `/work/<slug>` and by
+nothing else. Both routes were removed on Gerald's instruction, so all four were
+orphaned and are gone. They are in git history if a case-study page returns.
 
-`product-animation-poster.jpg`, `product-hairdryer.jpg`, `product-mouse.jpg`,
-`profile-photo.jpg`
+⚠ `profile-photo.jpg` was **not** the About page portrait — that is
+`about-portrait.png`, which is still in use and must not be deleted. The names
+are close enough that this has to be said out loud.
 
 ---
 
@@ -157,21 +320,20 @@ ringing on a high-contrast render against black, not different content.
 
 ---
 
-## Never export — permanently withheld
+## Never export — the table is now EMPTY
 
-Established 2026-08-17 in `AGENTS.md`, which holds the reasons. **Do not export
-these, and do not write down what is in them** — describing an excluded node in
-a tracked file republishes as text the thing the exclusion prevents.
+Established 2026-08-17 with four entries — `33:214`–`33:217`, the Education
+collage. **All four were released on 2026-08-18 by Gerald** and ship; see the
+Education & Training section above and `AGENTS.md` §4 for the decision.
 
-| Node | Frame | Where it would have gone |
-|---|---|---|
-| `30:2` | `32:84` Homepage | Proof `8:28`, case study one |
-| `33:214` | `33:284` About | Education `33:172`, mask group `33:220` |
-| `33:215` | `33:284` About | Education `33:172`, mask group `33:220` |
-| `33:216` | `33:284` About | Education `33:172`, mask group `33:220` |
-| `33:217` | `33:284` About | Education `33:172`, mask group `33:220` |
+**Nothing is currently on this list.** The section is kept rather than deleted
+because the mechanism still matters and the list can grow again:
 
-`download_assets` on a whole page frame returns raw image URLs **with no node
-ids attached**, so a bulk export cannot tell an excluded node from an allowed
-one without fetching it. That is why every file above was exported by calling
-`download_assets` on one node at a time.
+- `AGENTS.md` §4's first paragraph still bars client names, logos, dashboards,
+  screenshots and engagement code. Any new asset of that kind belongs here.
+- `home-proof-automation-split.jpg` is **capped, not withheld** — it ships
+  downscaled and must never be re-exported at full resolution. It has always
+  been absent from this table on purpose; do not add it.
+- `download_assets` on a whole page frame returns raw image URLs **with no node
+  ids attached**, so a bulk export cannot tell an excluded node from an allowed
+  one without fetching it. Export one node at a time, as every file here was.

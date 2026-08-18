@@ -16,12 +16,11 @@ Every route is a real HTML file in `dist/`.
 ```
 src/
   assets/img/        source images; optimised at build time by astro:assets
-  components/        .astro components (Icon, Nav, Footer, ServiceCard, CaseTeaser, CtaBlock, ContactForm)
+  components/        .astro components (Icon, Nav, Footer, ServiceCard, Newsletter, CtaBlock, ContactForm)
   content/           all page copy, as typed modules
     blanks.js        values deliberately left empty — read the rule below
     site.ts          nav, footer, meta, CTA labels, availability line
     home.ts services.ts about.ts contact.ts
-    work/            case studies (content collection)
     insights/        schema only; no route, no entries yet
   layouts/BaseLayout.astro   meta, canonical, Open Graph, skip link, <main>
   pages/             one file per route
@@ -29,7 +28,7 @@ src/
   styles/global.css  design tokens and component classes — authoritative
 src/content.config.ts   collection definitions
 public/            robots.txt, media/, logo
-vercel.json        security headers, /works -> /work redirect, cache policy
+vercel.json        security headers, cache policy, /works -> /services 301
 ```
 
 ## Commands
@@ -62,14 +61,27 @@ find dist -name "*.html" -exec grep -o '<script[^>]*>[^<]' {} + | grep -vc 'src=
 ```
 
 Use `find`, not `dist/**/*.html`. Git Bash here has `globstar` off, so the glob matches only one
-directory level — it misses `dist/404.html` and `dist/work/<slug>/index.html` and reports a
+directory level — it misses `dist/404.html` and `dist/about/index.html` and reports a
 false zero.
 
 ### 2. Do not add a UI framework island
 
 Astro injects an *inline* hydration runtime for every `client:*` directive, which rule 1 blocks. A
 Vue island was built and removed for this reason. Interactivity is static markup plus a bundled
-script in `src/scripts/`. Total JS across the whole site is ~3 KB; keep it that way.
+script in `src/scripts/`.
+
+⚠ **The rule is about ISLANDS, not about libraries — and the distinction now matters.**
+`motion` (formerly Framer Motion) was added 2026-08-18 for the pinned About story. That is allowed
+because it uses Motion's **vanilla** entry (`scroll`), which is a plain ES module bundled like any
+other script. **`motion/react` is NOT allowed** — it needs a `client:*` island and dies to rule 1 in
+production while working perfectly in `npm run dev`. If a request names Framer Motion, reach for the
+vanilla API; do not add React.
+
+⚠ **The "~3 KB total" figure is no longer true, and the budget is now per page.** Measured on the
+built output, gzipped: **Home 924 B · Services 924 B · Contact 1.8 KB · About 7.4 KB.** About carries
+Motion; the other three are untouched, which is why the story's script lives in `AboutStory.astro`
+rather than `BaseLayout`. Keep it that way — moving that import to the layout puts 6.4 KB on every
+route. `motion/mini` cannot help: it exports `animate` and `animateSequence` only, no `scroll`.
 
 ### 3. Never invent a figure
 
@@ -81,31 +93,102 @@ prices, testimonials, a share image. They are unfilled because nobody has suppli
   orphan `Result:` label or a `from $—` placeholder.
 - `npm run build` prints every blank still open, and flags the ones that block publication.
 
+⚠ **One deliberate exception, and it carries its own pre-deploy gate.** Gerald asked on
+2026-08-18 for the newsletter block to be finished as UI ahead of its backend, so it now renders
+on all six pages while `NEWSLETTER_ENDPOINT` is still null. The omit-rather-than-fake principle
+is not waived, it is enforced in the markup: with no endpoint the block is a `<div>`, not a
+`<form>`, and its button is `type="button" disabled`, so **nothing can be collected or
+dropped**. What it cannot prevent is a visitor reading a dead button as a broken site, so:
+
+```bash
+grep -rl 'data-newsletter="ui-only"' dist   # must print NOTHING before deploying
+```
+
+Clear it by setting `NEWSLETTER_ENDPOINT` (with the consent line and privacy link `site.ts`
+requires) or by setting `NEWSLETTER_VISIBLE` to false. Do not clear it by deleting the
+attribute — that is the only machine-readable trace of the state.
+
 ### 4. Do not name clients
 
 Work is described as "a US creative agency". Do not add a client name, logo, screenshot, dashboard
 image, or any code from a client engagement to this repository.
 
-⚠ **Five Figma nodes are permanently excluded. Do not export them, and do not describe their
-contents in any tracked file** — writing down what is in them republishes as text the thing the
-exclusion prevents. Established 2026-08-17 after each was opened and read directly.
+### The four Education nodes — exclusion LIFTED 2026-08-18 by Gerald
 
-| Node | Why |
-|---|---|
-| `30:2` | **Client-engagement material** — a screen capture from a client engagement. Both halves are in scope, so cropping does not help. |
-| `33:214` | Third-party trademark |
-| `33:215` | Third-party photograph |
-| `33:216` | Third-party photograph |
-| `33:217` | Third-party trademark |
+`33:214`, `33:215`, `33:216` and `33:217` were listed here from 2026-08-17 as permanently excluded —
+two third-party trademarks and two third-party photographs, in the Education & Training collage
+(mask group `33:220`). **They ship as of 2026-08-18.**
 
-`30:2` has been requested and re-downloaded **twice** despite being flagged, because it is the
-obvious visual for the homepage Proof section. **The Proof section ships without it**: case study
-one is text-only, case study two keeps its own image. If an asset is missing from
-`src/assets/img/`, treat that as deliberate and check this table before fetching it.
+| Node | What it is | Shipped as |
+|---|---|---|
+| `33:216` | Mapúa University campus photograph | `about-education-mapua.jpg` |
+| `33:215` | CIIT College of Arts and Technology campus photograph | `about-education-ciit.webp` |
+| `33:214` | Zuitt Coding Bootcamp logo | `about-education-zuitt.png` |
+| `33:217` | Filipino Institute logo | `about-education-filipino-institute.jpg` |
 
-A copy is quarantined at `.scratch/quarantine/`, which `.gitignore` covers **for this reason** —
-that entry is a safety control, not tidiness. Full reasoning, which is deliberately not repeated
-here, is in `tasks/2026-08-17-figma-four-page-redesign-implementation.md` (gitignored).
+**Gerald supplied the four files himself and asked twice for the section to carry them**, the second
+time after being shown in writing that they are the excluded nodes and that shipping them needs a
+rights decision he alone can make. He instructed implementation. **That decision is his and is
+recorded here so the next agent does not delete the images as a rule violation** — the rule is what
+changed. The basis is presumably nominative use: each mark sits beside a truthful statement that he
+studied there. **This is not legal advice and nobody in this repository has given any.** If that
+basis is ever challenged, the revert is in `AboutEducation.astro`'s header comment.
+
+What did NOT change:
+
+- **The rule in §4's first paragraph still stands** for client names, logos, dashboards, screenshots
+  and engagement code. This lifts four specific nodes, not the section.
+- **Do not add a fifth institution visual, or any other third-party mark, on the strength of this.**
+  It is a decision about four files, made once, on the record.
+- The files were renamed on the way in. Their original names — two of them browser defaults and one
+  a storage hash — matched the Figma layer names exactly, which is how they were identified.
+
+⚠ **Removing the collage again is not a one-line revert.** `AboutEducation.astro` used to centre its
+671px text block on the frame (x=384.5) *because* the left half was empty; that block is now back at
+its Figma x=705. Drop the images without restoring the centring and the section ships with a 705px
+hole down its left side.
+
+#### `30:2` — was the fifth; now a resolution ceiling, not an exclusion
+
+**Corrected 2026-08-18 by Gerald.** This node was listed here from 2026-08-17 as
+"client-engagement material — a screen capture from a client engagement". **It is not a capture of
+anything.** Gerald generated the artwork himself, so there is no client asset, no third-party
+right, and nobody to obtain approval from. The 2026-08-17 entry was inferred from what the picture
+*looks like*, and the picture looks like a screenshot because it was made to. **The exclusion is
+lifted and case study one now ships with it.**
+
+What survives is narrower and still binding. The right-hand half of the artwork renders source
+code, and §4's first paragraph bars *code from a client engagement* independently of who owns the
+image. So:
+
+> **Only a copy downscaled until that code is illegible may enter this repository.** The shipped
+> asset is `src/assets/img/home-proof-automation-split.jpg` — resampled to 276 × 140 and back up to
+> 790 × 400, which destroys the glyphs irreversibly, then JPEG q82 (162 KB → 23 KB). Do not
+> re-export this node at full resolution, and do not "improve" the asset by replacing it with a
+> sharper one. It is soft on purpose and the softness is the control.
+
+⚠ **A new render is a new source, not an exemption.** On 2026-08-18 Gerald supplied a second version
+of the same composition and asked for the image to be swapped. The swap was done *through* the
+ceiling: the v2 file went to `.scratch/quarantine/home-proof-automation-split-v2.png` and the shipped
+JPEG was regenerated from it by the same 276 × 140 round trip. Shipping a supplied file at its native
+790 × 400 would have been the "sharper replacement" this rule forbids — measured before the
+downscale, identifiers such as `body.request_id` and `brand_folder_id` were still recoverable from
+the v2 render at 4× zoom. If a future instruction is meant to lift the ceiling rather than change the
+picture, it has to say so; "replace the image" does not.
+
+The full-resolution originals stay quarantined at `.scratch/quarantine/`, which `.gitignore` covers
+**for this reason** — that entry is a safety control, not tidiness. The content-hash gate in
+*Definition of done* still compares against it and still blocks the full-res file; the shipped
+downscale hashes differently and passes. Keep both facts true if you ever regenerate the asset.
+
+⚠ Before 2026-08-18 this node was re-downloaded **three** times despite being flagged, because it is
+the obvious visual for the Proof section. That reflex is now correct in its instinct and still wrong
+in its method: fetch the node and you get the full-res original, which is the one thing that must
+not be committed. Full reasoning, deliberately not repeated here, is in
+`tasks/2026-08-17-figma-four-page-redesign-implementation.md` (gitignored).
+
+If any *other* asset is missing from `src/assets/img/`, treat that as deliberate and check the table
+above before fetching it.
 
 ### 5. Availability wording is fixed
 
@@ -125,6 +208,114 @@ reusing an existing supplied line over writing a new one, and say so in your rep
 
 - **Design tokens only.** `src/styles/global.css` defines colour, type scale, spacing, surfaces and
   motion. Do not hardcode hex values, font sizes, or ad-hoc `py-*` section padding.
+- ⚠ **Section heights are no longer Figma values. Changed 2026-08-18 on Gerald's instruction:**
+  every section fills the viewport and the page scroll-snaps one section per screen. The Figma
+  **proportions** survive exactly; the Figma **absolute heights** do not. Read this before treating
+  any section height in this repository as a copied number again.
+
+  The mechanism is in `global.css` under "Viewport-height sections": at ≥90rem a section is scaled by
+  `--fx-s: clamp(0.7, 100svh / var(--fx-h), 1.4)` so the fixed design canvas fits the viewport
+  exactly; below 90rem it is `min-height: 100svh` and the content flows.
+
+  ⚠ **It is a transform, not a re-layout, and that is forced rather than chosen.** At ≥90rem the
+  children are `position: absolute` at Figma coordinates, so changing a section's height moves the
+  BOX and not its CONTENTS — content spills into the next section, or is clipped silently where
+  `overflow: hidden` is set. Scaling the canvas is the only change that hits 100svh while leaving
+  every child where it was designed to sit.
+
+  ⚠ **Three declarations are one mechanism** — `width`, `margin-inline`, `margin-block-end`. Delete
+  any one and the other two break: without the width compensation every full-bleed background
+  shrinks by (1−s) and leaves a bar of page colour down both edges of every section; without the
+  end margin the section still occupies its unscaled height in flow.
+
+- ⚠ **Each Services detail is ONE 100svh row with TWO balanced columns. Reworked 2026-08-18.**
+  `/services` is **4 sections**: the intro plus one row per service. The title spans the text area,
+  and the four blocks plus the CTA flow into two columns beside the rail — first part left, second
+  right.
+
+  ⚠ **This is the THIRD layout for these sections in one day.** Original: one 2069/2069/2316px frame
+  each. Then: two stacked 100svh screens each (7 sections). Now: one row, two columns (4 sections).
+  Do not resurrect the middle one; it exists only in git history.
+
+  ⚠ **The Figma's per-node y coordinates are GONE from `services.astro`, deliberately.** Balanced
+  columns cannot be expressed as pinned y values — where a block lands depends on how the one above
+  it wrapped — so the blocks are in normal flow and the dead coordinates were deleted rather than
+  left looking authoritative. Recoverable from git history. The rail's x/width survives and still
+  drives which edge the gradient sits on.
+
+  Four things that will bite:
+  1. **`column-count`, not a hardcoded split index.** The blocks are very uneven (service 2 measures
+     149 / 401 / 513 / 541px at 422px wide), so the balanced split differs per service — 2/3, 3/2,
+     2/3 as it happens. The browser finds those; a constant would need re-tuning on every copy edit.
+  2. **`break-inside: avoid` on the block and the CTA.** Without it a block is torn across the gap,
+     heading at the foot of the left column and body at the head of the right.
+  3. **`min-height: 0` on `.svc-detail__columns`.** It is a flex item, so it defaults to
+     `min-height: auto` and refuses to shrink below its content — the box would grow past the row and
+     `overflow: hidden` would eat the overspill silently.
+  4. **`ROW_H` is MEASURED, not derived, and can go stale silently.** See the long warning in
+     `services.astro`. After any `SERVICE_DETAILS` copy change, re-measure: every
+     `.svc-detail__columns` child must stay inside its parent's box. Currently 1490px, which leaves
+     the tightest service 37px of headroom; at the measured-exact 1463 it had **7px**.
+
+  Trade-off to know: the rail keeps its full 413px, so the columns are ~422px each and the row scales
+  to **0.681** — body copy renders at **16.3px** against 18.7px elsewhere on the site. Narrowing the
+  rail is the one lever that buys it back, and it is a single number in `services.astro`.
+
+- ⚠ **`AboutStory` is a scroll-pinned panel. Added 2026-08-18.** The section becomes a track of 3–5
+  viewports with a sticky full-screen panel; the heading holds while the story column is drawn
+  upward through a masked stage, so lines fade in at the top edge and out at the bottom.
+  `src/scripts/story-pin.ts` drives it with Motion's vanilla `scroll()`.
+
+  Four things that will bite:
+  1. **`position: sticky` dies inside a transformed ancestor,** and the viewport fit transforms every
+     other section. This one works *only* because it keeps `fx-tall`. Remove that class and the pin
+     stops sticking silently — no error, it just stops.
+  2. **The snap markers must stay `:global()`.** Astro scopes component CSS by a `data-astro-cid-*`
+     attribute it can only add to template elements; the beats are created at runtime, so a scoped
+     rule matches none of them. Measured when it was scoped: the track held no snap position at all,
+     and `scroll-snap-type: y mandatory` threw the reader from the story's start straight to the next
+     section — the whole section skipped, with nothing in the console.
+  3. **`MIN_SCREENS` is 3 for a reason.** The bare formula returns 2 at desktop size, which drags the
+     column at ~1:1 with scroll — indistinguishable from no pin. Three gives ~0.46×.
+  4. **The column's `padding-block` and the mask's `--story-fade` are ONE mechanism.** The script sets
+     both from the stage's measured height. Without the padding the column starts flush with the
+     stage's top edge, where the mask is still transparent, so the FIRST line is half dissolved at
+     progress 0 and the LAST line is at progress 1 — reported from the live page, not theoretical.
+     The padding must be applied before `scrollHeight` is read, because it is part of the travel.
+     ⚠ It cannot be done in CSS: a percentage padding resolves against the stage's WIDTH, not its
+     height. Verified after the fix — first line 6px clear of the opaque threshold at progress 0,
+     last line 6px clear at progress 1.
+  4. **Everything is behind `[data-pinned]`, which only the script sets.** With no JS or with reduced
+     motion the section is an ordinary 1985px column with all 31 lines readable. Verified by removing
+     the attribute at runtime: height returns to exactly 1985, 0 paragraphs clipped, mask gone. Never
+     promote the pinned geometry into the default CSS.
+
+- ⚠ **About's "What I Do" cards take the homepage's card WIDTHS but hug their own content.
+  Changed 2026-08-18** on request, in two steps — the second step is the one that stands.
+  **Widths** are the homepage's exactly: 415 / 416 / 457 at x=54 / 491 / 928, replacing the Figma's
+  three 282×348 cards in a 942px group. `HomeServices.astro`'s `.card` rules are the source; copy any
+  change there to here. The unequal widths are the homepage's own and are not a mistake to even up.
+
+  ⚠ **There is deliberately NO `height`.** Matching the homepage's 611px was tried first and rejected
+  on sight: the homepage card carries a lede, body copy, a price, a timeline and a CTA, while these
+  hold three short lists, so a matched height left every card roughly two-thirds empty. They now
+  measure **305px**, set by the tallest of the three.
+
+  `align-items` stays at its `stretch` default so all three equalise and their bottom edges hold one
+  line. Do not "fix" that to `align-self: start` — each card would then find its own height and the
+  row would end ragged.
+
+  ⚠ **`AboutStory` (1985) is now the ONLY `fx-tall` section** — not viewport-fitted, taller than one
+  screen, snapping to its own top edge. Fitting it would scale it to 0.51 and take its smallest text
+  from 24px to **12.3px**. That is a weaker case than the Services one was and it was not part of the
+  request; splitting it the same way is the obvious follow-up if the inconsistency shows.
+
+  ⚠ **Corrected 2026-08-18, verified by measurement:** the Services body node is **24px**, not 18px.
+  An earlier revision of this file justified `fx-tall` with "18px body copy at 8–9px". The real
+  unsplit figures are **11.8px** (2069 frames) and **10.5px** (2316), against **18.7px** as they now
+  ship. The decision stands; the retracted numbers must not be reused to set a threshold.
+- **`svh`, never `vh`, for section heights.** `100vh` is the LARGE viewport on mobile, so a section
+  sized with it hides its last line behind the address bar until the user scrolls.
 - **Palette is the Figma's, changed 2026-08-17.** Was `#0b1120` / `#009efa`; is now
   `#161616` (page) / `#242424` (raised) / `#00aaff` (accent), sampled from a render of frame
   `33:505` rather than from `get_design_context` metadata. Gerald asked for a 1:1 copy and had
@@ -147,8 +338,9 @@ reusing an existing supplied line over writing a new one, and say so in your rep
   marginal, and it carries real instructional copy on the contact form (`33:537`), not just
   placeholders. It ships raised to `#959595`. That is the single deliberate colour deviation from 1:1.
   `--color-inset` `#2e2e2e` and the three `fg-*` greys are **authored**: the design has only two
-  surfaces and one text colour, and those token names are still referenced by `/work`,
-  `/work/<slug>`, `/thank-you` and `/404`, which are out of scope for the rebuild.
+  surfaces and one text colour, and those token names are still referenced by `/thank-you` and
+  `/404`, which are out of scope for the rebuild. (`/work` and `/work/<slug>` were the other two
+  consumers until 2026-08-18; both routes are gone.)
 - **Leading is `round(fontSize × 2400/2048)`, per size — not a ratio, and not `normal`.**
   Corrected 2026-08-18; an earlier version of this line said "7/6" and was wrong above 36px.
   `line-height: normal` for the *variable* Roboto Condensed measures ~1.208 in Chrome and drifts
@@ -255,7 +447,7 @@ reusing an existing supplied line over writing a new one, and say so in your rep
 - 0 inline `<script>` blocks in `dist/`.
 - ⚠ **No excluded asset staged — check by CONTENT HASH, before every commit:**
   ```bash
-  git diff --cached --name-only --diff-filter=A | grep -iE '\.(png|jpe?g|webp|svg|gif)$' \
+  git diff --cached --name-only --diff-filter=AM | grep -iE '\.(png|jpe?g|webp|svg|gif)$' \
     | while read -r f; do
         h=$(md5sum "$f" | cut -d' ' -f1)
         grep -q "$h" <<< "$(md5sum .scratch/quarantine/* 2>/dev/null)" \
@@ -268,6 +460,19 @@ reusing an existing supplied line over writing a new one, and say so in your rep
   payload is a binary image, so a text scan is structurally blind to it, and a renamed file defeats a
   filename check. Only the content hash is reliable. The quarantined copy in `.scratch/quarantine/`
   exists to be the reference for exactly this comparison.
+
+  ⚠ **Since 2026-08-18 this gate guards a resolution, not an absence.** `30:2` ships — see §4 — but
+  only as the downscaled `home-proof-automation-split.jpg`, which hashes differently from the
+  quarantined full-res originals and therefore passes. A `BLOCKED:` line for that node now means
+  someone re-exported it from Figma at full resolution, or swapped in a supplied render without
+  downscaling it — exactly the mistakes the ceiling exists to stop. Do not resolve it by emptying
+  `.scratch/quarantine/`; downscale instead, and quarantine every version so the gate keeps covering
+  the ones it already knew about.
+
+  ⚠ **The filter is `AM`, not `A`, and that matters now.** Once the shipped JPEG is tracked, a
+  full-res replacement arrives as a *modification* to a path git already knows — which
+  `--diff-filter=A` skips silently. Changed 2026-08-18, when the artwork was revised in place for
+  the first time. Do not narrow it back.
 - **0 occurrences of `[object Object]` in `dist/`:**
   ```bash
   grep -rl "\[object Object\]" dist --include=*.html | wc -l   # must be 0
@@ -293,7 +498,7 @@ reusing an existing supplied line over writing a new one, and say so in your rep
 <!-- SESSION-HANDOFF:START -->
 ## Current Session Handoff
 
-**Last updated:** 2026-08-17
+**Last updated:** 2026-08-18
 
 ### Current: the four pages rebuilt 1:1 from Figma — built and verified, NOT COMMITTED
 
@@ -307,15 +512,72 @@ misread `git status` — reading "differs from HEAD" as "left over from the old 
 deleting three untracked components that were in fact the new work. It retracted before anyone acted.
 `git status` tells you what differs from HEAD; it cannot tell you who wrote it.
 
-**Gate as of 2026-08-18, run against the BUILT output rather than the dev server:**
+**Gate as of 2026-08-18 BEFORE the `/work` removal — its page and asset counts are stale; the
+current ones are in the third pass below. Run against the BUILT output, not the dev server:**
 `npm run check` 0/0/0 · `npm run build` 8 pages · 0 inline `<script>` in `dist/` · 0 `[object Object]`
-· no third-party asset host · 0 excluded assets in the build · 22 webp, no avif ·
+· no third-party asset host · 0 excluded assets in the build · 24 webp, no avif ·
 **32/32 zero overflow** across 4 pages × 320/390/768/1024/1280/1440/1600/1920 with scrollbars shown.
 
-**Fidelity at ≥1440: every section on all four pages is +0 position and +0 height** against Figma
-geometry — Home 8/8, About 5/5, Services 4/4 (2069 / 2069 / 2316 exact), Contact 1/1. Measured with a
-harness fed by node values read independently of anything the page agents reported, because a harness
-fed by their own numbers can only confirm they were self-consistent.
+⚠ **Re-run scope, 2026-08-18 (Proof case one gained its image).** Everything on the line above was
+re-run except the 32/32 overflow matrix, which was **not**. What replaced it for this change: the
+homepage alone at 320/375/1439/1440/1920 — zero page overflow at each, and case one's three overlay
+nodes stay inside the figure box at each. At ≥90rem the figure measures **50, 224, 789.3 × 400
+against the canvas — +0 on all four**, and the section is still 1173 tall. The webp count moved 22 →
+24 because the new asset emits two widths. **If you touch layout, run the real matrix; do not read
+the 32/32 above as covering this change.**
+
+⚠ **SUPERSEDED 2026-08-18 — the height half of this no longer holds.** Gerald asked for every section
+to be 100vh with scroll snap, was shown that it collides with the 1:1 height contract, and confirmed.
+Sections are now viewport-fitted; see the section-height convention above. **What survives is the
+proportions** — the canvas is uniformly scaled, so every child keeps its designed position *within*
+its section, and the x-geometry is untouched. **What is gone is the absolute height claim below.**
+Kept for the record, and because it is still the reference for anyone restoring 1:1:
+
+> **Fidelity at ≥1440: every section on all four pages is +0 position and +0 height** against Figma
+> geometry — Home 8/8, About 5/5, Services 4/4 (2069 / 2069 / 2316 exact), Contact 1/1. Measured with a
+> harness fed by node values read independently of anything the page agents reported, because a harness
+> fed by their own numbers can only confirm they were self-consistent.
+
+**Verified after both changes (viewport fit, then the Services split), against the BUILD on the
+preview server — not the dev server, and the preview was confirmed to be serving the new CSS first,
+because a stale one was already running:**
+
+`npm run check` 0/0/0 · `npm run build` 8 pages · 0 inline `<script>` · 0 `[object Object]` · 24 webp,
+0 avif · **96/96 zero horizontal overflow** across 4 pages × 8 widths
+(320/390/768/1024/1280/1440/1600/1920) × **3 heights (700/900/1200)** with scrollbars shown ·
+**0/96 cells with any Services column child outside its box** — that last one is the gate that
+matters, because `.svc-detail` sets `overflow: hidden` and would eat a dropped bullet silently. The
+story pinned in 24/24 About cells. At 1920×1015 all four Services rows measure exactly 1015px with
+37 / 58 / 93px of column headroom.
+
+⚠⚠ **THE HEIGHT AXIS IS NOT OPTIONAL, AND OMITTING IT ALREADY HID A REAL BUG.** The first two passes
+here ran every width at a single height of 900, where `--fx-s` is always < 1, and reported a clean
+32/32 twice. Re-run with the height axis added, the SAME build produced **18 overflowing elements at
+1440×1200 and 31 at 1440×1400** — caused by the viewport fit scaling up until the section's layout
+box fell under the 1440px design canvas. Fixed by the `100vw / 90rem` cap in `global.css`; see the
+warning on that rule. A single-height matrix is not a matrix.
+
+At 1920×1015: all 8 Home sections exactly 1015px with **0px seams** and full-bleed backgrounds
+spanning the full 1905px client width; all **7** Services sections exactly 1015px. Content survives
+the split intact — **3 titles, 12 blocks, 3 CTAs**, and all three footer anchors
+(`#creative-automation-systems`, `#managed-ad-creative`, `#3d-product-visuals`) still resolve, on the
+first screen of each service. Minimum top slack on any Services screen is **24.9px** (it was 0 before
+`SCREEN_PAD`). Rendered type at the 0.779 fit: body **18.7px**, block heading 28px, title 56.5px.
+
+Snap: nudging 130px past each of the 7 Services boundaries lands flush on all 7, and 120px past each
+of the 8 Home boundaries lands flush on all 8. The footer lands flush at the document bottom via
+`scroll-snap-align: end`. Mandatory snap does not trap the one remaining `fx-tall` section.
+
+⚠ **Not verified:** no real touch device, and no browser other than the Chromium the harness drives.
+`calc()` length ÷ length is the one modern feature this leans on — confirmed working in that
+Chromium, **unconfirmed in Safari and Firefox**. If the fit silently stops working in another
+browser, that division is the first thing to check.
+
+**The failure mode is benign, and that was tested rather than assumed.** Forcing `--fx-s` invalid
+makes every declaration that references it compute to `unset` — `transform: none`, `width: auto`,
+`margin-block-end: 0` — so the section falls back to `height: var(--fx-h)`: measured 1024px tall at
+the full 1905px client width, full-bleed intact. **A browser that cannot do the division gets the
+previous 1:1 layout, not a broken page.** So this needs no `@supports` guard.
 
 ⚠ **Two limits on that result, so the zeros are not read as stronger than they are:**
 1. **Section-level `+0` does not prove internal fidelity.** `.fx-frame` declares an explicit height,
@@ -340,12 +602,268 @@ Plan of record, and the full correction log from the discarded pass — still ac
 Proof section that is not a slider and the client-material image that must never be exported.
 
 **Two things were deliberately NOT reverted, because they are safety, not design:**
-1. `.gitignore` covers `.scratch/`, which holds the quarantined client-material image. Without it,
-   `git add .` stages client source code into a public repo.
+1. `.gitignore` covers `.scratch/`, which holds the quarantined full-resolution `30:2` export.
+   Without it, `git add .` stages legible engagement source code into a public repo. (The image
+   itself is cleared as of 2026-08-18 and ships downscaled; the full-res file is not — see §4.)
 2. This file and `CLAUDE.md`, which are absent from `10df2b1` and would have been deleted. They
    carry the excluded-node table, the CSP rule, and the letterform check for font verification.
 
+### 2026-08-18 — Gerald's review corrections
+
+Nine of eleven findings implemented; see `tasks/2026-08-18-post-rebuild-design-corrections.md`
+(gitignored) for the brief and the measurements. **Five deliberate deviations from the Figma were
+introduced and each is labelled `AUTHORED 2026-08-18` at the line that changed** — Proof arrow
+(30:17) centred at 50% instead of 66.1%, Proof eyebrow (22:72) raised from 13.792px to 18px to match
+22:30, Services rails narrowed 413 → 360 with the right-hand rail re-anchored to x=1030, Services
+block rhythm re-cut, and the shared footer given an `ink` surface on Services and Contact where
+33:700 / 33:760 are #242424. Do not "restore fidelity" on any of them.
+
+One structural fix worth knowing about: **`HomeHero` and `HomeAboutStrip` were scaling their
+artwork with the viewport while the copy stayed pinned to the 1440 canvas** — measured 1.32× at
+1920px. Both layers are now capped to `--fx-frame`. It was invisible at exactly 1440, which is why
+a 1:1 rebuild never caught it; check any new full-bleed image layer for the same thing.
+
+The newsletter (33:750) now lives in `Newsletter.astro` and is rendered by both `Footer` and
+`HomeClosing` (into the 24:230 panel). **It still renders nowhere, because `NEWSLETTER_ENDPOINT` is
+still null** — that is item 0 below.
+
+**Second pass, same day** (`tasks/2026-08-18-hero-background-newsletter-and-education-images.md`):
+
+- **The homepage has no footer at all now.** The endpoint gate described above was removed — Gerald
+  asked for the tagline block gone a second time with the endpoint still unset, so `index.astro`
+  passes a flat `footer={false}` and the page ends on the empty 24:230 panel. `/` therefore carries
+  no link columns and **no copyright line**; nothing else renders them. Setting the endpoint fills
+  the panel but does not bring those back.
+- **The hero frame fill is `--color-void` (#000000), not `--color-ink`.** New token, and it exists
+  for one element. `.hero__bg::before` continues the artwork's right-hand wash past 1440 with a
+  five-stop gradient sampled from the raster itself — the two edges are not the same colour (left
+  is pure black at every height, right ramps to `rgb(1,56,86)`). **Re-measure both if the hero
+  artwork is ever re-exported**; nothing in the build checks those stops against the file.
+- **The Education collage ships** — see §4, which now records the lifted exclusion.
+- **The hero is now two layers, and its background is not an image.** Gerald supplied a transparent
+  full-body cut-out (`home-hero-portrait.png`) and asked for the flattened raster to be replaced by
+  it plus a CSS gradient. Done: `.hero` carries a `radial-gradient` reconstructed by sampling the
+  old export on a 6 × 5 grid, and `.hero__portrait` holds the cut-out, bottom-anchored inside the
+  1440 canvas. This supersedes both the `--color-void` seam fix and the `::before` flank described
+  above — those were the best available while the hero was one raster, and neither survives.
+  `home-hero-bg.jpg` is unused but **kept on disk**: it is the only reference for the gradient
+  stops. Details in `MANIFEST.md` under Homepage.
+
+**Third pass, same day — `/work` removed everywhere.**
+
+Gerald reversed a decision `site.ts` had recorded as fixed and asked for **Work gone from the whole
+site**. Deleted: `src/pages/work/index.astro`, `src/pages/work/[slug].astro`, the `work` content
+collection and its schema, its single entry `no-code-pipeline-migration.md`, `CaseTeaser.astro`, and
+four images that only those pages used (`product-hairdryer.jpg`, `product-mouse.jpg`,
+`product-animation-poster.jpg`, `profile-photo.jpg`). The nav was already four items, so nothing
+moved there. `404.astro`’s Work link became About.
+
+⚠ **The `/works` redirect was deleted in that pass and has been RESTORED pointing at `/services`**
+(2026-08-18, after the pass). `/works` is a **live production URL on the Vue site `master` still
+serves** — it is in `master:src/router/index.js` — so deleting the rule outright would have 404’d a
+real, possibly-indexed page on the next deploy. `/services` is the authored choice of destination;
+the portfolio content it replaces no longer exists anywhere. **`/work` itself is deliberately left
+to 404** — that route only ever existed in this unreleased branch.
+
+Nothing was written to replace the removed pages. The homepage’s “What this looks like in real
+life” section is unaffected: its two narratives are hand-written in `home.ts` as `PROOF.cases` and
+never read the collection. **Do not wire that section to a collection to “restore” this one.**
+
+**Gate re-run after the removal and the redirect restore:** `npm run check` 0 errors / 0 warnings /
+0 hints · `npm run build` **6 pages** (was 8) · **0** inline `<script>` in `dist/` · 0
+`[object Object]` · **36 webp, 0 avif** (the count rose from 24 with the Education collage and hero
+portrait, not with this change) · **0** `href="/work…"` anywhere in `dist/` · `vercel.json` parses.
+⚠ **The overflow matrix was NOT re-run** — this pass deleted routes and touched no layout, but that
+is reasoning, not measurement. Say so rather than inheriting the 96/96 above.
+
+Three blanks were annotated rather than deleted — `automationCaseResult` (downgraded to
+`blocksPublication: false`, **not filled**), `secondCaseStudy` and `testimonialAutomation` (both
+marked orphaned). The gap each one names is still real; only the page that would have shown it is
+gone.
+
+**Fourth pass, same day — the newsletter shipped as UI, and centred.**
+
+Gerald: “complete the Subscribe to my newsletter feature as a UI for now — do not add any backend
+coding to it just yet”, then “properly center vertically … aligned to the left side content”.
+
+`NEWSLETTER_VISIBLE` (new, `site.ts`) now decides whether the block is **drawn**;
+`NEWSLETTER_ENDPOINT` still decides whether it can **post**. Splitting them is the whole design:
+
+| | endpoint set | endpoint null, visible (today) |
+|---|---|---|
+| element | `<form method="post">` | `<div data-newsletter="ui-only">` |
+| control | `type="submit"` | `type="button" disabled` |
+| can transmit an address | yes | **no — there is no form to submit** |
+
+Verified in the build: **exactly one `<form>` in all six pages**, and it is the contact form on
+`/contact`. The newsletter contributes none. So the old “never ship a Submit button that posts
+nowhere” rule is satisfied more strictly than hiding the block was — what is gone is the
+protection against a visitor reading a dead button as breakage, which is why §3 now carries a
+`grep -rl 'data-newsletter="ui-only"' dist` pre-deploy gate. **It is currently expected to print
+six files. That is the blocker, not a warning.**
+
+⚠ **The disabled pill deliberately keeps its full accent fill** (`rgb(0,170,255)`), so the preview
+shows the real design; only `cursor` changes, to `not-allowed`. Do not add a greyed `:disabled`
+style “for clarity”.
+
+**Two placement fixes, both AUTHORED 2026-08-18 and both departures from 33:750's y=40:**
+
+1. **Vertical centre in the footer.** At the Figma y the block hugged the top edge with 239px of
+   dead space beneath it. Now `top: 50%` + `translateY(-50%)`. The two readings of Gerald's
+   instruction converge exactly — left content spans y=38→321 (centre **179.5**) and the frame is
+   359 tall (centre **179.5**) — so centring in the frame *is* centring against the left column.
+   Measured 120.4 slack above and below on About, Services and Contact at 1440/1600/1920/2560.
+   Percentage-based rather than a computed top because the block's height is type-dependent.
+2. **An 18.223px gap above it below 90rem.** In flow the block had a **0px** gap — the only zero in
+   the footer stack — and collided with the last link-list item at every width 320→1439. It had
+   never been seen because the block was hidden until now. 18.223 is the footer's own number, the
+   gap the column block already owns below itself in the 359 budget. ⚠ It is reset to 0 inside the
+   ≥90rem query: `margin-block-start` on an absolutely positioned box **adds to `top`** and would
+   push it 18.2px below the centre.
+
+**The homepage instance needed nothing** — measured centre-to-centre against `.closing__canvas` at
+1440/1600/1920/2560: **delta 0.0 at every width.** Do not “fix” it to match the footer's rule; it is
+centred by a different mechanism and is already correct.
+
+**Gate:** `npm run check` 0/0/0 · `npm run build` 6 pages · 0 inline `<script>` · 0
+`[object Object]` · 36 webp, 0 avif · 1 `<form>` in the whole build · **96/96 zero overflow** across
+4 pages × 8 widths × 3 heights, with the newsletter's inertness re-asserted in every cell.
+
+⚠ **The 96-cell harness had to be rebuilt** (`.scratch/matrix.mjs`): the playwright
+`chrome-headless-shell-1228` every older `.scratch` script hardcodes **is no longer on this
+machine**, so `verify.mjs`, `fidelity.mjs` and the rest will all fail with ENOENT until repointed.
+The rebuild drives system Chrome at `C:/Program Files/Google/Chrome/Application/chrome.exe`.
+
+⚠ **And it over-reported on its first run** — 8 About cells flagged
+`img.about-education__collage-img` as overflowing. It is not a defect: the collage deliberately
+oversizes its children (`max-width: none`) inside a mask with `overflow: hidden`, so nothing is
+painted outside. A bounding-box overflow test is blind to a clipping ancestor; the harness now
+walks up for one before reporting. **Keep that check in any future matrix** or the collage will
+produce eight phantom failures every time.
+
+**Fifth pass, same day — the hero crop, and the Zuitt card.**
+
+Two of Gerald's reports, both fixed by measuring the design rather than adjusting by eye.
+
+**1. Homepage hero — “crop the png image of me and zoom it in just like the Figma.”**
+
+The cut-out was rendering full-body and small (`object-fit: contain`, bottom-anchored); the design
+is a waist-up crop bleeding off the bottom. `home-hero-bg.jpg` **is** the design's own 1440 × 1024
+render of frame `1:2`, so it is the target, not a memory of one. Solving for the transform that
+maps the 2160 × 3840 cut-out onto it gives **scale 0.66841, translate (252.9, −75.3)** — a
+1443.8 × 2566.7 box in a 1024-tall frame. Three independent estimators agreed to **0.3%**.
+
+Checked back against the design render afterwards, which is the part that matters:
+
+| landmark | design | rendered | delta |
+|---|---|---|---|
+| forehead y | 158 | 158 | **0** |
+| head width | 239 | 238 | −1 |
+| head left / right | 853 / 1091 | 855 / 1092 | +2 / +1 |
+| skin run (head+neck) | 465 | 466 | +1 |
+
+⚠ **TOP-anchored now, and that is a change in kind.** The old rule pinned his feet to the section
+bottom. A waist-up crop has no feet, so the head is the only landmark that can hold, and it is
+fixed 100.5px below the frame top. Bottom-anchoring would slide his head with the viewport-fit
+height. It relies on `.hero`'s `overflow: hidden`; remove that and 1542px of figure escapes.
+
+⚠ **Two follow-ons the crop forced, both easy to lose:** `max-width: none` on `.hero__img` (the
+global `img { max-width: 100% }` clamped it to 1425 and rendered a 1.3% under-scale that looks
+nearly right), and `widths`/`sizes` **576/1152 → 720/1440/2160** — 576 was being upscaled 2.5× into
+a 1443.8px box. Detail and re-run instructions: `MANIFEST.md` under Homepage.
+
+**2. About — the Zuitt card overlapped CIIT and was taller than the Filipino Institute card.**
+
+Both true, and **both were in the Figma's own node boxes** — `33:214` is 309 × 309 at y=715 while
+CIIT `33:215` ends at y=739, so the design overlaps them by 24px, and `33:217` is 288 × 288 at
+y=736. It is visible here because the logo ships on an opaque **white** field, so the overlap
+paints a white notch across the photo. The two cards also overlapped each other by 4px.
+
+Zuitt is now vertically identical to `33:217` — 288 × 288 at y=736, same top, same bottom, the same
+3px tuck under CIIT that `33:217` always had and nobody objected to, and a 17px gap between the
+cards instead of a 4px overlap. Kept square because the source is 447 × 447 and `cover` would crop
+a non-square box. **This is the only child of the collage that is not its node box** — the Figma
+value is recorded beside it in `MANIFEST.md` so the deviation is legible rather than lost.
+
+**Gate after both:** `npm run check` 0/0/0 · `npm run build` 6 pages · 0 inline `<script>` · 0
+`[object Object]` · 1 `<form>` · 36 webp, 0 avif · 0 excluded assets · **96/96 zero overflow**
+re-run after each layout change.
+
+⚠ **`npm run build` PASSED while `npm run check` FAILED** during this pass — an Astro `{/* */}`
+comment between attributes compiles fine and throws ts(1005) in check. Both gates, every time; the
+build alone would have shipped it. (And a literal `*/` inside such a comment terminates it early —
+that one does break the build.)
+
+⚠ **A blank screenshot of the About collage was a reveal-timing artifact, not a defect** — the
+section is `fx-fit` with scroll-triggered reveals, so `captureBeyondViewport` shoots it before it
+is revealed. Scroll down in steps, then capture the viewport. This is the third time that class of
+artifact has cost time here; `.scratch/edu2.mjs` does it correctly.
+
+**Sixth pass, same day — white service headlines, and the deep links wired up.**
+
+**1. The three `/services` headlines are now white.** `33:295`, `33:345` and `33:396` are **#00aaff
+in the design**; Gerald asked for white, so `.svc-detail__title` is `--color-fg` and carries an
+`AUTHORED 2026-08-18` note. The accent still leads one level down — the block headings (`h3`,
+`33:298` etc) stay #00aaff, so the section reads the same, the title just stops competing.
+
+**2. “Learn more →” and the footer's three Services links now deep-link to their own section.**
+All four surfaces pointed at bare `/services` before, landing every reader at the top of the page
+to find the right one themselves — which was the entire job of the link.
+
+⚠ **Both resolvers THROW rather than falling back**, and that is the point. A dead in-page anchor
+fails **silently**: the page is served, the browser stays put, no 404, no console error, and no
+build gate here would catch it. `HomeServices.astro` matches card title → `SERVICE_DETAILS.title`;
+`site.ts` passes ids explicitly (its footer labels are the short forms — ‘Creative Automation’,
+‘3D Product Visuals’ — so they cannot be title-matched) and checks them against the same array.
+Edit an id or a title and the build fails with the known values listed. **Do not soften either to
+`?? '/services'`.** Import direction is safe: `site.ts` imported nothing, `services.ts` pulls in
+`blanks.js` only.
+
+**3. ⚠ A REAL BUG found while testing this: every `/services` anchor landed 128px low below 90rem.**
+
+Two independent offsets existed for the *same* 64px sticky header, and per spec a target's
+`scroll-margin` and its scroll container's `scroll-padding` **sum**:
+
+| where | value | purpose |
+|---|---|---|
+| `html` in `global.css` | `scroll-padding-top: 4rem` | the 64px bar — **and** where scroll-snap rests every section |
+| `.svc-detail` in `ServiceDetail.astro` | `scroll-margin-top: 4rem` | the 64px bar |
+
+Both carried a comment reading “4rem = that 64px exactly”; each author believed theirs was the
+only one. Measured 128 at 390/768/1280 when the intent was 64. **The `.svc-detail` one was removed**
+— the container rule is the one snap also reads, and it already zeroes itself at ≥90rem. Its
+`scroll-margin-top: 0` reset in the 90rem block went with it. A comment at the site explains why
+there is deliberately no offset there.
+
+⚠ **This class of bug cannot be caught by reading either file.** Both are locally correct; only the
+rendered scroll position shows it. When adding a scroll offset, grep for the other property.
+
+**Verification — landing, not just resolving.** An anchor that resolves can still scroll wrong on a
+scroll-snap page, so both were measured: **15/15** direct navigations and **18/18** click paths
+(footer links clicked from `/services` itself, which is a same-page anchor and does no page load,
+plus each homepage card) land with the section top at **0** at ≥90rem and **64** below it, flush
+under the bar — across 390/768/1280/1440/1920. Each link's destination title was checked against
+its own label. Harnesses: `.scratch/anchors.mjs`, `.scratch/anchor-click.mjs`.
+
+**Gate:** `npm run check` 0/0/0 · `npm run build` 6 pages · 0 inline `<script>` · 0 `[object
+Object]` · 1 `<form>` · 36 webp, 0 avif · **96/96 zero overflow** · the 20 remaining bare
+`/services` links are all the generic ‘Services’ nav/Explore item, as they should be.
+
+⚠ **`src/components/ServiceCard.astro` is DEAD CODE** — nothing imports it (the live homepage uses
+`HomeServices.astro`). Amusingly it already linked to `/services#${service.slug}`, i.e. the pattern
+this pass had to re-create. Left in place rather than deleted unasked; delete it or revive it, but
+do not read it as the shipping card.
+
 ### Still open — needs Gerald, not an agent
+0. **`NEWSLETTER_ENDPOINT` in `site.ts`, plus a consent line and a privacy-policy link.** ⚠ Since
+   2026-08-18 the block **does** render everywhere — as inert UI, see the fourth pass — so this is
+   no longer “it is invisible”, it is **“it ships dead unless you close this”**. Still needed: a real
+   Formspree URL (the CSP already allows it) and the consent copy `site.ts` records as a
+   precondition. The consent line must be **Gerald's words**, rule 6.
+0b. ~~**Education & Training left visual.**~~ **CLOSED 2026-08-18.** Gerald supplied the four files
+   and instructed implementation after being shown they are the excluded nodes; the collage ships
+   and §4 records the decision as his. Nothing further is needed from him unless the rights basis
+   is challenged.
 1. **The dated sentence in `about.ts` → `story.body[23]`.** Gerald has flagged it as needing
    rewording: it conflates two things that began at different times, and the date it implies is not
    the one he means. The replacement must be **his** words — rule 6, do not author copy — and must go
@@ -354,14 +872,17 @@ Proof section that is not a slider and the client-material image that must never
 2. **The Education italic.** Four institution names render a synthesised oblique, visibly wider and
    over-slanted at 24px. Full Roboto Condensed Italic is 56,956 B; a subset of the 33 glyphs used is
    10,032 B. Recommendation is subset-or-drop, leaning drop.
-3. **Blank #1 still blocks publication** — the automation case study has no outcome number. The Figma
-   supplies none either.
+3. ~~**Blank #1 still blocks publication.**~~ **NO LONGER BLOCKING as of 2026-08-18 — and it was
+   not answered.** `/work` and `/work/<slug>` were its only consumers and both were deleted, so no
+   page is waiting on the number. `blanks.js` now sets `blocksPublication: false` with that
+   reasoning inline. **The number is still missing.** Restore `true` the moment any page shows a
+   case-study outcome again.
 
 ### Carried over from the discarded pass — true of the design, not of this code
-- **`/work/<slug>` collides** the "← All work" link and the eyebrow on one line. **Pre-existing and
-  still present**, unrelated to any Figma work — proved by toggling `--shell` at runtime, identical
-  adjacency at both widths. Cause is `.eyebrow` being `display: inline-block`; the fix is `block` on
-  that one `<p>` in the page, not on the shared class.
+- ~~**`/work/<slug>` collides** the "← All work" link and the eyebrow on one line.~~ **MOOT
+  2026-08-18 — the route is gone.** Kept only for the cause, which is still live: `.eyebrow` is
+  `display: inline-block`, so any future page that puts an eyebrow beside an inline link gets the
+  same adjacency. Fix it with `block` on that one `<p>`, never on the shared class.
 - **The Figma's content measure is 1340px** (x=50→1390 in a 1440 frame). `--shell` is currently
   76rem, giving 1136px — 204px narrower. Note this is a *measure* vs a *box*: `.shell` subtracts two
   gutters from `max-width`, so matching 1340px of measure needs an 88.75rem box, not 83.75rem.
@@ -379,7 +900,9 @@ Proof section that is not a slider and the client-material image that must never
 - Separate de-risking commit `c33e8c6` on `master` removes employment-facing framing and fixes the
   blocked analytics beacon, footer contrast, missing `<main>` landmark, and two dead deploy configs.
   It introduces no new positioning copy.
-- New routes: `/services`, `/work`, `/work/<slug>`, `/thank-you`, real 404. `/works` 301s to `/work`.
+- New routes: `/services`, `/thank-you`, real 404. ⚠ `/work` and `/work/<slug>` shipped here too and
+  were **removed 2026-08-18** at Gerald’s instruction — see the third pass below. `/works` now 301s
+  to `/services`.
 - Contact form rebuilt with `fetch` submission, inline success and error states, and a working no-JS
   fallback. ⚠ It had **seven** qualification fields; 2026-08-17 cut it to **five** per the Figma.
   The removed two were `service` ("What do you need?") and `budget` ("Budget range").
@@ -391,26 +914,29 @@ Proof section that is not a slider and the client-material image that must never
   handoff. `master` and `redesign/astro-service-site` are still clean.
 
 ### Blockers and risks
-- ⚠ **Superseded 2026-08-17: one blank blocks publication, not three.** #2 (retainer monthly volume)
-  and #3 (3D price) were filled from the Figma. **#1, the automation case-study outcome number, is
-  still unfilled and still blocking** — the Figma supplies no figure for it either. See
-  `tasks/PRE-LAUNCH-CHECKLIST.md` (local, gitignored).
-- The single case study has no body narrative. The copy document supplies a teaser only; writing
-  more would mean inventing detail about a client engagement.
+- ⚠ **Superseded twice. No blank blocks publication as of 2026-08-18.** #2 and #3 were filled from
+  the Figma on 2026-08-17; #1 stopped blocking on 2026-08-18 because its only consumers were
+  deleted, **not because a number was supplied**. `tasks/PRE-LAUNCH-CHECKLIST.md` (local,
+  gitignored) has not been re-checked against this and may still list three.
+- ~~The single case study has no body narrative.~~ Moot with the route. The homepage’s two proof
+  narratives are hand-written in `home.ts` as `PROOF.cases` and were never part of that collection.
 - Nothing has been deployed. `master` still serves the old Vue site in production.
 
 ### Next actions
 1. Deploy `master` (`c33e8c6`) — it only removes exposure and fixes findings, and adds no positioning.
-2. Fill the three blocking blanks in `src/content/blanks.js`.
+2. ~~Fill the three blocking blanks.~~ None block now — see Blockers. Re-check
+   `tasks/PRE-LAUNCH-CHECKLIST.md`, which predates both changes.
 3. Merge `redesign/astro-service-site` into `master` and deploy.
-4. Confirm on the deployed site: `/works` 301, real 404 status, `robots.txt` and `sitemap-index.xml`
+4. Confirm on the deployed site: `/works` → `/services` 301, real 404 status, `robots.txt` and `sitemap-index.xml`
    served as their own files, and all security headers present.
 5. Submit the contact form once for real and confirm delivery.
 6. Re-run Lighthouse against production and record the numbers.
 
 ### Verification pending
-- `/works` → `/work` redirect and live header delivery — `vercel.json` behaviour, not exercisable by
-  `astro preview`.
+- `/works` → `/services` redirect and live header delivery — `vercel.json` behaviour, not
+  exercisable by `astro preview`. ⚠ The destination changed 2026-08-18; a stale or indexed
+  `/works` URL is the only reason this redirect exists. `/work` itself now 404s by design — it
+  never shipped to production, so nothing external points at it.
 - Lighthouse was not re-run; the audit's mobile baseline was Accessibility 92, Best Practices 73,
   SEO 83, and a fair comparison needs the deployed site.
 - Contact form was driven end to end with a stubbed `fetch`; no message has actually been sent.

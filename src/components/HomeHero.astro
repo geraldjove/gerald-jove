@@ -16,27 +16,51 @@ import HomeLines from './HomeLines.astro'
 import { HERO } from '@/content/home'
 import { AVAILABILITY } from '@/content/site'
 
-import heroBackground from '@/assets/img/home-hero-bg.jpg'
+import heroPortrait from '@/assets/img/home-hero-portrait.png'
 
 /** `as const` narrows each run to its own literal shape; widen it back to Run. */
 const ledeParagraphs: readonly (readonly Run[])[] = HERO.body.paragraphs
 ---
 
 <section class="fx-frame hero" style="--fx-h: 64rem" data-node="1:2">
-  {/* 19:12 — the black fill, the radial accent wash and the masked portrait,
-      flattened to one export because the mask and the gradient are baked in.
+  {/* ⚠ REWORKED 2026-08-18, on Gerald's instruction: "instead of using [the
+      flattened raster] let's rework it with [a cut-out] and then add the
+      gradient background instead."
 
-      ⚠ This is the only frame on the site with artwork under the navbar. The
-      shared Nav is transparent over it and its links are white, which is legible
-      here only because THIS image is near-black across its top 85px. That is a
-      property of the file, not a guarantee: swap it for a lighter crop and the
-      nav fails silently, and no check in the build would catch it. */}
-  <div class="hero__bg">
+      This used to be `home-hero-bg.jpg` — node `19:12` flattened to one export
+      with the black fill, the radial accent wash and the masked portrait all
+      baked in. That single raster is why the section had a scale problem at all:
+      it could not be full-bleed and design-scale at the same time, so capping it
+      left the wash terminating at 1440 with a visible edge.
+
+      Split into two layers, it stops being a trade-off — the wash is CSS and
+      extends to any width for free, and the portrait is its own transparent
+      layer that keeps its scale. `home-hero-bg.jpg` is now UNUSED; see
+      MANIFEST.md before deleting it, the revert path needs it.
+
+      ⚠ The nav-legibility note that used to live here still applies, and now
+      applies to the GRADIENT rather than to a file: the shared Nav is
+      transparent with white links, and it is legible because the top of this
+      section is near-black. The gradient's glow is anchored bottom-right for
+      that reason. Move the glow upward and the nav fails silently — no check in
+      the build catches it. */}
+  {/* ⚠ `widths`/`sizes` were widened 2026-08-18 WITH the crop below, and the two
+      must stay in step. The old 576/1152 pair was sized for a figure letterboxed
+      into a 740px column; the crop renders it 1443.8px wide at 1440 and ~1523 at
+      1920, so 576 was being upscaled 2.5x. 2160 is the source's own width and the
+      ceiling — above roughly a 2560 viewport the fit scales past it and the figure
+      does upscale. Re-check these if the crop scale changes.
+
+      ⚠ This comment sits ABOVE the tag, not between attributes. An Astro JSX
+      comment placed inside the attribute list compiles cleanly under
+      `npm run build` and FAILS `npm run check` with ts(1005) — verified here
+      2026-08-18. Build alone is not the gate. */}
+  <div class="hero__portrait">
     <Image
-      src={heroBackground}
+      src={heroPortrait}
       alt="Gerald Jove"
-      widths={[720, 1080, 1440]}
-      sizes="100vw"
+      widths={[720, 1440, 2160]}
+      sizes="(min-width: 90rem) 1600px, 45vw"
       format="webp"
       quality={82}
       loading="eager"
@@ -80,40 +104,72 @@ const ledeParagraphs: readonly (readonly Run[])[] = HERO.body.paragraphs
 </section>
 
 <style>
-  /* The frame's own fill is #000000. It is never visible: the 19:12 export is
-     opaque and covers the frame at every width, so `--color-ink` stands in
-     rather than introducing a black surface token nothing else needs. */
+  /* The frame fill (1:2) is #000000, and the accent wash is now drawn here
+     rather than baked into a raster.
+
+     ⚠ The gradient is RECONSTRUCTED FROM THE OLD EXPORT, not invented. Sampling
+     `home-hero-bg.jpg` on a 6 x 5 grid, ignoring the columns the subject sits
+     in, gives a glow anchored at the bottom-right corner and decaying to pure
+     black up and to the left:
+
+       corner (100%, 100%)  rgb(0,55,85)      x40%, y100%  rgb(1,21,32)
+       x100%, y50%          rgb(0,22,33)      x20%, y100%  rgb(1,6,10)
+       the whole left edge   #000000 at every height
+
+     A radial at `120% 100% at 100% 100%` reproduces those four readings to
+     within ~2/255 each. That is why the size is 120% on x — the horizontal
+     decay is slower than the vertical, and a circle or a 100% ellipse is
+     visibly wrong at the left edge.
+
+     Being CSS rather than a raster, it extends to any viewport width for free,
+     which is what "extend the background to max-width" asked for. */
   .hero {
-    background-color: var(--color-ink);
+    background-color: var(--color-void); /* 1:2 fill #000000 */
+    background-image: radial-gradient(
+      120% 100% at 100% 100%,
+      rgb(0 58 88) 0%,
+      rgb(0 30 46) 35%,
+      rgb(0 10 16) 65%,
+      rgb(0 0 0) 100%
+    );
     overflow: hidden;
   }
 
   /* No negative z-index here: `.hero` paints its own background over any child
      below zero, which loses the artwork entirely. The copy sits above simply by
      being later in the DOM and positioned. */
-  .hero__bg {
+  /* The cut-out. Bottom-anchored and never cropped: `contain` plus a bottom
+     origin keeps his feet on the section's bottom edge at every size, which is
+     the one alignment that has to hold — a full-body figure floating clear of
+     the floor reads as a mistake, a slightly smaller one does not. */
+  .hero__portrait {
     position: absolute;
-    inset: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    width: 45%;
+    pointer-events: none;
   }
 
   .hero__img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: 68% center;
+    object-fit: contain;
+    object-position: bottom right;
   }
 
-  /* AUTHORED: below 1440 the copy would sit across the portrait, so the image is
-     pushed right and scrimmed. Neither exists in the design. */
-  .hero__bg::after {
+  /* AUTHORED: below 1440 the copy and the figure share the width, so the figure
+     is held to the right edge and dimmed behind the text. The design has no
+     layout at this width at all. */
+  .hero__portrait::after {
     content: '';
     position: absolute;
     inset: 0;
     background: linear-gradient(
       to right,
-      rgb(0 0 0 / 0.93) 0%,
-      rgb(0 0 0 / 0.78) 55%,
-      rgb(0 0 0 / 0.4) 100%
+      rgb(0 0 0 / 0.85) 0%,
+      rgb(0 0 0 / 0.45) 60%,
+      rgb(0 0 0 / 0.15) 100%
     );
   }
 
@@ -186,12 +242,77 @@ const ledeParagraphs: readonly (readonly Run[])[] = HERO.body.paragraphs
   /* --- The design, exactly ------------------------------------------------
      Everything below reproduces frame 1:2 at its drawn coordinates. */
   @media (min-width: 90rem) {
-    .hero__bg::after {
-      display: none;
+    /* ⚠ AUTHORED 2026-08-18. The scale problem this replaces is worth keeping
+       on the record, because the two-layer split is what actually solved it.
+
+       While the hero was one flattened raster it rendered 1905px wide at a
+       1920px viewport against a 1440px design width — 1.32x — because the image
+       layer was full-bleed while `.hero__canvas` is capped at
+       `min(--fx-frame, 100%)`. The art grew with the viewport and the type on
+       top of it did not. Capping the raster fixed the scale and immediately
+       created a second problem: the wash stopped at 1440 with a visible edge.
+
+       There was no setting of one raster that satisfied both. Splitting it
+       does: the gradient on `.hero` is viewport-wide, and the cut-out below is
+       pinned to the design canvas, so the figure holds its scale against the
+       copy no matter how wide the window gets. At exactly 1440 the whole thing
+       is a no-op, which is why the 1:1 rebuild never saw the original defect.
+       `HomeAboutStrip` had the same defect and carries the cap-only fix. */
+    /* The wrapper is now the WHOLE design canvas, not the right-hand 740px of
+       it. The old `padding-left: 43.75rem` boxed the figure into the right side
+       so that `contain` could letterbox a full-body shot inside it; the crop
+       below is placed at absolute design coordinates instead, so the padding
+       would only shift it. */
+    .hero__portrait {
+      left: 50%;
+      right: auto;
+      width: min(var(--fx-frame), 100%);
+      padding-left: 0;
+      transform: translateX(-50%);
     }
 
+    /* ⚠ MEASURED FROM THE DESIGN, NOT CHOSEN. 2026-08-18, on Gerald's note that
+       the figure should be cropped and zoomed “like the Figma”.
+
+       `home-hero-bg.jpg` is the design's own 1440 x 1024 render of frame 1:2, so
+       where the figure sits in it IS the target. Solving for the uniform
+       transform that maps the 2160 x 3840 cut-out onto that render gives:
+
+         scale 0.66841   translate (252.9, -75.3)   =>  1443.8 x 2566.7
+
+       Three independent estimators — the head's skin-row run, the head's width,
+       and the widest single row — agreed to **0.3%** (0.66714 / 0.66947 /
+       0.66862), which is why this is quoted to five figures rather than eyeballed.
+       Harness: `.scratch/hero-fit.mjs`. Re-run it if the cut-out is ever
+       re-exported; nothing in the build checks these numbers against the file.
+
+       ⚠ TOP-anchored, and that is the change in kind. The old rule bottom-anchored
+       a `contain`ed full-body figure so his feet met the section's bottom edge.
+       A waist-up crop has no feet — it bleeds off the bottom by design (the box is
+       2566.7 tall in a 1024 frame) — so the head is the only landmark that must
+       hold, and it is fixed 100.5px below the frame top. Anchoring to the bottom
+       would slide his head up and down with the viewport-fit height.
+
+       ⚠ It relies on `.hero`'s `overflow: hidden` to clip. Remove that and 1542px
+       of figure escapes the section. */
     .hero__img {
-      object-position: center;
+      position: absolute;
+      left: 15.80625rem; /* 252.9px */
+      top: -4.70625rem; /* -75.3px — the crown sits above the frame */
+      width: 90.2356rem; /* 1443.77px = 2160 x 0.66841 */
+      height: auto; /* the base rule's 100% would squash the ratio */
+
+      /* ⚠ Load-bearing, same trap as `.about-education__collage-img`. global.css
+         sets `img, video { max-width: 100% }`, which silently clamped this to the
+         1425px wrapper — measured 1425 x 2533.3 instead of 1443.8 x 2566.7, a 1.3%
+         under-scale that reads as “nearly right” rather than as a broken rule. */
+      max-width: none;
+      object-fit: fill; /* box now matches the intrinsic ratio; nothing to fit */
+    }
+
+    /* No scrim at the design width — the copy and the figure do not overlap. */
+    .hero__portrait::after {
+      display: none;
     }
 
     .hero__canvas {

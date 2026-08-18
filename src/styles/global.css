@@ -7,10 +7,14 @@
       measured node value from Figma file 6Lgtxs8zSUzruc8zu8tY0T, converted
       px / 16 → rem, with the node id in a comment. This is what the four
       rebuilt pages, Nav and Footer are made of.
-   2. Everything else — the LEGACY layer that /work, /work/<slug>, /thank-you
-      and /404 still use. Those routes are out of scope for the 1:1 rebuild,
-      so every token name they reference is kept. Values were re-pointed onto
-      the new palette so they still pass contrast; names did not change.
+   2. Everything else — the LEGACY layer that /thank-you and /404 still use.
+      Those routes are out of scope for the 1:1 rebuild, so every token name
+      they reference is kept. Values were re-pointed onto the new palette so
+      they still pass contrast; names did not change.
+      ⚠ /work and /work/<slug> were the main consumers of this layer and were
+      deleted on 2026-08-18. Much of what follows is now reachable only from two
+      small pages, so it is a pruning candidate — but check both of those pages
+      before removing any token, not just grep for the token name.
 
    Palette and typefaces changed 2026-08-17 to the Figma's. The design won:
    #161616 / #242424 / #00aaff, Poppins + Roboto Condensed. Contrast for every
@@ -49,6 +53,14 @@
   --color-raised: #242424; /* Figma raised surface: footer band 33:730, input fills */
   --color-card: #242424; /* the design has only two surfaces; card aliases raised */
   --color-inset: #2e2e2e; /* AUTHORED — no third surface exists in the Figma. Legacy routes only. */
+  /* Frame fill of the hero, node 1:2. The only #000 surface in the design, and
+     it went unused until 2026-08-18 because the 19:12 export covered the frame
+     at every width — see the note in HomeHero.astro. Once that artwork was
+     capped at --fx-frame, the frame fill became visible beyond 1440 and had to
+     be the real colour: the raster's outermost pixel column is pure #000000 on
+     both edges, so anything lighter shows as a seam. Do not reuse this as a
+     general surface; the design has two. */
+  --color-void: #000000;
 
   --color-fg: #ffffff; /* Figma */
   --color-fg-muted: #d4d4d4; /* AUTHORED legacy — the Figma has no second text grey */
@@ -252,8 +264,9 @@
   --breakpoint-fx: 90rem;
 
   /* --- Legacy type scale --------------------------------------------------
-     Still referenced by /work, /work/<slug>, /thank-you, /404 and the four
-     components they share. Do not use these on a rebuilt page. */
+     Still referenced by /thank-you, /404 and the components they share.
+     Do not use these on a rebuilt page. (/work and /work/<slug> were the other
+     consumers until 2026-08-18.) */
   --text-eyebrow: 0.75rem;
   --text-eyebrow--line-height: 1.2;
   --text-eyebrow--letter-spacing: 0.2em;
@@ -363,6 +376,35 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+
+    /* --- Scroll snap -------------------------------------------------------
+       Requested 2026-08-18 alongside the 100svh sections. `html` is the
+       scroller here and `body` is NOT, despite `overflow-x: hidden` computing
+       `overflow-y: auto` on it — verified with `document.scrollingElement`.
+       Putting this on `body` would silently do nothing.
+
+       `mandatory`, not `proximity`, because every fitted section is exactly one
+       snapport tall so there is no in-between position worth resting at. The
+       four oversized sections (`.fx-tall`) are larger than the snapport, and
+       CSS Scroll Snap §5.2 requires the snapport be able to rest anywhere
+       inside such an area — so mandatory does NOT trap them. That is the spec
+       guarantee the choice rests on; it is also verified by scrolling. */
+    scroll-snap-type: y mandatory;
+
+    /* Below 90rem the header is sticky, opaque and 64px tall, so a section
+       snapped to `start` would slide its first line under the bar. Same
+       conditional as every other nav offset in this file — see --fx-nav-h. */
+    scroll-padding-top: 4rem;
+  }
+
+  @media (min-width: 90rem) {
+    html {
+      /* ⚠ Zero, NOT 85px. At >=90rem the navbar is `position: absolute`, out of
+         flow and scrolls away, so there is nothing for a snapped section to
+         land under. Any padding here overshoots every section by its own
+         height. */
+      scroll-padding-top: 0;
+    }
   }
 
   body {
@@ -456,6 +498,26 @@
     position: relative;
   }
 
+  /* --- Viewport-height sections + snap target -------------------------------
+     Requested 2026-08-18. This REPLACES the 1:1 height contract at >=90rem: the
+     Figma proportions survive exactly, the Figma absolute heights do not. See
+     the corresponding note in AGENTS.md before treating any section height in
+     this repository as a copied value again.
+
+     `.fx-fit` is the same behaviour for sections that must NOT take `.fx-frame`
+     — the five About sections, which deliberately avoid it because it carries a
+     default `line-height` that would wreck their per-node leading. Do not merge
+     the two classes; the About page says why in its own comment.
+
+     ⚠ `svh`, never `vh`. `100vh` is the LARGE viewport on mobile, so a section
+     sized with it hides its last line behind the address bar until the user
+     scrolls. `svh` is the small viewport and is correct at first paint. */
+  .fx-frame,
+  .fx-fit {
+    min-height: 100svh;
+    scroll-snap-align: start;
+  }
+
   @media (min-width: 90rem) {
     .fx-frame {
       height: var(--fx-h, auto);
@@ -476,6 +538,83 @@
        specificity at 0 so a page can still opt back in per element. */
     .fx-frame :where(h1, h2, h3, h4, h5, h6, p) {
       text-wrap: wrap;
+    }
+
+    /* --- Fit the design canvas to the viewport ----------------------------
+       WHY A TRANSFORM AND NOT A RE-LAYOUT. At >=90rem every section is a
+       fixed-size canvas whose children are `position: absolute` at Figma
+       coordinates. Changing the section height moves the BOX and not its
+       CONTENTS: the children stay pinned, so content either spills into the
+       next section or — where `overflow: hidden` is set, as on `.svc-detail` —
+       is clipped away silently. Scaling the whole canvas is the only change
+       that puts the box at 100svh while leaving every child where it was
+       designed to sit.
+
+       THE THREE DECLARATIONS BELOW ARE ONE MECHANISM. Removing any one of them
+       breaks the other two:
+
+         width             widen by 1/s BEFORE scaling, so that after scaling
+                           the section is exactly 100% again. Without it every
+                           full-bleed background shrinks by (1-s) and leaves a
+                           bar of page colour down both edges of every section.
+         margin-inline     negative half the added width, to keep it centred.
+                           `margin-inline: auto` cannot do this — auto margins
+                           compute to 0 when the box is wider than its
+                           container, which left-aligns it instead.
+         margin-block-end  `transform` does not affect layout, so the section
+                           still occupies --fx-h rows after scaling. This pulls
+                           the flow back to the visual height. It is negative
+                           when s<1 and positive when s>1, and the same
+                           expression is correct in both directions.
+
+       ⚠ `min-height: 0` is required. The 100svh minimum set outside this query
+       is right below 90rem, and here it would override `height: --fx-h` on any
+       viewport taller than the design section — the transform maths assumes the
+       layout box is exactly --fx-h, so the section would scale from the wrong
+       base and overshoot.
+
+       The clamp bounds are AUTHORED guards, not design values: the floor keeps
+       body copy legible on a very short window, and 1.4 stops a tall one
+       inflating a 64px heading past 90px. Between them the fit is exact.
+
+       ⚠ The floor was 0.7 and is 0.6 as of 2026-08-18. The Services rows are
+       1490px tall and need 0.681 to fit a 1015px viewport, so a 0.7 floor
+       CLAMPED them — leaving each row 1024px against a 1015px viewport, i.e.
+       visibly not the 100svh the whole mechanism exists to produce. A floor
+       that binds in ordinary use is not a guard, it is a bug. 0.6 renders the
+       24px Services body at 14.4px in the worst case and only engages on
+       genuinely short windows.
+
+       ⚠⚠ `100vw / 90rem` IS A HORIZONTAL-OVERFLOW GUARD, NOT A STYLE CHOICE.
+       The section is widened to `100% / s`, so scaling UP makes its layout box
+       NARROWER than the viewport. Once it falls under the 1440px design canvas,
+       every child pinned near the canvas's right edge (Home card three ends at
+       x=1385, the Services rail at 1390) hangs off the page.
+
+       Measured before the guard existed, on `/`: 1440×1200 produced **18**
+       overflowing elements and 1440×1400 produced **31**. It is invisible at
+       1920 wide — the section is still 1393 there, which cleared 1385 by 8px
+       and passed on luck rather than on design.
+
+       ⚠ A width×height matrix at ONE height cannot see this. The first 32/32
+       pass here ran every width at height 900, where s<1 always, and reported
+       clean. Vary BOTH axes when you touch this rule.
+
+       Consequence, deliberately accepted: on a viewport taller than the design
+       aspect allows (roughly >1044px at 1440 wide) the width cap wins and the
+       section is SHORTER than 100svh. That is geometric — a 1440×1024 canvas
+       cannot fill a taller box without cropping it — and a section that is a
+       little short beats one that scrolls sideways. */
+    .fx-frame:not(.fx-tall),
+    .fx-fit:not(.fx-tall) {
+      --fx-s: clamp(0.6, min(100svh / var(--fx-h), 100vw / 90rem), 1.4);
+
+      min-height: 0;
+      width: calc(100% / var(--fx-s));
+      margin-inline: calc(50% - 50% / var(--fx-s));
+      margin-block-end: calc(var(--fx-h) * (var(--fx-s) - 1));
+      transform: scale(var(--fx-s));
+      transform-origin: top center;
     }
   }
 

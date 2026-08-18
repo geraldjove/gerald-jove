@@ -195,28 +195,15 @@ export const PROOF = {
   },
 
   /**
-   * NOT used by the homepage, and NOT the same sentence as `h2` above.
+   * Two case narratives, alternating sides. Both now carry an image: case one
+   * node 30:12 (containing 30:2), case two node 32:30.
    *
-   * `/work` imports this as its own <h1>. That route is out of scope for the
-   * rebuild and must keep the wording it already ships
-   * (docs/website-copy-2026-08-09.md §2.4) — the Figma's "real life" line is
-   * the homepage's, and pointing /work at `h2.plain` would silently re-word a
-   * page nobody reviewed.
-   *
-   * It is a separate flat string on purpose: /work then depends on no part of
-   * the homepage heading's SHAPE, so re-cutting `h2` for the design cannot
-   * break that route again. It did once — `h2` became an object and /work
-   * rendered "[object Object]", which `astro check` cannot catch because
-   * interpolating an object into a template is legal.
-   *
-   * Delete this in the same change that restyles /work.
-   */
-  workH1: 'What this looks like in practice',
-
-  /**
-   * Two case narratives, alternating sides. Case one ships text-only: its Figma
-   * visual (node 30:12, containing 30:2) is a permanently excluded node — see
-   * the excluded-node table in AGENTS.md. Case two keeps its own image, 32:30.
+   * ⚠ Case one's visual was withheld until 2026-08-18 as client-engagement
+   * material. It is not — Gerald generated it, so there is no client asset and
+   * no approval to obtain. The exclusion is lifted. **What replaced it is a
+   * resolution ceiling, not a ban:** the right-hand half renders source code,
+   * and the shipped file is downscaled until that code is illegible. Only the
+   * downscaled asset may enter the repository. See AGENTS.md §4.
    */
   cases: [
     {
@@ -228,7 +215,25 @@ export const PROOF = {
         'As the amount of work grew, the system became harder to manage. It would break, costs ' +
         'kept growing, and fixing problems took too much time. I rebuilt the process as a ' +
         'custom-coded system that the agency owns.',
-      image: null,
+      /**
+       * node 30:12. The Figma supplies no alt text; this one is written, and
+       * describes what the visual shows without repeating the two overlay
+       * labels, which are real text in the DOM. Flagged as authored.
+       */
+      image: {
+        alt: 'The same ad-production workflow before and after the rebuild, split across one frame: a canvas of wired-together no-code automation nodes on one side, the source code that replaced it on the other',
+
+        /**
+         * nodes 30:18 / 30:19 — Roboto Condensed Bold 24px, accent, laid over
+         * the image itself. Supplied by the Figma, not authored. Without them
+         * the split reads as two unrelated textures, so they are content and
+         * live here rather than in the component.
+         */
+        labels: {
+          before: 'No-Code Automation', // 30:18
+          after: 'Custom-coded System', // 30:19
+        },
+      },
     },
     {
       node: '22:83',

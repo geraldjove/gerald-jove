@@ -16,7 +16,7 @@ import { ABOUT } from '@/content/about'
 const { heading, cards, tools } = ABOUT.capabilities
 ---
 
-<section class="about-capabilities">
+<section class="about-capabilities fx-fit">
   <div class="about-capabilities__inner">
     <h2 class="about-capabilities__heading">
       {
@@ -155,12 +155,23 @@ const { heading, cards, tools } = ABOUT.capabilities
   /* --- Figma-exact at >=90rem ---------------------------------------------- */
   @media (min-width: 90rem) {
     .about-capabilities {
-      height: 64rem; /* 33:121 — 1024 */
+      /* --fx-h feeds the 100svh viewport fit in global.css (`.fx-fit`). */
+      --fx-h: 64rem; /* 33:121 — 1024 */
+      height: var(--fx-h);
       padding-block: 0;
     }
 
+    /* ⚠ Was 58.875rem (942, the Figma group box). Widened to the full 1440
+       design canvas on 2026-08-18 so the three cards can sit at the HOMEPAGE's
+       own x positions — see the grid rule below. The heading is unaffected: it
+       is 576 wide and `margin-inline: auto`, so it was centred on the frame at
+       942 and is still centred on the frame at 1440.
+
+       `min(90rem, 100%)` rather than a bare 90rem, for the reason `.fx-canvas`
+       in global.css spells out — a media query counts the scrollbar gutter and
+       layout does not, so a bare 1440 hangs 7.5px off both edges in that band. */
     .about-capabilities__inner {
-      width: 58.875rem; /* 33:222 — 942, centred on the frame (x=249..1191) */
+      width: min(90rem, 100%);
       max-width: none;
       padding-inline: 0;
       padding-top: 18.1875rem; /* 33:123 — y=291 */
@@ -174,14 +185,52 @@ const { heading, cards, tools } = ABOUT.capabilities
       line-height: 4.25rem; /* 68 */
     }
 
+    /* --- Homepage card geometry, adopted 2026-08-18 ------------------------
+       Requested: these containers should be the same size as the homepage's
+       "Three ways I can help" cards. Both sections are 1440-wide frames with
+       exactly three cards, so the cards take the homepage's own widths AND its
+       x positions — `.card:nth-child(n)` in HomeServices.astro is the source
+       for every number here. Copy any change there to here.
+
+         card 1   x=54   w=415      card 2   x=491  w=416
+         card 3   x=928  w=457      all      h=611
+
+       ⚠ AUTHORED, not from the Figma. `33:121` draws three 282×348 cards in a
+       942px group; this is 415/416/457×611 across the full frame. It is a
+       deliberate departure to match the homepage, and the widths are unequal
+       because the HOMEPAGE's are — they are not a mistake to be "evened up".
+
+       `space-between` with the two explicit paddings reproduces x=54 and the
+       1385 right edge; the leftover 43px splits into the design's ~21.5px
+       gutters. That is why `column-gap` is 0 — the gap is the leftover, not a
+       value of its own.
+
+       Vertical: the grid still starts at y=386 (291 heading + 62 + 33), so the
+       cards run 386→997 inside the 1024 frame, clearing the bottom by 27px. */
     .about-capabilities__grid {
-      grid-template-columns: repeat(3, 17.625rem); /* 282 */
+      box-sizing: border-box;
+      grid-template-columns: 25.9375rem 26rem 28.5625rem; /* 415 / 416 / 457 */
+      column-gap: 0;
       justify-content: space-between;
+      padding-inline: 3.375rem 3.4375rem; /* 54 left; 1440-1385=55 right */
       margin-top: 2.0625rem; /* 291 + 62 + 33 = 386, node 33:222 y */
     }
 
+    /* ⚠ NO `height` HERE, DELIBERATELY — the cards hug their content.
+       Changed 2026-08-18, one revision after they took the homepage's full
+       611px: these three lists are far shorter than the homepage cards, which
+       carry a lede, body copy, a price, a timeline and a CTA, so a matched
+       height left each card two-thirds empty.
+
+       The WIDTHS still match the homepage exactly; only the height is content
+       driven. Grid `align-items` is left at its `stretch` default on purpose,
+       so all three equalise to the tallest card and their bottom edges stay on
+       one line — `align-self: start` would let each find its own height and the
+       row would end ragged, which reads as a bug rather than a choice. */
     .about-card {
-      height: 21.75rem; /* 348 */
+      /* 1.5rem to match the homepage card's inset. The Figma's own 24/26 inset
+         was measured for a 282px card and reads tight in a 415px one. */
+      padding: 1.5rem;
     }
 
     /* Leading is absolute here, not a ratio — Figma rounds it to a whole pixel

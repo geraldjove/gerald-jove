@@ -11,7 +11,7 @@
 import { ABOUT } from '@/content/about'
 ---
 
-<section class="about-more">
+<section class="about-more fx-fit">
   <div class="about-more__inner">
     <h2 class="about-more__heading">
       {
@@ -78,7 +78,9 @@ import { ABOUT } from '@/content/about'
   /* --- Figma-exact at >=90rem ---------------------------------------------- */
   @media (min-width: 90rem) {
     .about-more {
-      height: 64rem; /* 33:246 — 1024 */
+      /* --fx-h feeds the 100svh viewport fit in global.css (`.fx-fit`). */
+      --fx-h: 64rem; /* 33:246 — 1024 */
+      height: var(--fx-h);
       padding-block: 0;
     }
 

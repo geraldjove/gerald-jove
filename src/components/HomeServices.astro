@@ -8,8 +8,34 @@
  */
 import HomeLines from './HomeLines.astro'
 import { SERVICES_SECTION } from '@/content/home'
+import { SERVICE_DETAILS } from '@/content/services'
 
 const { cards, cardCta } = SERVICES_SECTION
+
+/**
+ * Each card's “Learn more” goes to ITS OWN section on /services, not to the top
+ * of the page (2026-08-18, Gerald). All three shared `cardCta.href` before, so
+ * every card landed a reader at the same place and left them to find the right
+ * one — which is the whole job the link was supposed to do.
+ *
+ * ⚠ Resolved against `SERVICE_DETAILS` rather than written out here, and it
+ * THROWS rather than falling back. The id and the card title live in two
+ * different content modules; if either is edited the link silently points at
+ * nothing, and a dead in-page anchor fails by doing nothing at all — no 404, no
+ * console error, nothing a build gate would catch. Failing the build is the only
+ * way this stays true. Do not soften it to `?? cardCta.href`.
+ */
+const detailHref = (title: string): string => {
+  const detail = SERVICE_DETAILS.find((d) => d.title === title)
+  if (!detail) {
+    throw new Error(
+      `HomeServices: no SERVICE_DETAILS section titled "${title}". ` +
+        `Its "${cardCta.label}" link would go nowhere. ` +
+        `Known titles: ${SERVICE_DETAILS.map((d) => d.title).join(', ')}.`,
+    )
+  }
+  return `${cardCta.href}#${detail.id}`
+}
 ---
 
 <section class="fx-frame services" style="--fx-h: 64rem" data-node="8:27">
@@ -44,7 +70,7 @@ const { cards, cardCta } = SERVICES_SECTION
 
             {card.timeline && <p class="card__timeline">{card.timeline}</p>}
 
-            <a class="fx-pill card__cta" href={cardCta.href}>
+            <a class="fx-pill card__cta" href={detailHref(card.title)}>
               <span class="card__sr">{card.title}: </span>
               {cardCta.label}
             </a>

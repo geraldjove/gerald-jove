@@ -1,0 +1,141 @@
+---
+/**
+ * Newsletter sign-up — Figma node `33:750`.
+ *
+ * Extracted from `Footer.astro` on 2026-08-18 because the homepage now carries
+ * this block too: `HomeClosing` renders it in the `24:230` panel, which is the
+ * right half of the closing frame the design fills with an older footer variant.
+ *
+ * ⚠ This component owns its INTERNAL type and controls only. **Placement is the
+ * host's job** — Astro's scoped styles do not reach in here, so the host wraps
+ * it in its own positioned element (`.fx-footer-newsletter`,
+ * `.closing__newsletter`) rather than trying to position these nodes directly.
+ *
+ * ⚠ **Two render modes, and the difference is structural, not cosmetic.**
+ *
+ *   live  (`NEWSLETTER_ENDPOINT` is a string) — a real `<form method="post">`
+ *         with a `type="submit"` button. This is the shipping state.
+ *   preview (`NEWSLETTER_ENDPOINT` is null, `NEWSLETTER_VISIBLE` is true) — a
+ *         plain `<div>`, and the button is `type="button" disabled`. There is no
+ *         form element, so there is no submission, no navigation and no request:
+ *         **an address typed into the field cannot leave the browser.**
+ *
+ * The preview mode exists because Gerald asked for the UI to be finished ahead of
+ * the backend (2026-08-18). The old rule it replaces — “never ship a Submit button
+ * that posts nowhere” — was protecting against silently collecting and dropping an
+ * address; emitting no form at all protects against that more strictly than hiding
+ * the block did. What it does NOT protect against is a visitor reading a dead
+ * button as a broken site, so the preview markup is tagged `data-newsletter=
+ * "ui-only"` and AGENTS.md §3 makes a `dist/` grep for it a pre-deploy gate.
+ *
+ * ⚠ The button keeps its full `.fx-pill` colour when disabled — that is deliberate,
+ * so the preview shows the real design. Do not add a greyed-out `:disabled` fill.
+ *
+ * ⚠ Renders nothing while `NEWSLETTER_VISIBLE` is false. Hosts must check the same
+ * constant before drawing their wrapper, or they leave an empty box behind.
+ */
+import { FOOTER, NEWSLETTER_ENDPOINT, NEWSLETTER_VISIBLE } from '@/content/site'
+
+interface Props {
+  /** Distinguishes the two instances' label/field pairing on a page that has both. */
+  id?: string
+}
+
+const { id = 'newsletter-email' } = Astro.props
+
+/** The single test for “can this actually post”. Never duplicate it inline. */
+const live = NEWSLETTER_ENDPOINT !== null
+
+/* Dynamic tag: a `<form>` only exists when there is somewhere for it to go. */
+const Wrapper = live ? 'form' : 'div'
+const wrapperProps = live
+  ? { method: 'post', action: NEWSLETTER_ENDPOINT ?? undefined }
+  : { 'data-newsletter': 'ui-only' }
+---
+
+{
+  NEWSLETTER_VISIBLE && (
+    <Wrapper class="newsletter" {...wrapperProps}>
+      <h2 class="newsletter__heading font-display font-bold">
+        <span class="text-accent">{FOOTER.newsletter.lead}</span>
+        {FOOTER.newsletter.rest}
+      </h2>
+      <p class="newsletter__blurb">{FOOTER.newsletter.blurb}</p>
+      <div class="newsletter__row">
+        <label class="sr-only" for={id}>
+          Email address
+        </label>
+        <input
+          id={id}
+          type="email"
+          name="email"
+          required
+          placeholder={FOOTER.newsletter.placeholder}
+          class="newsletter__field"
+        />
+        <button
+          type={live ? 'submit' : 'button'}
+          disabled={!live}
+          class="fx-pill newsletter__submit"
+        >
+          {FOOTER.newsletter.submit}
+        </button>
+      </div>
+    </Wrapper>
+  )
+}
+
+<style>
+  /* Every length is a Figma node value, px / 16. Node ids in comments. */
+
+  .newsletter__heading {
+    font-size: var(--text-fx-40); /* 40.116px — 33:751 */
+    line-height: 1.2;
+  }
+
+  .newsletter__blurb {
+    margin-top: 0.206rem;
+    font-size: var(--text-fx-12); /* 12.436px — 33:752 */
+  }
+
+  .newsletter__row {
+    display: flex;
+    gap: 0.588rem; /* 9.363px — 1240.255 → 1250.618 */
+    margin-top: 0.68rem;
+  }
+
+  .newsletter__field {
+    flex: 1 1 auto;
+    height: 2.202125rem; /* 35.234px — 33:753 */
+    padding-inline: 0.6875rem; /* 11px — placeholder 33:758 sits at x=830 */
+    border: 0.06475rem solid var(--color-accent); /* 1.036px */
+    border-radius: 0.323813rem; /* 5.181px */
+    background-color: var(--color-raised);
+    font-size: var(--text-fx-12);
+    color: var(--color-fg);
+  }
+
+  .newsletter__field::placeholder {
+    color: var(--color-fg-placeholder);
+  }
+
+  .newsletter__submit {
+    width: 8.711377rem; /* 139.382px — 33:755 */
+    height: 2.202125rem; /* 35.234px */
+    border-radius: 2.051313rem; /* 32.821px */
+    font-size: var(--text-fx-12); /* 12.436px — 33:756 */
+  }
+
+  /* Preview mode only. `.fx-pill` sets background and colour explicitly, so a
+     disabled button keeps the design's accent fill rather than being greyed by
+     the UA — which is what we want: the preview must show the real thing. Only
+     the cursor and the hover response change, so it does not invite a click it
+     cannot answer. Delete this rule when the endpoint lands. */
+  .newsletter__submit:disabled {
+    cursor: not-allowed;
+  }
+
+  .newsletter__submit:disabled:hover {
+    background-color: var(--color-accent);
+  }
+</style>

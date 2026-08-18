@@ -21,7 +21,13 @@ export const blanks = {
   automationCaseResult: {
     ref: 1,
     what: 'One real outcome number for the automation case study (variants/month before vs after, hours saved, tool cost removed, or turnaround time)',
-    blocksPublication: true,
+    /* ⚠ Was `true`, and this WAS the last blank blocking publication.
+       Downgraded 2026-08-18, not filled: `/work` and `/work/<slug>` were the
+       only consumers and both were deleted, so no page renders this and no page
+       is now waiting on it. **The number is still missing** — nothing was
+       answered, the question was removed. Restore `true` the moment any page
+       shows a case-study outcome again. */
+    blocksPublication: false,
     value: null,
   },
   retainerMonthlyVolume: {
@@ -49,6 +55,10 @@ export const blanks = {
   secondCaseStudy: {
     ref: 4,
     what: 'A second case study (ideally 3D/product visualisation where CGI replaced a photoshoot) with its own hard number',
+    /* ⚠ ORPHANED 2026-08-18 — there is no case-study route any more, so there is
+       nowhere for a second one to go. Kept rather than deleted because the
+       underlying gap (only one piece of proof, and no number on it) is real
+       whether or not a page exists to show it. */
     value: null,
   },
   aboutHumanClose: {
@@ -81,6 +91,9 @@ export const blanks = {
   testimonialAutomation: {
     ref: 9,
     what: 'Testimonial for Creative Automation Systems — real quotes only',
+    /* ⚠ ORPHANED 2026-08-18 with `/work/<slug>`, its only consumer. The other
+       testimonial blanks were never wired to anything, so this one simply
+       joined them. */
     value: null,
   },
   testimonialManaged: {

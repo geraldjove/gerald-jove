@@ -1,19 +1,20 @@
 ---
 /**
- * /services — a 1:1 rebuild of Figma `6Lgtxs8zSUzruc8zu8tY0T`, frame `33:504`
- * (1440 × 7837). Four sections, then the shared Footer.
+ * /services — built from Figma `6Lgtxs8zSUzruc8zu8tY0T`, frame `33:504`.
+ * Four sections, then the shared Footer.
  *
- * Section stack, with the Figma frame heights:
- *   33:285  Services Section              1024   ServiceIntro
- *   33:293  Creative Automation Systems   2069   ServiceDetail
- *   33:431  Managed Ad Creative           2069   ServiceDetail
- *   33:447  3D Product Visuals & CGI Ads  2316   ServiceDetail
- *   33:700  Footer                         359   the shared Footer, not this frame
+ *   33:285  Services Section              ServiceIntro
+ *   33:293  Creative Automation Systems   ServiceDetail
+ *   33:431  Managed Ad Creative           ServiceDetail
+ *   33:447  3D Product Visuals & CGI Ads  ServiceDetail
+ *   33:700  Footer                        the shared Footer, not this frame
  *
- * Every number in the `geometry` objects below is a Figma node value in px,
- * converted to rem at the call site. They stay here rather than inside
- * ServiceDetail so the three sections can be read against the coordinate map
- * in one place.
+ * ⚠ The Figma draws each detail as one tall frame (2069 / 2069 / 2316px) with
+ * every block pinned at its own y. Since 2026-08-18 each is ONE 100svh row with
+ * the blocks flowing into two balanced columns beside the rail, so those
+ * per-node y coordinates no longer describe anything and were removed rather
+ * than left here looking authoritative. They are in git history if a 1:1
+ * restoration is ever wanted. Full reasoning: `ServiceDetail.astro`.
  *
  * ⚠ "What I don't do" is deliberately absent. The Figma has no such section,
  * and the block that used to live here was written against the old copy
@@ -35,82 +36,91 @@ import railManaged from '@/assets/img/services-rail-managed.jpg'
 import rail3d from '@/assets/img/services-rail-3d.jpg'
 
 /**
- * Frame geometry, in Figma px. `columnX` and `rail.x` are frame coordinates;
- * ServiceDetail subtracts the frame's 50px gutter to reach the content box.
- * `blocks` is in block order — the heading's y, and the drawn width of the body
- * node beneath it. Every body sits 93px below its heading in all twelve blocks.
+ * Per-service surface and rail. `rail.x` is a FRAME coordinate; ServiceDetail
+ * subtracts the frame's 50px gutter to reach the content box, and derives the
+ * text area from whichever side of the rail is left over.
  */
-const GEOMETRY = [
+/**
+ * ⚠ AUTHORED 2026-08-18 — the rails are 360 wide here, not the Figma's 413.
+ *
+ * Reported as "the service containers feel too tight". The arithmetic said the
+ * same thing: the content box is 1340px, and a 413px rail plus its 40px
+ * clearance was taking 453 of it — 34% — leaving 884-887px to hold two columns
+ * of ~422px. Narrowing the rail to 360 and cutting `RAIL_GAP` to 24 in
+ * `ServiceDetail.astro` returns 69px per row.
+ *
+ * ⚠ The right-hand rail's x MOVED WITH ITS WIDTH. `33:808` is drawn at x=977
+ * w=413, which ends flush on the content box's right edge at 1390. Narrowing it
+ * without re-anchoring would have left it floating 53px short of that edge —
+ * the one thing about these rails that reads as broken rather than restyled.
+ * 1390 - 360 = 1030.
+ *
+ * The rails are grain-and-gradient textures with no subject to crop (see
+ * MANIFEST.md), so `object-fit: cover` absorbs the narrower box with nothing
+ * visible lost. Restore 413 / x=977 to go back to the design.
+ */
+const RAIL_W = 360
+
+const SERVICES = [
   {
     // 33:293 — Creative Automation Systems
     surface: 'raised' as const,
     railImage: railAutomation,
-    geometry: {
-      frameH: 2069,
-      columnX: 507, // group 33:430
-      titleY: 87, // 33:295
-      titleW: 859,
-      blocks: [
-        { y: 223, w: 859 }, // 33:298 / 33:300
-        { y: 451, w: 859 }, // 33:301 / 33:302
-        { y: 1015, w: 859 }, // 33:303 / 33:304
-        { y: 1383, w: 859 }, // 33:305 / 33:306
-      ],
-      ctaY: 1947, // 33:339
-      rail: { node: '33:807', x: 53, w: 413, edge: 'left' as const },
-    },
+    rail: { node: '33:807', x: 53, w: RAIL_W, edge: 'left' as const },
   },
   {
     // 33:431 — Managed Ad Creative
     surface: 'ink' as const,
     railImage: railManaged,
-    geometry: {
-      frameH: 2069,
-      columnX: 50, // group 33:446
-      titleY: 127, // 33:345
-      titleW: 859,
-      blocks: [
-        { y: 260, w: 859 }, // 33:346 / 33:350
-        { y: 434, w: 859 }, // 33:347 / 33:351
-        { y: 830, w: 859 }, // 33:348 / 33:352
-        { y: 1350, w: 859 }, // 33:349 / 33:353
-      ],
-      ctaY: 1908, // 33:354
-      rail: { node: '33:808', x: 977, w: 413, edge: 'right' as const },
-    },
+    rail: { node: '33:808', x: 1390 - RAIL_W, w: RAIL_W, edge: 'right' as const },
   },
   {
     // 33:447 — 3D Product Visuals & CGI Ads
     surface: 'raised' as const,
     railImage: rail3d,
-    geometry: {
-      frameH: 2316,
-      columnX: 517, // group 33:462
-      titleY: 84, // 33:396
-      titleW: 873,
-      blocks: [
-        { y: 217, w: 808 }, // 33:397 / 33:401 — 808, not 859, in the design
-        { y: 646, w: 859 }, // 33:398 / 33:402
-        { y: 1216, w: 859 }, // 33:399 / 33:403
-        { y: 1736, w: 859 }, // 33:400 / 33:404
-      ],
-      ctaY: 2197, // 33:405
-      rail: { node: '33:809', x: 50, w: 413, edge: 'left' as const },
-    },
+    rail: { node: '33:809', x: 50, w: RAIL_W, edge: 'left' as const },
   },
 ]
+
+/**
+ * Row height in Figma px, shared by all three services so they render at ONE
+ * scale — three adjacent sections at three different type sizes would read as
+ * a mistake rather than a rhythm.
+ *
+ * ⚠ MEASURED, NOT DERIVED, and that is a genuine weakness worth knowing about.
+ * The old stacked layout could compute its height from Figma y coordinates; a
+ * BALANCED two-column layout cannot be known ahead of time, because the height
+ * depends on how the copy wraps at the rendered column width. This value came
+ * from measuring the built page: at 422px columns the tallest service needs
+ * 1463px including the title and its 80px insets, and 1490 leaves that service
+ * ~34px of headroom. At the measured 1463 exactly it had **7px**, which is
+ * inside the noise of a font-metric or copy change.
+ *
+ * ⚠ IT CAN GO STALE, AND IT FAILS SILENTLY. `.svc-detail` sets
+ * `overflow: hidden`, so if a copy edit pushes a column past this height the
+ * overflow is CLIPPED rather than scrolled — a bullet just disappears, and no
+ * build gate can see it. After any change to `SERVICE_DETAILS`, re-measure:
+ * every `.svc-detail__columns` scrollHeight must stay under its clientHeight.
+ */
+const ROW_H = 1490
 ---
 
-<BaseLayout title={META.services.title} description={META.services.description}>
+{/* AUTHORED 2026-08-18 — footer 33:700 is #242424 in the Figma; requested #161616. */}
+<BaseLayout
+  title={META.services.title}
+  description={META.services.description}
+  footerSurface="ink"
+>
   <ServiceIntro />
 
   {
     SERVICE_DETAILS.map((detail, i) => (
       <ServiceDetail
         detail={detail}
-        surface={GEOMETRY[i].surface}
-        geometry={GEOMETRY[i].geometry}
-        railImage={GEOMETRY[i].railImage}
+        surface={SERVICES[i].surface}
+        rail={SERVICES[i].rail}
+        railImage={SERVICES[i].railImage}
+        rowH={ROW_H}
       />
     ))
   }

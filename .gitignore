@@ -48,9 +48,14 @@ tasks/
 # Scratch space for throwaway working files — screenshot downloads, probe
 # harnesses, render checks. Never a source of truth.
 #
-# ⚠ SAFETY, NOT TIDINESS. `.scratch/quarantine/` currently holds an image
-# exported from Figma node `30:2` that contains client-engagement material —
-# a screen capture from a client engagement, which AGENTS.md rule 4 forbids in
-# this PUBLIC repository. Without this line `git add .` stages it. Do not
-# remove this line, and do not move anything out of quarantine.
+# ⚠ SAFETY, NOT TIDINESS. `.scratch/quarantine/` holds the FULL-RESOLUTION
+# export of Figma node `30:2`. Amended 2026-08-18: the artwork is Gerald's own,
+# so it is not client-engagement material and the node itself is no longer
+# excluded — a downscaled copy ships as
+# `src/assets/img/home-proof-automation-split.jpg`. What is still forbidden is
+# THIS file: at native resolution its right-hand half renders legible source
+# code, which AGENTS.md rule 4 bars from a PUBLIC repository independently of
+# who owns the picture. Without this line `git add .` stages it. Do not remove
+# this line, and do not move anything out of quarantine — the content-hash gate
+# in AGENTS.md compares against this copy and needs it to stay put.
 .scratch/

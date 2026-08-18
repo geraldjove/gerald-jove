@@ -15,22 +15,40 @@
 import { ABOUT } from '@/content/about'
 ---
 
-<section class="about-story">
-  <div class="about-story__inner">
-    <h2 class="about-story__heading">
-      {
-        ABOUT.story.heading.map((run) => (
-          <span class:list={[run.accent && 'about-story__accent']}>{run.text}</span>
-        ))
-      }
-    </h2>
+<section class="about-story fx-fit fx-tall" data-story-track>
+  <div class="about-story__viewport">
+    <div class="about-story__inner">
+      <h2 class="about-story__heading">
+        {
+          ABOUT.story.heading.map((run) => (
+            <span class:list={[run.accent && 'about-story__accent']}>{run.text}</span>
+          ))
+        }
+      </h2>
 
-    <div class="about-story__body">
-      {ABOUT.story.body.map((line) => <p>{line}</p>)}
-      <p class="about-story__close">{ABOUT.story.close}</p>
+      <div class="about-story__stage" data-story-stage>
+        <div class="about-story__body" data-story-column>
+          {ABOUT.story.body.map((line) => <p>{line}</p>)}
+          <p class="about-story__close">{ABOUT.story.close}</p>
+        </div>
+      </div>
     </div>
   </div>
+
+  {/* Filled by story-pin.ts with one snap marker per screen. Empty, and
+      `display: none`, until the pin is actually applied. */}
+  <div class="about-story__beats" data-story-beats aria-hidden="true"></div>
 </section>
+
+{/*
+  Bundled, never inline — Astro compiles this to `<script type="module" src=…>`,
+  which is what the `script-src 'self'` CSP allows. Kept in this component rather
+  than BaseLayout so Motion is only bundled into /about, and Home, Services and
+  Contact keep their ~3 KB of JS.
+*/}
+<script>
+  import '@/scripts/story-pin.ts'
+</script>
 
 <style>
   /* --- Authored below 90rem ------------------------------------------------ */
@@ -94,7 +112,13 @@ import { ABOUT } from '@/content/about'
   /* --- Figma-exact at >=90rem ---------------------------------------------- */
   @media (min-width: 90rem) {
     .about-story {
-      height: 124.0625rem; /* 33:116 — 1985 */
+      /* ⚠ `fx-tall` on the section opts this OUT of the 100svh viewport fit,
+         deliberately. At 1985px against a ~1015px viewport the fit would scale
+         the canvas to ~0.51 and render 18px body copy at ~9px — unreadable.
+         This section stays taller than one screen and snaps to its own top
+         edge instead. Same call as the three Services detail frames. */
+      --fx-h: 124.0625rem; /* 33:116 — 1985 */
+      height: var(--fx-h);
       padding-block: 0;
     }
 
@@ -123,5 +147,123 @@ import { ABOUT } from '@/content/about'
       font-size: 2.25rem; /* 36 */
       line-height: var(--leading-fx-36); /* 42 */
     }
+  }
+
+  /* --- Scroll-pinned reading panel, added 2026-08-18 ------------------------
+     Requested: the section should pin, fade the story through on scroll, and
+     release to the next section once the story is done.
+
+     ⚠ EVERY RULE HERE IS BEHIND `[data-pinned]`, WHICH ONLY `story-pin.ts`
+     SETS. With no JS, or with reduced motion, none of it applies and the
+     section stays an ordinary column with all thirty-one lines readable —
+     AGENTS.md forbids content that depends on JS to appear. Do not promote any
+     of this into the default rules.
+
+     ⚠ These sit AFTER the 90rem block on purpose. `[data-pinned]` adds
+     attribute specificity so it beats the plain `.about-story` height in there
+     regardless, but keeping the source order honest means the override is
+     visible to whoever reads the file top to bottom.
+
+     ⚠ `position: sticky` DIES inside a transformed ancestor, and every other
+     section on this site is transformed by the viewport fit in global.css. This
+     one works only because it carries `fx-tall`, which opts out of that
+     transform. If `fx-tall` is ever removed from this section, the pin breaks
+     silently — it will simply stop sticking, with no error. */
+  .about-story__beats {
+    display: none;
+  }
+
+  .about-story[data-pinned] {
+    position: relative; /* containing block for the absolutely placed beats */
+    height: calc(var(--story-screens, 3) * 100svh);
+    padding-block: 0;
+    /* The section is no longer its own snap target — the beats are, one per
+       screen, so the reader can rest anywhere along the track. */
+    scroll-snap-align: none;
+  }
+
+  .about-story[data-pinned] .about-story__viewport {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .about-story[data-pinned] .about-story__inner {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    padding-block: clamp(2rem, 6vh, 5rem);
+  }
+
+  /* `min-height: 0` is load-bearing: a flex item defaults to `min-height: auto`,
+     which refuses to shrink below its content, so the stage would grow to the
+     full column height and there would be nothing to scroll. */
+  .about-story[data-pinned] .about-story__stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    /* The design's 34px heading-to-body gap, moved onto the stage. It cannot
+       stay on the column: the column's own top margin counts toward its
+       scrollHeight, so it would offset the travel `story-pin.ts` measures. And
+       without a gap the copy fades through hard against the heading's
+       descenders, which reads as a collision rather than a mask. */
+    margin-top: 2.125rem;
+    /* The fade itself — copy dissolves in at the top edge and out at the bottom
+       as it travels. Done with a mask rather than per-paragraph animations:
+       thirty scroll-linked opacity tweens would cost real frame time to
+       reproduce an effect the compositor gives for free here.
+
+       ⚠ `--story-fade` is set by `story-pin.ts`, in px, from the stage's real
+       height, and the SAME value pads the column top and bottom. The two must
+       agree: the padding is what keeps the first and last lines out of the
+       fade, so they can be read in full at each end of the travel. The 16%
+       fallback only applies for the instant before the script measures. */
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 var(--story-fade, 16%),
+      #000 calc(100% - var(--story-fade, 16%)),
+      transparent 100%
+    );
+  }
+
+  .about-story[data-pinned] .about-story__body {
+    margin-top: 0;
+    will-change: transform;
+  }
+
+  .about-story[data-pinned] .about-story__beats {
+    display: block;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* ⚠ `:global()` IS REQUIRED, AND LEAVING IT OFF FAILS SILENTLY.
+     Astro scopes component CSS by rewriting selectors to carry a
+     `data-astro-cid-*` attribute, and it can only add that attribute to
+     elements that exist in the TEMPLATE. These beats are created at runtime by
+     `story-pin.ts`, so they never get the attribute and a scoped
+     `.about-story__beat` rule matches none of them.
+
+     Measured when this was scoped: the markers rendered with no positioning and
+     no `scroll-snap-align`, so the track held no snap position at all — asking
+     the scroller for the story's own start (1015) landed on 0, and asking for
+     the middle (1522) landed on 3045, the NEXT section. The story was skipped
+     end to end. Nothing errors; the rule simply never applies.
+
+     Kept rooted at `.about-story[data-pinned]` so the global part is only the
+     leaf, not a bare class loose in the page. */
+  .about-story[data-pinned] :global(.about-story__beat) {
+    position: absolute;
+    left: 0;
+    top: calc(var(--i) * 100svh);
+    width: 1px;
+    height: 100svh;
+    scroll-snap-align: start;
   }
 </style>

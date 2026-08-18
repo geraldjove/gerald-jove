@@ -10,13 +10,12 @@
  * Node 24:197 is the one Poppins heading on this page that is not the page H1.
  */
 import HomeLines from './HomeLines.astro'
+import Newsletter from './Newsletter.astro'
 import { CLOSING } from '@/content/home'
-import { AVAILABILITY } from '@/content/site'
+import { AVAILABILITY, NEWSLETTER_VISIBLE } from '@/content/site'
 ---
 
 <section class="fx-frame closing" style="--fx-h: 64rem" data-node="8:32">
-  <div class="closing__panel" data-node="24:230"></div>
-
   <div class="closing__canvas">
     <div class="closing__copy" data-node="24:207">
       {/* `fx-display` — 24:197 is the one Poppins node on this page that is not
@@ -39,6 +38,24 @@ import { AVAILABILITY } from '@/content/site'
       <p class="closing__availability" data-node="24:205">*{AVAILABILITY.short}</p>
     </div>
   </div>
+
+  {/* 24:230. AUTHORED 2026-08-18 — the panel was an empty dark rectangle; it
+      now holds the newsletter, which is what the design's older footer variant
+      filled this half with.
+
+      ⚠ It sits AFTER the canvas in the DOM on purpose. At ≥90rem both are
+      absolutely positioned and the order is immaterial, but below 90rem the
+      panel is in flow — placed first it would push the newsletter above the
+      heading. */}
+  <div class="closing__panel" data-node="24:230">
+    {
+      NEWSLETTER_VISIBLE && (
+        <div class="closing__newsletter">
+          <Newsletter id="closing-newsletter-email" />
+        </div>
+      )
+    }
+  </div>
 </section>
 
 <style>
@@ -48,10 +65,14 @@ import { AVAILABILITY } from '@/content/site'
   }
 
   /* 24:230 — the darker right half. Below 1440 there is no second column for it
-     to mark, so it is not drawn. */
+     to mark, so the fill is not drawn; the element stays in flow only to carry
+     the newsletter, and collapses to nothing when NEWSLETTER_VISIBLE is false. */
   .closing__panel {
-    display: none;
-    background-color: var(--color-ink); /* #161616 */
+    padding-inline: var(--spacing-gutter);
+  }
+
+  .closing__newsletter {
+    padding-bottom: 4rem; /* AUTHORED — clears the section's own bottom padding */
   }
 
   .closing__canvas {
@@ -119,12 +140,26 @@ import { AVAILABILITY } from '@/content/site'
   /* --- The design, exactly ------------------------------------------------ */
   @media (min-width: 90rem) {
     .closing__panel {
-      display: block;
       position: absolute;
       top: 0;
       bottom: 0;
       left: calc(50% + 0.0625rem); /* 24:230 x=721 in a 1440 frame */
       right: 0;
+      display: flex;
+      align-items: center;
+      padding-inline: 0;
+      background-color: var(--color-ink); /* #161616 */
+    }
+
+    /* AUTHORED. The design gives no coordinates for a newsletter here — the
+       half it replaces holds a whole older footer variant. The x is taken from
+       the real footer's own block (33:750, x=819) so the two instances line up
+       on the same grid: 819 - 721 = 98px into this panel, 571px wide. The
+       vertical position is centred, which the design does not specify. */
+    .closing__newsletter {
+      width: 35.6875rem; /* 571px — 33:750 */
+      margin-left: 6.125rem; /* 98px */
+      padding-bottom: 0;
     }
 
     .closing__canvas {

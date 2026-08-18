@@ -12,9 +12,29 @@ interface Props {
   ogDescription?: string
   /** Set on /thank-you and 404 — pages with no business being indexed. */
   noindex?: boolean
+  /**
+   * Set `false` on the homepage only. The closing frame (8:32) draws its own
+   * footer in the design, and since 2026-08-18 it carries the newsletter block,
+   * so the shared footer under it would be a second one.
+   *
+   * ⚠ Turning this off also removes the three link columns (33:734 / 33:739 /
+   * 33:744) and the copyright line (33:757) from that page. Nothing else on the
+   * site renders them.
+   */
+  footer?: boolean
+  /** Which surface the shared footer is filled with. See Footer.astro. */
+  footerSurface?: 'ink' | 'raised'
 }
 
-const { title, description, ogTitle, ogDescription, noindex = false } = Astro.props
+const {
+  title,
+  description,
+  ogTitle,
+  ogDescription,
+  noindex = false,
+  footer = true,
+  footerSurface = 'raised',
+} = Astro.props
 
 /**
  * Real per-route canonical. The old SPA had none at all, and a single static
@@ -61,7 +81,7 @@ const ogImage = blankValue('ogImage')
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    {footer && <Footer surface={footerSurface} />}
 
     <script>
       import '@/scripts/reveal.ts'

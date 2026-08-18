@@ -25,7 +25,34 @@ import HomeClosing from '@/components/HomeClosing.astro'
 import { META } from '@/content/site'
 ---
 
-<BaseLayout title={META.home.title} description={META.home.description}>
+{
+  /**
+   * AUTHORED 2026-08-18 — the shared footer is off the homepage. Requested
+   * twice: first as "remove the Footer for the Homepage", then as "remove the
+   * 'Creative systems and 3D production for teams that need more content.'
+   * section completely". The closing frame (8:32) carries its own footer in
+   * the design, so a shared footer under it was a second one.
+   *
+   * ⚠ This was briefly CONDITIONAL on `NEWSLETTER_ENDPOINT`, so that the page
+   * could not end on an empty panel before the newsletter could render. Gerald
+   * asked for the removal again with the endpoint still unset, so the condition
+   * is gone and the consequence is accepted:
+   *
+   *   Until `NEWSLETTER_ENDPOINT` is set, THIS PAGE HAS NO FOOTER AT ALL. It
+   *   ends on the 24:230 panel, which is empty — exactly the state the 1:1
+   *   rebuild shipped, since the design's own footer variant in that half was
+   *   never reproduced.
+   *
+   *   The homepage therefore carries no Services / Explore / Find me columns
+   *   (33:734 / 33:739 / 33:744, which hold the only LinkedIn, ArtStation,
+   *   Behance and GitHub links on the site) and no copyright line (33:757).
+   *   Nothing else renders them. Setting the endpoint fills the panel with the
+   *   newsletter but does NOT bring the links or the copyright back.
+   *
+   * Pass no `footer` prop at all to restore it.
+   */
+}
+<BaseLayout title={META.home.title} description={META.home.description} footer={false}>
   <div class="home">
     <HomeHero />
     <HomeProblem />
@@ -76,7 +103,10 @@ import { META } from '@/content/site'
      * smaller than its own text, and 4:6 is mixed-face (see below).
      */
     --home-leading-12: 0.875rem; /* 14px — 12px, node 22:43 */
-    --home-leading-13: 1rem; /* 16px — 13.792px, node 22:72 */
+    /* --home-leading-13 / --home-text-13 (16px / 13.792px, node 22:72) were
+       deleted 2026-08-18. Their only consumer was `.proof__eyebrow`, which now
+       takes `--text-fx-18` to match `.problem__eyebrow` — see the AUTHORED note
+       in HomeProof.astro. Restore both from 22:72 if that ever reverts. */
     /**
      * 25px — 21.278px, node 4:6. Its rendered block is 125px against a 124px
      * Figma box, and that 1px is NOT the rule failing: 4:6 is a mixed-face node.
@@ -92,7 +122,6 @@ import { META } from '@/content/site'
     --home-leading-30b: 2.25rem; /* 36px — 30.34px, node 22:62 */
     --home-leading-36: 2.6875rem; /* 43px — 36.78px, nodes 22:76, 22:85, 23:181 */
 
-    --home-text-13: clamp(0.75rem, 0.7084rem + 0.17067vw, 0.862rem); /* 13.792px — 22:72 */
     --home-text-17: clamp(1rem, 0.970194rem + 0.12229vw, 1.08025rem); /* 17.284px — 24:199, 24:203 */
     --home-text-21: clamp(1.0625rem, 0.963188rem + 0.40743vw, 1.329875rem); /* 21.278px — 4:6 */
     --home-text-30b: clamp(1.25rem, 1.009963rem + 0.98476vw, 1.89625rem); /* 30.34px — 22:62 */

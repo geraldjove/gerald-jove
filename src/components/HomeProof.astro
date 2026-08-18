@@ -3,15 +3,21 @@
  * "What this looks like in real life" — Figma node `8:28`, 1440 x 1173,
  * fill #161616. Two alternating rows, no slider and no JavaScript.
  *
- * Case one is text-only on purpose: the visual the Figma draws beside it
- * (node 30:12, wrapping 30:2) is a permanently excluded node — see the
- * excluded-node table in AGENTS.md. Case two keeps its own image, 32:30.
+ * Both rows carry an image: case one `30:12`, case two `32:30`. Case one's was
+ * withheld until 2026-08-18 on the belief it was client-engagement material;
+ * it is Gerald's own generated artwork, so the exclusion is lifted. The file is
+ * capped at a resolution that leaves the code in its right-hand half illegible
+ * — see AGENTS.md §4 before ever replacing it with a sharper export.
+ *
+ * ⚠ Still not a before/after slider. The split is baked into the raster, so
+ * there is nothing to slide between and no JavaScript here.
  */
 import { Image } from 'astro:assets'
 
 import HomeLines from './HomeLines.astro'
 import { PROOF } from '@/content/home'
 
+import proofAutomation from '@/assets/img/home-proof-automation-split.jpg'
 import proof3d from '@/assets/img/home-proof-product-cutaway.jpg'
 
 const [caseOne, caseTwo] = PROOF.cases
@@ -30,12 +36,56 @@ const [caseOne, caseTwo] = PROOF.cases
       <p class="proof__text" data-node="22:74">{caseOne.body}</p>
     </article>
 
+    <figure class="proof__figure proof__figure--one" data-node="30:12">
+      <Image
+        src={proofAutomation}
+        alt={caseOne.image.alt}
+        widths={[395, 790]}
+        sizes="(min-width: 90rem) 49.5rem, 92vw"
+        format="webp"
+        quality={80}
+        class="proof__img"
+      />
+
+      {/* 30:18 / 30:19 / 30:17 sit *over* the raster as separate Figma nodes. */}
+      <figcaption class="proof__overlay">
+        <span class="proof__label proof__label--before" data-node="30:18"
+          >{caseOne.image.labels.before}</span
+        >
+        <span class="proof__label proof__label--after" data-node="30:19"
+          >{caseOne.image.labels.after}</span
+        >
+
+        {
+          /* 30:17. Exact path data from the Figma export, which draws the arrow
+             pointing UP in a 93.1776 x 127 box; the design rotates it to point
+             right. `translate(127 0) rotate(90)` is that rotation, which maps
+             (x,y) -> (127 - y, x) and lands the apex at (127, 46.59) — the
+             right edge, vertically centred. Inline rather than a committed
+             .svg for the reason Icon.astro gives: it costs no extra request. */
+        }
+        <svg
+          class="proof__arrow"
+          viewBox="0 0 127 93.1776"
+          fill="var(--color-accent)"
+          aria-hidden="true"
+          focusable="false"
+          data-node="30:17"
+        >
+          <g transform="translate(127 0) rotate(90)">
+            <path d="M46.5889 0L86.9359 69.8832H6.24179L46.5889 0Z"></path>
+            <rect x="28.1855" y="46.7546" width="36.8068" height="80.2454"></rect>
+          </g>
+        </svg>
+      </figcaption>
+    </figure>
+
     <article class="proof__case proof__case--two" data-node={caseTwo.node}>
       <h3 class="proof__title" data-node="22:85">{caseTwo.title}</h3>
       <p class="proof__text" data-node="22:84">{caseTwo.body}</p>
     </article>
 
-    <figure class="proof__figure" data-node="32:30">
+    <figure class="proof__figure proof__figure--two" data-node="32:30">
       <Image
         src={proof3d}
         alt={caseTwo.image.alt}
@@ -59,11 +109,16 @@ const [caseOne, caseTwo] = PROOF.cases
     padding: 5rem var(--spacing-gutter);
   }
 
+  /* ⚠ AUTHORED 2026-08-18 — requested: "Real Work" follows the font sizing of
+     "The Problem". The Figma disagrees: 22:72 is 13.792px and 22:30 is 18px,
+     and both were copied correctly. This deliberately overrides 22:72 to match
+     `.problem__eyebrow`, so the two eyebrows read as one component. Keep the
+     two in step — if `.problem__eyebrow` changes size, this follows it. */
   .proof__eyebrow {
     margin: 0;
     font-family: var(--font-sans); /* Roboto Condensed */
     font-weight: 700;
-    font-size: var(--home-text-13); /* 22:72 13.792px */
+    font-size: var(--text-fx-18); /* was --home-text-13 (22:72, 13.792px) */
     line-height: var(--leading-fx);
     color: var(--color-accent);
     text-align: center;
@@ -105,7 +160,63 @@ const [caseOne, caseTwo] = PROOF.cases
   }
 
   .proof__figure {
+    position: relative; /* anchors case one's overlay; --two has nothing to anchor */
     margin: 1.5rem 0 0;
+  }
+
+  /* --- Case one's overlay, nodes 30:18 / 30:19 / 30:17 --------------------
+     Positioned in PERCENT, not rem, and deliberately so. These are absolute
+     children of a box that is 789.3 x 400 only at >=90rem and fluid below it;
+     the rem offsets the rest of this file uses would send them off the image
+     on a phone. Each percentage below is the Figma offset over the Figma box,
+     so the design width is still exact.
+
+     The trailing label anchors to the RIGHT and BOTTOM edges rather than
+     left/top. Same position at 1440, but a `left:` of 69.8% would push a
+     nowrap label past the right edge of a 375px-wide figure. */
+  .proof__overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .proof__label {
+    position: absolute;
+    font-family: var(--font-sans); /* Roboto Condensed */
+    font-weight: 700;
+    font-size: var(--text-fx-24); /* 30:18 / 30:19 are 24px */
+    line-height: var(--leading-fx-24); /* 28px — matches both nodes' 28px box */
+    color: var(--color-accent);
+    white-space: nowrap;
+    /* 30:18 / 30:19 both carry this. It is not decoration: accent-on-photo is
+       the one place in this design where the text sits on unknown pixels. */
+    text-shadow: 0 0.25rem 0.25rem #000;
+  }
+
+  .proof__label--before {
+    left: 1.9%; /* 30:18 x=65 against the box's x=50 -> 15/789.3 */
+    top: 2.5%; /* y=234 against y=224 -> 10/400 */
+  }
+
+  .proof__label--after {
+    right: 2.7%; /* 30:19 ends x=818; box ends 839.3 -> 21.3/789.3 */
+    bottom: 2.25%; /* ends y=615; box ends 624 -> 9/400 */
+  }
+
+  /* ⚠ AUTHORED 2026-08-18 — requested: "the blue arrow is not centered at the
+     image". It was not, horizontally: the Figma draws 30:17 at x=508 in a box
+     starting at x=50, i.e. left 58.03% + width 16.09%, which centres it on
+     66.1%. Vertically it was already centred (38.25% + 23.3% -> 49.9%), so only
+     the horizontal offset changes. The design value is kept in the comment
+     because this is a deviation from a correct 1:1 copy, not a bug fix. */
+  .proof__arrow {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 38.25%; /* y=377 against 224 -> 153/400 */
+    width: 16.09%; /* 127/789.3 */
+    height: auto;
+    aspect-ratio: 127 / 93.1776;
   }
 
   /* The export is the mask group 32:26, so the rounded crop is already baked in
@@ -143,9 +254,18 @@ const [caseOne, caseTwo] = PROOF.cases
       width: max-content;
     }
 
+    /* ⚠ AUTHORED 2026-08-18, and the offset moved WITH the size — the two are
+       one change. The design puts 22:72 at y=88 with a 16px line box, ending
+       16.09px clear of the h2 at y=104.091. At 18px the line box is 21px
+       (18 x --leading-fx), which would have overrun the heading by ~5px.
+
+       The HEADING keeps its Figma y exactly; the eyebrow is raised so its
+       taller line still ends where the 16px one did: 104.091 - 21 = 83.091px.
+       Growing the eyebrow upward is what leaves every other node on this frame
+       untouched. */
     .proof__eyebrow {
-      top: 5.5rem; /* 22:72 y=88, box centre x=719.7 */
-      line-height: var(--home-leading-13); /* 16px */
+      top: 5.1932rem; /* 83.091px — was 5.5rem (22:72 y=88) */
+      line-height: var(--leading-fx-18); /* 21px — matches .problem__eyebrow */
     }
 
     .proof__h2 {
@@ -211,13 +331,23 @@ const [caseOne, caseTwo] = PROOF.cases
       width: 32.1594rem; /* 514.55 */
     }
 
+    /* Both figures are the same 789.299 x 400 box; only the corner differs.
+       Case one sits left and high, mirroring case two right and low. */
     .proof__figure {
       position: absolute;
-      left: 37.5625rem; /* 32:30 x=601 */
-      top: 42.875rem; /* y=686 */
       width: 49.3312rem; /* 789.299 */
       height: 25rem; /* 400 */
       margin: 0;
+    }
+
+    .proof__figure--one {
+      left: 3.125rem; /* 30:12 x=50 */
+      top: 14rem; /* y=224 */
+    }
+
+    .proof__figure--two {
+      left: 37.5625rem; /* 32:30 x=601 */
+      top: 42.875rem; /* y=686 */
     }
 
     .proof__img {

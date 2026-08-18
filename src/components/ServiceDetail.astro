@@ -4,10 +4,6 @@
  * are the same composition mirrored, so this is one component driven by the
  * measured coordinates rather than three near-copies.
  *
- * At ≥90rem every child is placed at its Figma coordinate inside the 1340px
- * content box (`.shell`), so each `left` is the node's Figma x minus the 50px
- * frame gutter. Below 90rem the layout is AUTHORED and flows in one column.
- *
  * ⚠⚠ THE TITLE IS ROBOTO CONDENSED, NOT POPPINS. `33:295`, `33:345` and
  * `33:396` are Bold at 72.504px — the same size as the Poppins page h1s, and
  * bigger than anything else on the page. Size does not predict the face here
@@ -17,13 +13,36 @@
  * `font-display` off ServiceIntro.astro — AGENTS.md holds the enumeration, and
  * this is the exact node it warns about.
  *
- * Two measured facts that shape the markup:
- *  - Every block's body sits exactly 93px below its heading, in all twelve
- *    blocks across the three sections. So a block is ONE positioned box with
- *    the heading and body in flow inside it (42px heading + 51px gap = 93).
- *  - The CTA pill is 258.293 × 35.527 at radius 60.821 with its label inset
- *    28.699px from the left — not centred. The inset is reproduced, because it
- *    is what puts the label's first glyph at the drawn x.
+ * Measured fact that still shapes the markup: every block's body sits exactly
+ * 93px below its heading, in all twelve blocks across the three sections. So a
+ * block is ONE box with the heading and body in flow inside it (42px heading +
+ * 51px gap = 93).
+ *
+ * --- The two-column rework, 2026-08-18 --------------------------------------
+ *
+ * Each service is ONE 100svh row. The title spans the text area, and the four
+ * blocks plus the CTA flow into TWO balanced columns beside the rail — first
+ * part on the left, second on the right.
+ *
+ * This replaces a same-day attempt that split each service into two stacked
+ * 100svh screens, which itself replaced the original single 2069/2316px
+ * section. `/services` went 4 sections → 7 → back to 4.
+ *
+ * ⚠ THE FIGMA'S PER-NODE Y COORDINATES ARE GONE, AND THAT IS NOT AN OVERSIGHT.
+ * The old layout pinned every block at its own `--b-y` inside an absolutely
+ * positioned canvas. Two balanced columns cannot be expressed that way — where
+ * a block lands now depends on how the one above it wrapped — so the blocks are
+ * in normal flow and the y values were removed rather than left in place
+ * looking authoritative. They are recoverable from git history if a 1:1
+ * restoration is ever wanted. The x-geometry that survives is the rail's, which
+ * still drives which edge the gradient sits on and how wide it is.
+ *
+ * ⚠ `column-count`, NOT a hardcoded split index. The blocks are wildly uneven —
+ * measured at 422px wide, service 2's four blocks are 149 / 401 / 513 / 541px —
+ * so the balanced split differs per service (2, 3 and 2 blocks on the left
+ * respectively). Letting the browser balance means no per-service magic number
+ * to maintain, and a copy edit cannot silently unbalance a column.
+ * `break-inside: avoid` is what keeps a block from being torn across the gap.
  */
 import { Image } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
@@ -36,35 +55,46 @@ interface Props {
   detail: ServiceDetailSection
   /** Which of the design's two surfaces this frame is filled with. */
   surface: 'ink' | 'raised'
-  /** Frame height, and the drawn geometry of its children, in Figma px. */
-  geometry: {
-    frameH: number
-    columnX: number
-    titleY: number
-    titleW: number
-    /** In block order: the heading's y, and the drawn width of the body node. */
-    blocks: Array<{ y: number; w: number }>
-    ctaY: number
-    rail: { node: string; x: number; w: number; edge: 'left' | 'right' }
-  }
+  /** The gradient rail: its Figma x and width, and the edge it sits on. */
+  rail: { node: string; x: number; w: number; edge: 'left' | 'right' }
   railImage: ImageMetadata
+  /**
+   * Row height in Figma px, shared by all three services so they render at one
+   * scale. Computed in `services.astro`; read the note there before changing it.
+   */
+  rowH: number
 }
 
-const { detail, surface, geometry, railImage } = Astro.props
-const { frameH, columnX, titleY, titleW, blocks, ctaY, rail } = geometry
+const { detail, surface, rail, railImage, rowH } = Astro.props
 
 const rem = (px: number) => `${px / 16}rem`
 
 /** The frame's own 50px gutter, subtracted so x is relative to the content box. */
 const GUTTER = 50
+/** Frame-space right edge of the content box (x=50→1390). */
+const CONTENT_RIGHT = 1390
+/**
+ * Clearance between the rail and the text area. AUTHORED.
+ * 40 → 24 on 2026-08-18: see the rail-width note in `services.astro`. Both
+ * changes exist to widen the text area, which was reported as feeling tight.
+ */
+const RAIL_GAP = 24
+
+/**
+ * The text area, in content-box space. The rail keeps its drawn x and width, so
+ * the columns take whatever is left on the other side of it.
+ */
+const textX = rail.edge === 'left' ? rail.x + rail.w + RAIL_GAP : GUTTER
+const textW =
+  rail.edge === 'left' ? CONTENT_RIGHT - textX : rail.x - RAIL_GAP - GUTTER
 
 const rootStyle = [
-  // `.fx-frame` reads --fx-h for the section height at ≥90rem.
-  `--fx-h:${rem(frameH)}`,
-  `--d-col-x:${rem(columnX - GUTTER)}`,
-  `--d-title-y:${rem(titleY)}`,
-  `--d-title-w:${rem(titleW)}`,
-  `--d-cta-y:${rem(ctaY)}`,
+  // `.fx-frame` reads --fx-h at ≥90rem, and global.css scales the canvas by
+  // 100svh/--fx-h from there. No `fx-tall`: at one row per service these fit a
+  // viewport readably, which is the point of the rework.
+  `--fx-h:${rem(rowH)}`,
+  `--d-text-x:${rem(textX - GUTTER)}`,
+  `--d-text-w:${rem(textW)}`,
   `--d-rail-x:${rem(rail.x - GUTTER)}`,
   `--d-rail-w:${rem(rail.w)}`,
 ].join(';')
@@ -82,7 +112,7 @@ const rootStyle = [
         src={railImage}
         alt=""
         widths={[64, rail.w]}
-        sizes="(min-width: 90rem) 413px, 24px"
+        sizes={`(min-width: 90rem) ${rail.w}px, 24px`}
         format="webp"
       />
     </div>
@@ -90,21 +120,20 @@ const rootStyle = [
     <div class="svc-detail__col">
       <h2 class="svc-detail__title" data-node={detail.titleNode}>{detail.title}</h2>
 
-      {
-        detail.blocks.map((block, i) => (
-          <div
-            class="svc-detail__block"
-            style={`--b-y:${rem(blocks[i].y)};--b-w:${rem(blocks[i].w)}`}
-          >
-            <h3 data-node={block.headingNode}>{block.heading}</h3>
-            <ServiceRuns runs={block.runs} node={block.bodyNode} />
-          </div>
-        ))
-      }
+      <div class="svc-detail__columns">
+        {
+          detail.blocks.map((block) => (
+            <div class="svc-detail__block">
+              <h3 data-node={block.headingNode}>{block.heading}</h3>
+              <ServiceRuns runs={block.runs} node={block.bodyNode} />
+            </div>
+          ))
+        }
 
-      <div class="svc-detail__cta">
-        <a href={SERVICES_CTA.href} class="fx-pill svc-detail__pill">{SERVICES_CTA.label}</a>
-        <p class="svc-detail__availability">{AVAILABILITY.short}</p>
+        <div class="svc-detail__cta">
+          <a href={SERVICES_CTA.href} class="fx-pill svc-detail__pill">{SERVICES_CTA.label}</a>
+          <p class="svc-detail__availability">{AVAILABILITY.short}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -112,27 +141,32 @@ const rootStyle = [
 
 <style>
   /* --- Authored below 90rem ------------------------------------------------
-     The design is a 413px gradient rail beside an 859px text column, which does
-     not fit under 1440px. The rail is kept as a narrow full-height edge strip
-     on the side the design draws it: the colour signature survives, and the
-     text column clears it inside the shell gutter. */
-  /* `.fx-frame` supplies `position: relative`, the frame height at ≥90rem from
-     `--fx-h`, and the design's 7/6 leading by inheritance. `overflow: hidden`
-     is ours, to contain the authored edge strip below 90rem. */
-  /* 4rem, and it is AUTHORED — scroll behaviour is not in the Figma at all.
-     Below 90rem the header is `sticky top-0`, opaque and 64px tall (measured,
-     not assumed), so the footer's deep links to #creative-automation-systems,
-     #managed-ad-creative and #3d-product-visuals would drop each title under
-     the bar without an offset. 4rem = that 64px exactly.
+     The design is a 413px gradient rail beside a text column, which does not
+     fit under 1440px. The rail is kept as a narrow full-height edge strip on
+     the side the design draws it: the colour signature survives, and the text
+     column clears it inside the shell gutter. ONE column here — the two-column
+     split is a ≥90rem layout only, and 422px columns do not exist below 1440. */
+  /* ⚠ NO `scroll-margin-top` here, deliberately — REMOVED 2026-08-18, and this
+     comment is what stops it coming back.
 
-     ⚠ NOT `var(--fx-nav-h)`. That is 85px, the ≥90rem navbar, and at ≥90rem the
-     header is `position: absolute` and scrolls away — there is nothing for an
-     anchor to land under, so any offset there overshoots the section by its own
-     height. Zeroed in the 90rem block below. Re-check both if Nav's positioning
-     changes again. */
+     It used to be `4rem`, to keep a deep-linked title from landing under the
+     64px sticky header below 90rem. That reasoning is right and the offset is
+     still applied — just once, by `html { scroll-padding-top: 4rem }` in
+     global.css, which exists for the same 64px bar and additionally governs
+     where scroll-snap rests every section on every page.
+
+     **Both were present, and per spec they SUM.** The target's scroll-margin and
+     the scroll container's scroll-padding are independent, so every anchor
+     landed 128px low: 64 of sticky header plus 64 of nothing. Measured before
+     the fix at 390/768/1280 — section top 128 at all three, when the intent was
+     64. Both declarations carried a comment saying “4rem = that 64px exactly”,
+     each author believing theirs was the only one.
+
+     The container rule is the one to keep: it is the one snap also reads, and
+     it already zeroes itself at ≥90rem where the navbar leaves flow. Re-adding
+     an offset here re-creates the double. */
   .svc-detail {
     overflow: hidden;
-    scroll-margin-top: 4rem;
     padding-block: clamp(3rem, 1.5rem + 6vw, 6rem);
   }
 
@@ -173,18 +207,22 @@ const rootStyle = [
   }
 
   /* 33:295 / 33:345 / 33:396 — Roboto Condensed **Bold** 72.504px, #00aaff.
-     See the warning at the top of this file before changing the face.
-     `33:295` alone is centred in its 859px box in the Figma, but its text fills
-     that box to within a pixel, so it renders flush left; left-aligning all
-     three keeps the title's left edge pinned to the body column, which is what
-     the design shows and what a centred box would lose to font metrics. */
+     See the warning at the top of this file before changing the face. */
+  /* ⚠ AUTHORED 2026-08-18 — the colour. `33:295`, `33:345` and `33:396` are
+     **#00aaff in the design**; Gerald asked for all three service headlines white.
+     Do not “restore fidelity” here.
+
+     The accent is still doing its job one level down: the block headings (`h3`,
+     33:298 etc) remain #00aaff, so the section still reads as accent-led — the
+     title just stops competing with them. Contrast improves either way: white on
+     #242424 measures far above the 4.53:1 floor recorded in AGENTS.md. */
   .svc-detail__title {
     font-family: var(--font-sans);
     font-weight: 700;
     font-size: var(--text-fx-72);
     line-height: var(--leading-fx);
     letter-spacing: 0;
-    color: var(--color-accent);
+    color: var(--color-fg);
     text-wrap: wrap;
   }
 
@@ -202,10 +240,20 @@ const rootStyle = [
     text-wrap: wrap;
   }
 
-  /* 51px, which with the heading's own 42px line box puts every body node
-     exactly 93px below its heading — the offset all twelve blocks share. */
+  /* ⚠ AUTHORED 2026-08-18 — 3.1875rem (51px) in the Figma, which with the
+     heading's own 42px line box put every body node exactly 93px below its
+     heading, the offset all twelve blocks share.
+
+     That is the "spaced unevenly" half of the report, and it is a grouping
+     problem rather than a size one: at 51px a block's heading sat almost as far
+     from its OWN body as blocks sat from each other (56px), so the twelve
+     headings and twelve bodies read as twenty-four loose items instead of
+     twelve pairs. Pulling the body up to 20px makes the 56px between blocks the
+     largest gap in the column, which is what groups them.
+
+     Restore 3.1875rem for a literal 1:1 copy. */
   .svc-detail__block > :global(.svc-runs) {
-    margin-top: 3.1875rem;
+    margin-top: 1.25rem; /* 20px — was 51px (Figma) */
   }
 
   .svc-detail__cta {
@@ -231,14 +279,14 @@ const rootStyle = [
     color: var(--color-fg-quiet);
   }
 
-  /* --- The design, exactly, at ≥90rem -------------------------------------- */
+  /* --- Two balanced columns at ≥90rem -------------------------------------- */
   @media (min-width: 90rem) {
     .svc-detail {
       padding-block: 0; /* height comes from --fx-h via .fx-frame */
-      /* The header is `position: absolute` here, so it leaves flow and scrolls
-         away. Nothing persistent sits over an anchor target, and any offset
-         would push the section that far past the top. */
-      scroll-margin-top: 0;
+      /* No `scroll-margin-top: 0` reset needed any more — there is no offset on
+         this element to reset. `html { scroll-padding-top }` already zeroes
+         itself at this width, because the navbar is `position: absolute` here,
+         leaves flow, and scrolls away with nothing to land under. */
     }
 
     .svc-detail__canvas {
@@ -254,61 +302,74 @@ const rootStyle = [
       width: var(--d-rail-w);
     }
 
-    /* The text column is a zero-size anchor; its children carry the drawn
-       offsets, because the design spaces them freely rather than in a flow. */
+    /* The text area: whatever the rail leaves. A flex column so the title takes
+       its natural height and the balanced columns absorb the rest. */
     .svc-detail__col {
       position: absolute;
-      left: var(--d-col-x);
-      top: 0;
-      width: 0;
-      height: 0;
+      left: var(--d-text-x);
+      top: 5rem; /* 80 — AUTHORED inset, the Figma's own titleY varied 84–127 */
+      width: var(--d-text-w);
+      height: calc(100% - 10rem);
+      display: flex;
+      flex-direction: column;
     }
 
     .svc-detail__title {
-      position: absolute;
-      left: 0;
-      top: var(--d-title-y);
-      width: var(--d-title-w);
       font-size: 4.5315rem; /* 72.504 */
 
       /* 85px, read from the node: `33:295`, `33:345` and `33:396` are each a
          single 72.504px line in an 85px box (get_metadata). There is no
          --leading-fx-72 token because 72.504 is the only size at this value.
 
-         Set explicitly rather than inherited, because the frame's --leading-fx
-         ratio gives 84.588 here. ⚠ The 85 does NOT prove which leading model
-         Figma used — round(72.504 × 1.171875) = 85 and round(72.504 × 7/6) = 85
-         both land on it, so this node cannot discriminate. It is pinned to the
-         measured box either way, which is what a 1:1 copy needs.
-
-         Absolute, so it belongs in this block only; below 90rem the type is
-         fluid and the ratio is the correct fallback. */
+         ⚠ The 85 does NOT prove which leading model Figma used —
+         round(72.504 × 1.171875) = 85 and round(72.504 × 7/6) = 85 both land on
+         it, so this node cannot discriminate. It is pinned to the measured box
+         either way, which is what a 1:1 copy needs. */
       line-height: 5.3125rem;
     }
 
-    .svc-detail__block {
-      position: absolute;
-      left: 0;
-      top: var(--b-y);
-      width: var(--b-w);
+    /* ⚠ `min-height: 0` is load-bearing. A flex item defaults to
+       `min-height: auto`, which refuses to shrink below its content — the
+       column box would grow past the row and `overflow: hidden` on the section
+       would eat whatever fell off the bottom, silently. */
+    .svc-detail__columns {
+      flex: 1;
+      min-height: 0;
+      margin-top: 2.5rem; /* 40 — AUTHORED */
+      column-count: 2;
+      /* 40 → 48 on 2026-08-18. The columns gained ~35px each from the narrower
+         rail; spending 8 of that on the gutter keeps the two columns reading as
+         two rather than as one wrapped block. */
+      column-gap: 3rem; /* 48 — AUTHORED */
+      column-fill: balance;
+    }
+
+    /* ⚠ Without this a block is torn across the column gap: its heading ends up
+       at the foot of the left column and its body at the head of the right. */
+    .svc-detail__block,
+    .svc-detail__cta {
+      break-inside: avoid;
       margin-top: 0;
+    }
+
+    /* The blocks are spaced from each other rather than from the column top, so
+       neither column opens with a leading gap. */
+    /* 56 → 72 on 2026-08-18. The heading-to-body gap above dropped 31px per
+       block, which both tightened each pair AND left the column short of the
+       row. Spending part of that on the gap BETWEEN blocks does two jobs at
+       once: it puts the largest gap in the column where the grouping boundary
+       is, and it takes back some of the height the column otherwise loses.
+       ⚠ Do not raise this much further — the columns are a fixed-height
+       multicol and anything past the row height is clipped by
+       `overflow: hidden`, silently. Check the last availability line is still
+       visible on all three services after changing it. */
+    .svc-detail__block + .svc-detail__block,
+    .svc-detail__block + .svc-detail__cta {
+      margin-top: 4.5rem; /* 72 — AUTHORED, was 56 */
     }
 
     .svc-detail__block > h3 {
-      width: max-content;
-      max-width: 100%;
       font-size: 2.25rem; /* 36 */
-    }
-
-    /* `max-content` because the column anchor is zero-width: without it the
-       shrink-to-fit box collapses and the availability line under the pill
-       wraps at about 190px. The pill's own width is fixed either way. */
-    .svc-detail__cta {
-      position: absolute;
-      left: 0;
-      top: var(--d-cta-y);
-      width: max-content;
-      margin-top: 0;
     }
 
     .svc-detail__pill {

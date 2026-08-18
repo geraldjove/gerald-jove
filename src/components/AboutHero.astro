@@ -18,7 +18,7 @@ import { ABOUT } from '@/content/about'
 import portrait from '@/assets/img/about-portrait.png'
 ---
 
-<section class="about-hero">
+<section class="about-hero fx-fit">
   <div class="about-hero__inner">
     <h1 class="about-hero__title">
       {
@@ -147,7 +147,10 @@ import portrait from '@/assets/img/about-portrait.png'
   /* --- Figma-exact at >=90rem ---------------------------------------------- */
   @media (min-width: 90rem) {
     .about-hero {
-      height: 64rem; /* 32:90 — 1024 */
+      /* --fx-h feeds the 100svh viewport fit in global.css (`.fx-fit`). The
+         height must stay expressed through it, not duplicated. */
+      --fx-h: 64rem; /* 32:90 — 1024 */
+      height: var(--fx-h);
       padding-block: 0;
     }
 

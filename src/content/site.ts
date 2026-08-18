@@ -8,6 +8,8 @@
  * docs/website-copy-2026-08-09.md §6 unless noted.
  */
 
+import { SERVICE_DETAILS } from './services'
+
 export const SITE_URL = 'https://geraldjove.com'
 
 /** Used by the collapsed navigation bar below 90rem. The Figma navbar carries
@@ -37,18 +39,45 @@ export const PRIMARY_CTA = {
 export const NAV_CTA = { label: 'Book a Call', href: '/contact' } as const
 
 /**
- * FIVE items. The Figma navbar shows four and omits Work; shipping Work is a
- * fixed decision, and /work plus the /works → /work redirect stay. The order
- * below is the Figma's own (Home, About, Services, Contact) with Work inserted
- * before Contact.
+ * FOUR items, and this is now the Figma navbar exactly.
+ *
+ * ⚠ A fifth, Work, sat between Services and Contact until 2026-08-18. Earlier
+ * revisions of this comment called shipping it "a fixed decision" — Gerald
+ * reversed that and asked for Work removed everywhere, so the route, its
+ * content collection, its `CaseTeaser` component and the `/works` redirect are
+ * all gone. **Do not re-add the item on the strength of the old note**; the
+ * Figma never had it, and there is no longer a page behind it.
  */
 export const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Services', href: '/services' },
-  { label: 'Work', href: '/work' },
   { label: 'Contact', href: '/contact' },
 ] as const
+
+/**
+ * Deep-link a footer Services entry to its own section on /services
+ * (2026-08-18, Gerald). All three pointed at bare `/services` before.
+ *
+ * ⚠ It THROWS on an unknown id rather than degrading to `/services`. A dead
+ * in-page anchor fails **silently** — the browser serves the page, stays at the
+ * top, and reports nothing; no 404, no console error, and no build gate here
+ * catches it. Failing the build is the only thing that keeps these honest.
+ *
+ * ⚠ The footer LABELS are the short forms (‘Creative Automation’, ‘3D Product
+ * Visuals’) and the section titles are the long ones, so these cannot be matched
+ * on title the way `HomeServices.astro` does — hence ids passed explicitly and
+ * checked. Import direction is safe: `services.ts` pulls in `blanks.js` only.
+ */
+const serviceHref = (id: string): string => {
+  if (!SERVICE_DETAILS.some((d) => d.id === id)) {
+    throw new Error(
+      `site.ts: no /services section with id "${id}", so this footer link would ` +
+        `go nowhere. Known ids: ${SERVICE_DETAILS.map((d) => d.id).join(', ')}.`,
+    )
+  }
+  return `/services#${id}`
+}
 
 /**
  * Footer — the three-page variant (33:730 / 33:700 / 33:760), which is the one
@@ -75,9 +104,9 @@ export const FOOTER = {
     {
       heading: 'Services',
       links: [
-        { label: 'Creative Automation', href: '/services' },
-        { label: 'Managed Ad Creative', href: '/services' },
-        { label: '3D Product Visuals', href: '/services' },
+        { label: 'Creative Automation', href: serviceHref('creative-automation-systems') },
+        { label: 'Managed Ad Creative', href: serviceHref('managed-ad-creative') },
+        { label: '3D Product Visuals', href: serviceHref('3d-product-visuals') },
       ],
     },
     {
@@ -102,7 +131,7 @@ export const FOOTER = {
   /** 33:757, verbatim. Replaces "© 2026 Gerald Jove. Metro Manila, Philippines." */
   legal: 'Copyright 2026. Gerald Jove. All rights reserved.',
 
-  /** 33:751 / 33:752 / 33:756 — rendered only when NEWSLETTER_ENDPOINT is set. */
+  /** 33:751 / 33:752 / 33:756. Verbatim from the design — rule 6, do not reword. */
   newsletter: {
     lead: 'Subscribe',
     rest: ' to my newsletter',
@@ -115,16 +144,38 @@ export const FOOTER = {
 /**
  * The newsletter form has no provider yet.
  *
- * While this is null the entire newsletter block is omitted — heading, blurb,
- * field and Submit button — exactly the way `blanks.js` omits an unfilled
- * value. Never ship a Submit button that does nothing.
- *
  * To turn it on: create the form in Formspree (already permitted by the CSP in
  * both `connect-src` and `form-action`, so no vendor and no header change is
  * needed) and paste its endpoint here. A consent line and a privacy-policy
  * link are required before it collects a single address; neither exists yet.
+ *
+ * This constant is the ONLY thing that decides whether the block can submit.
+ * `NEWSLETTER_VISIBLE` below decides whether it is drawn at all — the two are
+ * separate on purpose; see the warning there.
  */
 export const NEWSLETTER_ENDPOINT: string | null = null
+
+/**
+ * Draw the newsletter block even while `NEWSLETTER_ENDPOINT` is null.
+ *
+ * ⚠ **UI-ONLY PREVIEW. Set by Gerald 2026-08-18: “complete the Subscribe to my
+ * newsletter feature as a UI for now — do not add any backend coding to it yet.”**
+ *
+ * Until then this block was omitted entirely, on the `blanks.js` principle that
+ * an element with nothing behind it is not rendered. That principle is not
+ * waived here, it is enforced structurally instead: with no endpoint,
+ * `Newsletter.astro` emits a `<div>` rather than a `<form>` and its button is
+ * `type="button" disabled`. **It therefore cannot submit, cannot navigate, and
+ * cannot transmit an address anywhere.** Nothing is collected and then dropped,
+ * which is the failure the old rule existed to prevent.
+ *
+ * ⚠ **This must not reach production in this state.** A visitor who types an
+ * address and finds the button dead reads the site as broken. The preview markup
+ * carries `data-newsletter="ui-only"` so the state is greppable in `dist/`;
+ * AGENTS.md §3 records that grep as a pre-deploy gate. Set the endpoint (with the
+ * consent line and privacy link) or set this to `false` before deploying.
+ */
+export const NEWSLETTER_VISIBLE = true
 
 /** Per-page meta, exactly as written in copy §6. */
 export const META = {
@@ -148,12 +199,7 @@ export const META = {
     description:
       'Tell me where your creative production breaks. Twenty minutes, no pitch. Taking new projects from January 2027.',
   },
-  /** Not in copy §6 — written to the same pattern. */
-  work: {
-    title: 'Work — Case Studies',
-    description:
-      'How the production systems and 3D creative worked in practice: the problem, what I built, and the result.',
-  },
+  /* `work` was here until 2026-08-18 and went with the route. */
   thankYou: {
     title: 'Thanks — Gerald Jove',
     description: 'Your message is in. Here is what happens next.',

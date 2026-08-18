@@ -33,7 +33,12 @@ import { META } from '@/content/site'
 import { CONTACT } from '@/content/contact'
 ---
 
-<BaseLayout title={META.contact.title} description={META.contact.description}>
+{/* AUTHORED 2026-08-18 — footer 33:760 is #242424 in the Figma; requested #161616. */}
+<BaseLayout
+  title={META.contact.title}
+  description={META.contact.description}
+  footerSurface="ink"
+>
   <section class="fx-frame contact-section" style="--fx-h: 64rem">
     <div class="shell contact-frame">
       {/* 33:506 */}

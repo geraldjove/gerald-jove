@@ -102,15 +102,24 @@ import portrait from '@/assets/img/home-about-strip-portrait.jpg'
 
   /* --- The design, exactly ------------------------------------------------ */
   @media (min-width: 90rem) {
-    /* 24:194 / 37:821 — 720 wide, exactly half the 1440 frame, so 50% keeps it
-       flush to the left edge above 1440 as well. */
+    /* 24:194 / 37:821 — 720 wide, exactly half the 1440 frame.
+       ⚠ AUTHORED 2026-08-18. This was `left: 0; width: 50%`, on the reasoning
+       that 50% of 1440 is 720. It is, at 1440 — and at 1920 it is 952px holding
+       a 720 x 1024 asset, so `object-fit: cover` scaled the portrait 1.32x
+       (measured). Reported as "the left side image of me is also enlarged".
+
+       The panel is now pinned to the left edge of the same centred 1440 canvas
+       the copy uses, and capped at the asset's own 720px, so it never upscales.
+       `--color-raised` fills the strip that opens up beyond 1440 — the same
+       treatment the copy block already gets. `HomeHero` carries the identical
+       fix; the two are one defect. */
     .about__panel {
       position: absolute;
-      left: 0;
+      left: calc(max(100% - var(--fx-frame), 0px) / 2);
       top: 0;
       bottom: 0;
       height: auto;
-      width: 50%;
+      width: min(50%, calc(var(--fx-frame) / 2));
     }
 
     .about__panel-img {

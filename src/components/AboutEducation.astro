@@ -2,15 +2,26 @@
 /**
  * Education & Training — Figma node `33:172` (1440 x 1024).
  *
- * ⚠ AUTHORED DEVIATION, and the only one on this page at >=1440.
- * In the Figma the left half of this section (x=50..621) is a collage of
- * institution logos and campus photographs — nodes `33:214`–`33:217`, which are
- * permanently excluded from this repository (AGENTS.md rule 4). The text block
- * sits at x=705 because it is balanced against that collage. With the collage
- * gone, holding x=705 would leave a 705px hole down the left of the section and
- * read as a missing asset. The 671px block is therefore CENTRED on the frame
- * (x=384.5), which shifts every node in this section left by 320.5px. Vertical
- * positions are unchanged and exact.
+ * ⚠ **The left-hand collage returned on 2026-08-18, on Gerald's instruction,
+ * and this section no longer carries the centring deviation it used to.**
+ * Mask group `33:220` (x=50, y=3, 571 x 1021) holds four images, and the text
+ * block is back at its Figma x=705 because it is balanced against them.
+ * Earlier revisions centred the 671px block on the frame (x=384.5) because the
+ * collage was absent; that shift is gone. **If the collage is ever removed
+ * again, restore the centring in the same change** — a 705px hole down the left
+ * of the section reads as a missing asset, which is why the deviation existed.
+ *
+ * ⚠ Those four images were excluded from this repository until 2026-08-18 under
+ * AGENTS.md §4. They are third-party marks and photographs, they are back at
+ * Gerald's explicit request, and §4 records the decision. **Do not remove them
+ * as a rule violation** — read §4 first; it is the rule that changed.
+ *
+ * The children keep their Figma boxes, which overhang the mask on three sides
+ * (two start at a negative x, one at a negative y) and are clipped by it. Their
+ * offsets are written as PERCENTAGES of the 571 x 1021 mask rather than in rem,
+ * so the whole collage scales as one unit below 90rem where the container is
+ * fluid. Percent of the mask == the Figma px over 571 or 1021, so the design is
+ * still exact at 1440.
  *
  * The rail markers `33:194`–`33:198` are plain 41px rings — circle r=19,
  * stroke #00AAFF width 3, i.e. a 3px border on a 41px box. They carry no
@@ -21,11 +32,101 @@
  * visibly wrong at this size; the decision to subset, load, or drop the italic
  * is Gerald's and belongs in the shared font layer, not here.
  */
+import { Image } from 'astro:assets'
+
 import { ABOUT } from '@/content/about'
+
+import mapua from '@/assets/img/about-education-mapua.jpg'
+import ciit from '@/assets/img/about-education-ciit.webp'
+import zuitt from '@/assets/img/about-education-zuitt.png'
+import filipinoInstitute from '@/assets/img/about-education-filipino-institute.jpg'
+
+/**
+ * `33:216`, `33:215`, `33:214`, `33:217` in the order they stack down the mask:
+ * Mapúa campus, CIIT campus, Zuitt logo, Filipino Institute logo. Geometry is
+ * each node's own box, converted to a percentage of the 571 x 1021 mask group
+ * `33:220`.
+ *
+ * ⚠ Every `alt` is empty and the container is `aria-hidden`, deliberately. All
+ * four institutions are already named in `ABOUT.education.entries` immediately
+ * beside this collage, so describing them again would make a screen reader read
+ * the same four names twice. The collage is decorative *because the list is the
+ * content* — if the list ever moves away from this section, give these real alt
+ * text instead.
+ */
+const COLLAGE = [
+  {
+    node: '33:216',
+    src: mapua,
+    // x=12.932 y=-48.385 w=645.673 h=427.759, against the mask's x=50 y=3
+    style: 'left:-6.492%;top:-5.033%;width:113.078%;height:41.896%',
+    widths: [646, 1292],
+  },
+  {
+    node: '33:215',
+    src: ciit,
+    // x=-57 y=277 w=883 h=462
+    style: 'left:-18.739%;top:26.836%;width:154.641%;height:45.250%',
+    widths: [883, 1200],
+  },
+  {
+    node: '33:214',
+    src: zuitt,
+    /* ⚠ AUTHORED 2026-08-18 — the only child here that is NOT its Figma box.
+       Reported by Gerald: the Zuitt card overlapped the CIIT photo and stood
+       taller than the Filipino Institute card. Both are true of the design
+       itself, and both are visible because this logo ships on an opaque WHITE
+       field — the overlap paints a white notch across the photo above it.
+
+         Figma  x=31 y=715 w=309 h=309  ->  bottom 1024, 24px over CIIT (739)
+         here   x=31 y=736 w=288 h=288  ->  bottom 1024,  3px over CIIT
+
+       Now vertically identical to `33:217` beside it: same top, same 288
+       square, same bottom, and the same 3px tuck under CIIT that the Filipino
+       Institute card already had and that nobody objected to. Kept square
+       because the source is 447x447 and `object-fit: cover` would crop a
+       non-square box rather than letterbox it.
+
+       ⚠ Side effect, deliberate: at 309 wide the two cards OVERLAPPED each
+       other by 4px and read as one white band. At 288 they sit 17px apart and
+       read as two cards. x is unchanged — it still bleeds 19px off the mask's
+       left edge, as drawn. */
+    // x=31 y=736 w=288 h=288  (Figma: y=715 w=309 h=309)
+    style: 'left:-3.327%;top:71.792%;width:50.438%;height:28.208%',
+    widths: [288, 447],
+  },
+  {
+    node: '33:217',
+    src: filipinoInstitute,
+    // x=336 y=736 w=288 h=288
+    style: 'left:50.088%;top:71.792%;width:50.438%;height:28.208%',
+    widths: [288, 447],
+  },
+] as const
 ---
 
-<section class="about-education">
-  <div class="about-education__inner">
+<section class="about-education fx-fit">
+  <div class="about-education__canvas">
+    {/* 33:220 — a plain rectangular mask; measured, it carries no corner radius. */}
+    <div class="about-education__collage" data-node="33:220" aria-hidden="true">
+      {
+        COLLAGE.map((img) => (
+          <Image
+            src={img.src}
+            alt=""
+            widths={[...img.widths]}
+            sizes="(min-width: 90rem) 571px, 80vw"
+            format="webp"
+            quality={80}
+            class="about-education__collage-img"
+            style={img.style}
+            data-node={img.node}
+          />
+        ))
+      }
+    </div>
+
+    <div class="about-education__inner">
     <h2 class="about-education__heading">
       {
         ABOUT.education.heading.map((run) => (
@@ -46,7 +147,8 @@ import { ABOUT } from '@/content/about'
           </li>
         ))
       }
-    </ul>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -57,11 +159,71 @@ import { ABOUT } from '@/content/about'
     padding-block: var(--a-pad-block);
   }
 
-  .about-education__inner {
+  .about-education__canvas {
     width: 100%;
     max-width: calc(var(--fx-content) + 2 * var(--spacing-gutter));
     margin-inline: auto;
     padding-inline: var(--spacing-gutter);
+  }
+
+  .about-education__inner {
+    width: 100%;
+  }
+
+  /* 33:220. AUTHORED below 90rem — the design has no layout here. The collage
+     keeps its 571:1021 proportion and sits above the list, capped so a portrait
+     block this tall cannot dominate a phone screen. Its children are positioned
+     in percent, so the whole group scales with this box. */
+  .about-education__collage {
+    position: relative;
+    width: min(100%, 20rem);
+    aspect-ratio: 571 / 1021;
+    margin: 0 auto 2.5rem;
+    overflow: hidden;
+  }
+
+  /* ⚠ AUTHORED 2026-08-18 — a white field behind the two logo cards, on Gerald's
+     report of “a black gap” between them.
+
+     It is the visible half of the Zuitt resize on the same day: matching that
+     card to `33:217` took it from 309 to 288 wide, which removed a 4px overlap
+     between the two cards and left a **17px** channel where the section's own
+     `#242424` showed through. Both logos ship on an opaque field that renders
+     **exactly `#ffffff`** (sampled from the built page, both cards, not from the
+     source files — astro:assets re-encodes to webp q80 and the shipped white is
+     the one that has to match). So a pure white band closes it with no seam.
+
+     ⚠ A BAND, not `background-color` on the container. The photographs above
+     cover the mask completely today, so a container fill would look identical —
+     until one is re-cropped or fails to load, and then white flashes behind the
+     photo half. This paints only the logo row.
+
+     ⚠ `top` MUST track the two cards' own `top`. All three are 71.792% and they
+     move together — change one and the band either shows a dark line above the
+     cards or paints white over the CIIT photo.
+
+     ⚠ Paints BELOW the images without a z-index: it is a positioned box earlier
+     in paint order than the element's own children. Do not add `z-index` here. */
+  .about-education__collage::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 71.792%; /* = `33:214` / `33:217` top; keep in step */
+    bottom: 0;
+    background-color: #fff;
+  }
+
+  /* ⚠ `max-width: none` is load-bearing. Three of the four boxes are WIDER than
+     the mask that clips them (the CIIT band is 154.6% of it), which is how the
+     design gets full-bleed photographs inside a 571px column. global.css sets
+     `img, video { max-width: 100% }`, which silently clamped each one to the
+     mask width and left the band short of the right edge with the image behind
+     it showing through — it renders as a layout bug, not as a missing style. */
+  .about-education__collage-img {
+    position: absolute;
+    max-width: none;
+    object-fit: cover;
   }
 
   /* 33:173 — Roboto Condensed Bold 64px */
@@ -130,11 +292,42 @@ import { ABOUT } from '@/content/about'
   /* --- Figma-exact at >=90rem, except the horizontal shift noted above ------ */
   @media (min-width: 90rem) {
     .about-education {
-      height: 64rem; /* 33:172 — 1024 */
+      /* --fx-h feeds the 100svh viewport fit in global.css (`.fx-fit`). */
+      --fx-h: 64rem; /* 33:172 — 1024 */
+      height: var(--fx-h);
       padding-block: 0;
     }
 
+    /* The 1440 frame, centred. `min()` not a bare 90rem for the reason
+       global.css gives on `.fx-canvas`: a media query counts the scrollbar
+       gutter and layout does not. */
+    .about-education__canvas {
+      position: relative;
+      width: min(var(--fx-frame), 100%);
+      max-width: none;
+      height: 100%;
+      margin-inline: auto;
+      padding-inline: 0;
+    }
+
+    /* 33:220 — x=50, y=3, 571 x 1021 in the 1440 x 1024 frame. */
+    .about-education__collage {
+      position: absolute;
+      left: 3.125rem;
+      top: 0.1875rem;
+      width: 35.6875rem;
+      height: 63.8125rem;
+      aspect-ratio: auto;
+      margin: 0;
+    }
+
+    /* 33:203 — x=705. ⚠ This is the Figma position, restored 2026-08-18 when
+       the collage returned. It was 384.5 (frame-centred) while the left half
+       was empty; see the note at the top of this file before changing it. */
     .about-education__inner {
+      position: absolute;
+      left: 44.0625rem; /* 705 */
+      top: 0;
       width: 41.9375rem; /* 33:203 — 671 */
       max-width: none;
       padding-inline: 0;
