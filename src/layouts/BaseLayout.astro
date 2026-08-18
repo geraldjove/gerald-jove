@@ -2,7 +2,7 @@
 import '@/styles/global.css'
 import Nav from '@/components/Nav.astro'
 import Footer from '@/components/Footer.astro'
-import { SITE_URL, OG_DEFAULTS } from '@/content/site'
+import { SITE_URL } from '@/content/site'
 import { blankValue } from '@/content/blanks.js'
 
 interface Props {
@@ -43,6 +43,8 @@ const {
  */
 const path = Astro.url.pathname.replace(/\/+$/, '')
 const canonical = `${SITE_URL}${path}`
+const socialTitle = ogTitle ?? title
+const socialDescription = ogDescription ?? description
 
 /** Blank #6. While null the og:image tag is omitted rather than pointed at a placeholder. */
 const ogImage = blankValue('ogImage')
@@ -63,13 +65,13 @@ const ogImage = blankValue('ogImage')
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Gerald Jove" />
     <meta property="og:url" content={canonical} />
-    <meta property="og:title" content={ogTitle ?? OG_DEFAULTS.title} />
-    <meta property="og:description" content={ogDescription ?? OG_DEFAULTS.description} />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={socialDescription} />
     {ogImage && <meta property="og:image" content={new URL(ogImage, SITE_URL).href} />}
 
     <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
-    <meta name="twitter:title" content={ogTitle ?? OG_DEFAULTS.title} />
-    <meta name="twitter:description" content={ogDescription ?? OG_DEFAULTS.description} />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={socialDescription} />
     {ogImage && <meta name="twitter:image" content={new URL(ogImage, SITE_URL).href} />}
 
     <link rel="sitemap" href="/sitemap-index.xml" />
