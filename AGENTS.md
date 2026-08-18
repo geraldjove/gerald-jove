@@ -947,6 +947,31 @@ untouched at 1440 and 1920. Harness: `.scratch/mobile-check.mjs`.
 **Gate:** `npm run check` 0/0/0 · `npm run build` 6 pages · 0 inline `<script>` · 0 `[object
 Object]` · 1 `<form>` · **96/96 zero overflow** · My Story pin intact · 15/15 anchors land.
 
+**2026-08-18 — Shopify was considered as a host and REJECTED. Vercel stays.**
+
+Gerald asked for the site to be converted to run inside Shopify, was shown what the move costs, and
+decided against it the same day. **Do not start a Liquid port.** Nothing was built and no Liquid was
+written; the only call made was a read-only `get-shop-info`.
+
+Why it was dropped, so this is not re-opened from scratch:
+
+| today (Astro / Vercel) | on Shopify |
+|---|---|
+| 7 response headers incl. a strict CSP | **none** — the storefront does not let you set headers |
+| `astro:assets` → 36 optimised webp | re-authored against Shopify's `image_url` CDN filters |
+| typed content modules + `blanks.js` | Liquid has no type checking; becomes section schema settings |
+| 4 bundled JS modules, no inline script | theme assets, but **no build step** |
+| free static hosting | $39/mo minimum |
+
+⚠ **The content layer was the real cost, not the markup.** `blanks.js` is what makes §3 “never
+invent a figure” enforceable at build time. Liquid has no equivalent, so the port would have traded
+the one guard this project is built around for a theme editor.
+
+⚠ **And the only connected store is EJ's.** `get-shop-info` returns **AGNTcy / agntcy.app**, which
+is the Space Ape engagement side. Gerald's personal services site must never be deployed there —
+the vault's ownership rule bars code and infrastructure crossing between the two in either
+direction. If Shopify is ever revisited it needs a store of Gerald's own, not that one.
+
 ### Still open — needs Gerald, not an agent
 0. **`NEWSLETTER_ENDPOINT` in `site.ts`, plus a consent line and a privacy-policy link.** ⚠ Since
    2026-08-18 the block **does** render everywhere — as inert UI, see the fourth pass — so this is
