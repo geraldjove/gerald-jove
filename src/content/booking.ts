@@ -39,6 +39,24 @@ export const CALENDLY_URL: string | null =
   'https://calendly.com/geraldjove/gerald-jove-creative-ai-solutions'
 
 /**
+ * ⚠ THE CALENDLY EVENT IS 30 MINUTES AND THE SITE SAYS 20. THAT IS CORRECT.
+ *
+ * Gerald books a 30-minute slot for a 20-minute call: the extra 10 minutes is
+ * deliberate slack for a prospect who joins late or runs over. The call he is
+ * selling is 20 minutes, so every "Book a 20-minute call" and every sentence
+ * describing the call is accurate and must stay at 20.
+ *
+ * Recorded because the mismatch reads exactly like a copy bug from the outside.
+ * On 2026-08-18 an agent read the event's `duration: 30` against the page's "20
+ * minutes", concluded the page was wrong, and changed two Figma-sourced strings
+ * to 30 — making the site understate the offer. Reverted the same day
+ * (`ed245ab`, then its revert) once Gerald explained the buffer.
+ *
+ * **Do not reconcile these two numbers.** If the call length itself ever
+ * changes, the source of truth is what Gerald sells, not what Calendly reserves.
+ */
+
+/**
  * The single destination for every "Book a call" button. ONE constant so the
  * fallback cannot disagree with itself across three content modules — `home.ts`
  * has two of these, `services.ts` one, and `site.ts` two more.
