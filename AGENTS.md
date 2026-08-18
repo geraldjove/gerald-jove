@@ -905,6 +905,48 @@ from 736 down.
 Object]` · 1 `<form>` · **0 `scroll-snap-*` properties in `dist/`** · **96/96 zero overflow** ·
 15/15 anchors · 18/18 click paths · pin intact at 3 widths.
 
+**Eighth pass — three mobile fixes.**
+
+**1. The hero figure is hidden below 64rem, and that fixed the “repeating gradient” too.**
+
+⚠ **The gradient was never repeating.** `background-repeat` computes to the initial `repeat`, but a
+gradient with `background-size: auto` fills its box exactly, so nothing tiles — checked before
+changing anything, and “fixing” `background-repeat` would have been a fix to a non-bug. What was
+actually on screen: `.hero__portrait::after` is a **second** left-to-right gradient confined to the
+45%-wide portrait box, so its hard left edge cut a vertical seam down the middle of the phone and
+restarted the dark→light ramp. Two ramps across one screen reads exactly like a tiled background.
+Hiding the figure removes the scrim with it and leaves the section's single radial gradient running
+edge to edge.
+
+⚠ **64rem, not 90rem, and it is a judgement call rather than a fidelity one.** Measured both ends:
+at 1024 the figure is clear of the copy and reads as intended; at 390 it is a dark shape squeezed
+into 45% of the width behind the text. 1024 is the last width that works, so it is the floor.
+
+⚠ **The seam still exists at 1024–1439**, where the figure stays. Far less visible, not reported,
+and left alone deliberately — fixing it means spanning the scrim across the whole section so it has
+no left edge. Recorded so it is a known deferral, not an oversight.
+
+**2 & 3. `About Gerald` (home) and `A Little More About Me` (about) are vertically centred below**
+**90rem.** Both are `100svh` sections whose content is far shorter than that, so it sat at the top
+with the remainder empty — `.about` measured **535px of content in an 844px box at 390**, 309px of
+dead space under the CTA. Both are now `flex-direction: column; justify-content: center`.
+
+⚠ **Both are reset to `display: block` at ≥90rem**, where the design is exact. On `.about` the two
+children are `position: absolute` there, so flex would have been inert anyway — but “inert because
+the children happen to be out of flow” is the kind of invariant somebody breaks later. The reset
+makes it explicit. `.about__panel` also carries `flex: none`, because its `clamp()` height is the
+point and a flex item is otherwise free to shrink.
+
+The panel and copy centre **as one group**, so the image stays directly above the text.
+
+**Verified** at 320/390/768/1024/1440/1920 — portrait hidden below 1024 and shown at and above it;
+equal slack above and below both sections at every width under 1440 (`.about` 73.6/73.6 at 320,
+154.3/154.3 at 390, 157.3/157.3 at 768, 31.2/31.2 at 1024) and `display: block` with the geometry
+untouched at 1440 and 1920. Harness: `.scratch/mobile-check.mjs`.
+
+**Gate:** `npm run check` 0/0/0 · `npm run build` 6 pages · 0 inline `<script>` · 0 `[object
+Object]` · 1 `<form>` · **96/96 zero overflow** · My Story pin intact · 15/15 anchors land.
+
 ### Still open — needs Gerald, not an agent
 0. **`NEWSLETTER_ENDPOINT` in `site.ts`, plus a consent line and a privacy-policy link.** ⚠ Since
    2026-08-18 the block **does** render everywhere — as inert UI, see the fourth pass — so this is

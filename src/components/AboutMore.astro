@@ -29,9 +29,20 @@ import { ABOUT } from '@/content/about'
 
 <style>
   /* --- Authored below 90rem ------------------------------------------------ */
+  /* ⚠ Centred vertically below 90rem — 2026-08-18, Gerald: “About page, A little
+     more about me, please center this vertically in mobile version”.
+
+     Same shape as the `About Gerald` strip on the homepage: `.fx-fit` gives the
+     section `min-height: 100svh` and the content is far shorter than that, so it
+     sat at the top with the remainder empty below. Reset to `block` at ≥90rem,
+     where the section takes its exact `--fx-h` height and the inner block is
+     positioned by an explicit `padding-top` from the node. */
   .about-more {
     background-color: var(--color-ink);
     padding-block: var(--a-pad-block);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .about-more__inner {
@@ -82,6 +93,7 @@ import { ABOUT } from '@/content/about'
       --fx-h: 64rem; /* 33:246 — 1024 */
       height: var(--fx-h);
       padding-block: 0;
+      display: block; /* the mobile vertical centring is below-90rem only */
     }
 
     .about-more__inner {

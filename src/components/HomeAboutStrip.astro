@@ -44,14 +44,32 @@ import portrait from '@/assets/img/home-about-strip-portrait.jpg'
 </section>
 
 <style>
+  /* ⚠ Centred vertically below 90rem — 2026-08-18, Gerald: “About Gerald, please
+     center the text content vertically when in mobile mode”.
+
+     `.fx-frame` gives this section `min-height: 100svh`, but its two children are
+     in normal flow below 90rem and totalled 535px inside an 844px box at 390 —
+     309px of dead space under the CTA, with everything jammed to the top.
+
+     The panel and the copy centre AS ONE GROUP, not individually, so the image
+     stays directly above the text. `flex: none` on the panel because it has a
+     `clamp()` height that a flex item would otherwise be free to shrink.
+
+     ⚠ Reset to `block` at ≥90rem. Both children are `position: absolute` there,
+     so flex would be inert — but “inert because the children happen to be out of
+     flow” is an invariant somebody will break. The reset makes it explicit. */
   .about {
     background-color: var(--color-raised); /* 8:31 fill #242424 */
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   /* AUTHORED: below 1440 the portrait becomes a band above the copy. */
   .about__panel {
     height: clamp(14rem, 52vw, 26rem);
+    flex: none; /* the clamp() height is the point; do not let flex shrink it */
   }
 
   .about__panel-img {
@@ -102,6 +120,11 @@ import portrait from '@/assets/img/home-about-strip-portrait.jpg'
 
   /* --- The design, exactly ------------------------------------------------ */
   @media (min-width: 90rem) {
+    /* The vertical centring above is a below-90rem measure only. See its note. */
+    .about {
+      display: block;
+    }
+
     /* 24:194 / 37:821 — 720 wide, exactly half the 1440 frame.
        ⚠ AUTHORED 2026-08-18. This was `left: 0; width: 50%`, on the reasoning
        that 50% of 1440 is 720. It is, at 1440 — and at 1920 it is 952px holding

@@ -142,13 +142,42 @@ const ledeParagraphs: readonly (readonly Run[])[] = HERO.body.paragraphs
      origin keeps his feet on the section's bottom edge at every size, which is
      the one alignment that has to hold — a full-body figure floating clear of
      the floor reads as a mistake, a slightly smaller one does not. */
+  /* ⚠ HIDDEN BELOW 64rem — 2026-08-18, on Gerald's “remove the image of me in the
+     hero section when in mobile mode”, and it fixes the second half of that same
+     report in one move.
+
+     “The gradient background is repeating” was NOT a repeat. `background-repeat`
+     is the initial `repeat`, but a gradient with `background-size: auto` fills its
+     box exactly, so nothing tiles — checked before changing anything. What was
+     actually on screen: `.hero__portrait::after` is a SECOND left-to-right
+     gradient confined to this 45%-wide box, so its hard left edge cut a vertical
+     seam down the middle of the phone and restarted the dark→light ramp. Two
+     ramps across one screen reads exactly like a tiled background. Removing the
+     figure removes the scrim with it, leaving the section's single radial
+     gradient running edge to edge.
+
+     ⚠ 64rem, not 90rem. Measured both ends: at 1024 the figure is well clear of
+     the copy and reads as intended, at 390 it is a dark shape squeezed into 45%
+     of the width behind the text. 1024 is the last width that works, so it is the
+     floor. Moving this bound is a judgement call, not a fidelity one.
+
+     ⚠ The seam still exists at 1024–1439, where the figure stays. It is far less
+     visible there and was not reported; fixing it means spanning the scrim across
+     the whole section so it has no left edge. Left alone deliberately. */
   .hero__portrait {
+    display: none;
     position: absolute;
     right: 0;
     bottom: 0;
     top: 0;
     width: 45%;
     pointer-events: none;
+  }
+
+  @media (min-width: 64rem) {
+    .hero__portrait {
+      display: block;
+    }
   }
 
   .hero__img {
