@@ -113,11 +113,22 @@ export const CONTACT = {
     accent: 'slowing your team down.',
   },
 
-  /** 33:508 — Roboto Condensed 24px, centred. One entry per paragraph. */
+  /**
+   * 33:508 — Roboto Condensed 24px, centred. One entry per paragraph.
+   *
+   * ⚠ AUTHORED 2026-08-18, third line only: the design says **20 minutes**. The
+   * Calendly event is 30 and Gerald chose to keep it there, so the page no
+   * longer promises a length the calendar will not honour.
+   *
+   * ⚠ He also chose to leave the CTA buttons at "Book a 20-minute call" — see
+   * the deviations index. The site therefore says 20 on the button and 30 here.
+   * That is his call, made with the inconsistency stated; do not "fix" either
+   * side of it on your own initiative.
+   */
   body: [
     'You do not need a perfect brief.',
     'Just tell me what is taking too much time.',
-    'We can talk about it for 20 minutes and figure out whether I can help.',
+    'We can talk about it for 30 minutes and figure out whether I can help.',
     'No long sales call.',
     'If I do not think I am the right fit, I will tell you.',
   ],

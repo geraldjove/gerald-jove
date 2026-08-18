@@ -273,8 +273,11 @@ export const PROCESS = {
       node: '22:119',
       label: 'Talk', // 22:92
       body:
-        // 22:112
-        'We start with a free 20-minute call. You show me how your current process works and where ' +
+        /* 22:112. ⚠ AUTHORED 2026-08-18 — the design says "20-minute". The
+           Calendly event is 30 minutes and stays there by Gerald's decision, so
+           the promise is corrected to match the calendar. The CTA buttons keep
+           "20-minute" by the same decision; see the deviations index. */
+        'We start with a free 30-minute call. You show me how your current process works and where ' +
         'things get slow. If I do not think I am the right person for the job, I will tell you.',
     },
     {

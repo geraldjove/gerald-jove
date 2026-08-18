@@ -497,6 +497,13 @@ fidelity” on any of them** — the Figma value is recorded so nobody has to gu
 | Popup error pill `33:595` | a pill that says "Please try again in a moment." | same text, but it **dismisses** — a pill that looks pressable and leads nowhere is worse |
 | Popup error body `33:592` | ~5.5px above the gap centre | **centred**, same rule as the success node — a 4.9px difference |
 | Popup close X | no node | **added**, blue, top-right on both — Gerald asked for it |
+| Call length, `33:508` + `22:112` | "20 minutes" / "20-minute" | **30**, to match the real Calendly event |
+| Call length, the five CTA buttons | "Book a 20-minute call" | **unchanged at 20**, by Gerald's decision 2026-08-18 |
+
+⚠ **Those last two rows disagree with each other on purpose.** The site says *20* on every CTA button
+and *30* in the two sentences that describe the call. Gerald chose that after being shown the
+inconsistency and the alternative (one field in Calendly). It is a decision, not drift — do not
+resolve it in either direction without asking him.
 
 ⚠ **Two more that are corrections, not preferences.** `HomeHero` and `HomeAboutStrip` were scaling
 their artwork with the viewport while the copy stayed pinned to the 1440 canvas — measured 1.32× at
