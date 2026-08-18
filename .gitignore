@@ -68,3 +68,7 @@ tasks/
 # this line, and do not move anything out of quarantine — the content-hash gate
 # in AGENTS.md compares against this copy and needs it to stay put.
 .scratch/
+
+# Playwright MCP scratch output (page snapshots, console logs). Never committed:
+# this repository is public and these capture whatever was on screen.
+.playwright-mcp/
