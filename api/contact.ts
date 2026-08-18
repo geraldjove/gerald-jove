@@ -63,6 +63,34 @@ function respond(wantsJson: boolean, ok: boolean, status: number, message?: stri
   })
 }
 
+/**
+ * Form field name -> HubSpot contact property.
+ *
+ * ⚠ CHECKED AGAINST THE REAL PORTAL (247085184, Gerald's personal account,
+ * 2026-08-18). Of the five fields the form sends, `email`, `company` and
+ * `message` are default contact properties and arrive as-is. Two are NOT:
+ *
+ *   name      -> HubSpot has no `name` property; it has firstname / lastname.
+ *   timeline  -> no default equivalent at all.
+ *
+ * HubSpot IGNORES a property it does not recognise instead of erroring, so
+ * without this map a submission returns 200 with the visitor's name silently
+ * discarded. That is the failure `.env.example` warns about, caught by reading
+ * the portal's schema rather than by losing a lead.
+ *
+ * `name` maps to `firstname` WHOLE, not split on a space. The form asks for one
+ * full name, and splitting it guesses at which token is the family name — wrong
+ * often enough, and for Gerald's own market especially, that a full name in
+ * First Name is the better of the two errors. HubSpot still shows the contact
+ * under their real name; a custom `name` property would not.
+ *
+ * `timeline` has no mapping because there is nothing to map it to: it needs ONE
+ * custom contact property named `timeline`, a dropdown whose options match
+ * FIELDS in src/content/contact.ts exactly — Now / Next quarter / Just
+ * exploring. Until that property exists, urgency is the one field still dropped.
+ */
+const PROPERTY: Record<string, string> = { name: 'firstname' }
+
 async function submitToHubSpot(cfg: Config, fields: FormData, pageUri: string): Promise<Response> {
   /* HubSpot takes a flat name/value list. `objectTypeId: '0-1'` is the Contact
      object; anything mapped to a property the form does not define is ignored
@@ -70,7 +98,11 @@ async function submitToHubSpot(cfg: Config, fields: FormData, pageUri: string): 
   const payload = {
     fields: Array.from(fields.entries())
       .filter(([name, value]) => name !== '_gotcha' && name !== '_next' && String(value).trim())
-      .map(([name, value]) => ({ objectTypeId: '0-1', name, value: String(value) })),
+      .map(([name, value]) => ({
+        objectTypeId: '0-1',
+        name: PROPERTY[name] ?? name,
+        value: String(value),
+      })),
     context: { pageUri, pageName: 'Contact — geraldjove.com' },
   }
 
