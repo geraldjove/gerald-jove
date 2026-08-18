@@ -35,7 +35,8 @@
  * While this is null every CTA falls back to `/contact` — where they already
  * pointed, and still a real page with a real form. Nothing breaks unset.
  */
-export const CALENDLY_URL: string | null = null
+export const CALENDLY_URL: string | null =
+  'https://calendly.com/geraldjove/gerald-jove-creative-ai-solutions'
 
 /**
  * The single destination for every "Book a call" button. ONE constant so the
