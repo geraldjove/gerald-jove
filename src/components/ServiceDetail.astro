@@ -153,7 +153,8 @@ const rootStyle = [
      64px sticky header below 90rem. That reasoning is right and the offset is
      still applied — just once, by `html { scroll-padding-top: 4rem }` in
      global.css, which exists for the same 64px bar and additionally governs
-     where scroll-snap rests every section on every page.
+     the anchor offset for the whole site. (It also drove scroll snap until
+     2026-08-18, when snap was removed; the anchor job is why it stays.)
 
      **Both were present, and per spec they SUM.** The target's scroll-margin and
      the scroll container's scroll-padding are independent, so every anchor

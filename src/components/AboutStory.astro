@@ -34,10 +34,6 @@ import { ABOUT } from '@/content/about'
       </div>
     </div>
   </div>
-
-  {/* Filled by story-pin.ts with one snap marker per screen. Empty, and
-      `display: none`, until the pin is actually applied. */}
-  <div class="about-story__beats" data-story-beats aria-hidden="true"></div>
 </section>
 
 {/*
@@ -169,17 +165,13 @@ import { ABOUT } from '@/content/about'
      one works only because it carries `fx-tall`, which opts out of that
      transform. If `fx-tall` is ever removed from this section, the pin breaks
      silently — it will simply stop sticking, with no error. */
-  .about-story__beats {
-    display: none;
-  }
-
   .about-story[data-pinned] {
-    position: relative; /* containing block for the absolutely placed beats */
+    position: relative;
     height: calc(var(--story-screens, 3) * 100svh);
     padding-block: 0;
-    /* The section is no longer its own snap target — the beats are, one per
-       screen, so the reader can rest anywhere along the track. */
-    scroll-snap-align: none;
+    /* No `scroll-snap-align` — the page has no scroll snap since 2026-08-18.
+       This used to be an explicit `none`, opting the tall story track OUT of
+       being a single snap target. Nothing to opt out of now. */
   }
 
   .about-story[data-pinned] .about-story__viewport {
@@ -236,34 +228,17 @@ import { ABOUT } from '@/content/about'
     will-change: transform;
   }
 
-  .about-story[data-pinned] .about-story__beats {
-    display: block;
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
+  /* ⚠ The snap-marker “beats” were REMOVED 2026-08-18 with the page's scroll
+     snap. One 1px x 100svh marker per screen was created at runtime and existed
+     for a single purpose: `scroll-snap-type: y mandatory` had no snap position
+     anywhere inside this tall track, so the scroller flung the reader from the
+     section's start straight to the next section and the story was skipped end
+     to end. No snap, no need for them. The container element, its CSS, and the
+     creation loop in `story-pin.ts` all went together.
 
-  /* ⚠ `:global()` IS REQUIRED, AND LEAVING IT OFF FAILS SILENTLY.
-     Astro scopes component CSS by rewriting selectors to carry a
-     `data-astro-cid-*` attribute, and it can only add that attribute to
-     elements that exist in the TEMPLATE. These beats are created at runtime by
-     `story-pin.ts`, so they never get the attribute and a scoped
-     `.about-story__beat` rule matches none of them.
-
-     Measured when this was scoped: the markers rendered with no positioning and
-     no `scroll-snap-align`, so the track held no snap position at all — asking
-     the scroller for the story's own start (1015) landed on 0, and asking for
-     the middle (1522) landed on 3045, the NEXT section. The story was skipped
-     end to end. Nothing errors; the rule simply never applies.
-
-     Kept rooted at `.about-story[data-pinned]` so the global part is only the
-     leaf, not a bare class loose in the page. */
-  .about-story[data-pinned] :global(.about-story__beat) {
-    position: absolute;
-    left: 0;
-    top: calc(var(--i) * 100svh);
-    width: 1px;
-    height: 100svh;
-    scroll-snap-align: start;
-  }
+     Worth keeping from that episode, because it will bite again on any runtime
+     element: the rule needed `:global()`. Astro scopes component CSS by adding a
+     `data-astro-cid-*` attribute, and it can only add it to elements present in
+     the TEMPLATE — a scoped selector matches nothing a script created, and fails
+     silently rather than erroring. */
 </style>

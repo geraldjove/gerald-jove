@@ -854,6 +854,57 @@ Object]` · 1 `<form>` · 36 webp, 0 avif · **96/96 zero overflow** · the 20 r
 this pass had to re-create. Left in place rather than deleted unasked; delete it or revive it, but
 do not read it as the shipping card.
 
+**Seventh pass — scroll snap removed site-wide; the collage overlap closed.**
+
+**1. ⚠ `scroll-snap-type: y mandatory` IS GONE.** Gerald: “remove the snap scroll for the entire
+website but keep the sticky scroll for the My Story section.” It had lived on `html` for one day.
+
+⚠ **Do not put it back without asking.** Every section is still exactly `100svh`, so the site looks
+like it is missing the other half of that design — it is not. Removed with it, because all of it
+was scaffolding for that one declaration:
+
+| what | where |
+|---|---|
+| `scroll-snap-align: start` | `.fx-frame`, `.fx-fit` in `global.css` |
+| `scroll-snap-align: end` | `.fx-footer` |
+| `scroll-snap-align: none` | `.about-story[data-pinned]` |
+| the runtime beat markers | `story-pin.ts`, its container in `AboutStory.astro`, and their CSS |
+
+The beats were **one 1px × 100svh marker per screen**, created at runtime purely so mandatory snap
+had somewhere to rest inside the tall story track — without them the scroller flung the reader from
+the section start to the next section and skipped the story end to end. No snap, no need.
+
+⚠ **`scroll-padding-top: 4rem` STAYS and is not snap scaffolding.** It is now the only thing
+keeping a deep-linked `/services` section from landing under the 64px sticky header below 90rem.
+Re-verified after the removal: **15/15** anchor navigations and **18/18** click paths still land.
+
+**The “My Story” pin was kept and is verified intact.** It never depended on snap — it is
+`position: sticky` plus a `scroll()` callback writing one transform. Measured at 390/1440/1920:
+`data-pinned` set, sticky panel top held at **0** through the whole track, column translateY
+monotonic with **1097 / 1271 / 1167px** of travel, and **0** leftover beat elements.
+Harness: `.scratch/story-pin-check.mjs`.
+
+⚠ **That harness needs `behavior: 'instant'`.** `html` sets `scroll-behavior: smooth`, so
+`window.scrollTo` ANIMATES; the first long jump was still in flight when the sample was taken and
+read a panel that had not stuck yet — which looked exactly like a broken pin. It was the probe.
+Any future scroll harness on this site has the same trap.
+
+**2. The two logo cards no longer overlap the CIIT photo.** Gerald: “parts of the Zuitt and
+Filipino Institute image are overlapping with the CIIT image.” Both now start at mask-local **736**,
+exactly CIIT `33:215`'s bottom edge, instead of 733. `33:217` had carried that 3px tuck from the
+design all along; it only became visible once both logos sat on a continuous white field. They keep
+288 square and run 3px past the mask, where the clip takes white padding rather than artwork.
+
+⚠ **The white band behind them deliberately did NOT move.** It stays at 71.792% (733), 3px above
+the cards and tucked behind CIIT, which paints over it. Sitting it exactly on the edge would risk a
+1px dark seam wherever the viewport-fit scale lands on a fraction. Verified with
+`.scratch/band-edge.mjs`, which reads the gap column across the boundary: photo at 730/734, white
+from 736 down.
+
+**Gate:** `npm run check` 0/0/0 · `npm run build` 6 pages · 0 inline `<script>` · 0 `[object
+Object]` · 1 `<form>` · **0 `scroll-snap-*` properties in `dist/`** · **96/96 zero overflow** ·
+15/15 anchors · 18/18 click paths · pin intact at 3 widths.
+
 ### Still open — needs Gerald, not an agent
 0. **`NEWSLETTER_ENDPOINT` in `site.ts`, plus a consent line and a privacy-policy link.** ⚠ Since
    2026-08-18 the block **does** render everywhere — as inert UI, see the fourth pass — so this is

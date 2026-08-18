@@ -197,8 +197,8 @@ these.
 |---|---|---|---|
 | `about-education-mapua.jpg` | `33:216` | 2000 × 1325 | −37.07, −51.39, 645.67 × 427.76 |
 | `about-education-ciit.webp` | `33:215` | 1200 × 628 | −107, 274, 883 × 462 |
-| `about-education-zuitt.png` | `33:214` | 447 × 447 | **−19, 733, 288 × 288 — AUTHORED, not the node box (was −19, 712, 309 × 309)** |
-| `about-education-filipino-institute.jpg` | `33:217` | 447 × 447 | 286, 733, 288 × 288 |
+| `about-education-zuitt.png` | `33:214` | 447 × 447 | **−19, 736, 288 × 288 — AUTHORED (node box: −19, 712, 309 × 309)** |
+| `about-education-filipino-institute.jpg` | `33:217` | 447 × 447 | **286, 736, 288 × 288 — `top` AUTHORED (node box: 286, 733)** |
 
 ⚠ **The Zuitt box is the one child here that is NOT its Figma box (2026-08-18).**
 Gerald reported it overlapping the CIIT photo and standing taller than the
@@ -206,17 +206,27 @@ Filipino Institute card. Both were true **of the design itself**, and both were
 visible because this logo ships on an opaque WHITE field — so the overlap painted
 a white notch across the photo above it:
 
-| | Figma `33:214` | shipped |
+| | Figma | shipped |
 |---|---|---|
-| top (mask-local) | 712 | **733** — level with `33:217` |
-| size | 309 × 309 | **288 × 288** — same as `33:217` |
-| over CIIT's bottom (736) | **24px** | **3px** — the same tuck `33:217` already had |
-| vs the other card | overlapped it by 4px | **17px gap** |
+| `33:214` top | 712 | **736** |
+| `33:217` top | 733 | **736** |
+| `33:214` size | 309 × 309 | **288 × 288** — same as `33:217` |
+| over CIIT's bottom (736) | 24px / 3px | **0 — both sit ON the edge** |
+| the two cards to each other | overlapped by 4px | **17px gap, white band behind** |
 
-Kept square: the source is 447 × 447 and `object-fit: cover` crops a non-square
-box rather than letterboxing it. x is unchanged, so it still bleeds 19px off the
-mask's left edge as drawn. **Do not “restore fidelity” here** — the Figma value is
-in the table above precisely so nobody has to guess what was changed.
+Two reports, two days apart in the same afternoon. First: the Zuitt card overlapped
+CIIT and stood taller than its neighbour — matched to `33:217` at 288 square. Then:
+“parts of the Zuitt and Filipino Institute image are overlapping with the CIIT
+image” — the remaining 3px tuck, which `33:217` had carried from the start and which
+cut a visible notch because both logos ship on an opaque white field. **Both cards
+now begin exactly at CIIT's bottom edge.**
+
+They keep 288 square and therefore run 3px past the mask, where they are clipped;
+what is clipped is white padding. Shortening them to 285 instead would make the box
+non-square and `object-fit: cover` would crop the logo artwork. x is unchanged on
+both, so `33:214` still bleeds 19px off the mask's left edge as drawn. **Do not
+“restore fidelity” here** — the Figma values are in the table so nobody has to guess
+what changed. The cards must stay level with each other; move one, move both.
 
 The mask itself sits at 50, 3 in the 1440 × 1024 frame `33:172`, and carries **no
 corner radius** — checked on the rendered node, the corner pixel is fully opaque.

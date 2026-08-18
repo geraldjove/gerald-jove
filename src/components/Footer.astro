@@ -173,15 +173,9 @@ const isExternal = (href: string) => href.startsWith('http')
     background-color: var(--color-ink);
   }
 
-  /* ⚠ `end`, not `start`. The footer is 359px and is NOT a full-screen section,
-     so snapping its TOP to the viewport top would park it under a screen that
-     is two-thirds empty. Aligning its END to the snapport end makes the natural
-     resting place the bottom of the document, which is where a footer belongs.
-     Without any alignment it is skipped entirely under `scroll-snap-type:
-     mandatory` — added with the 100svh sections on 2026-08-18. */
-  .fx-footer {
-    scroll-snap-align: end;
-  }
+  /* The footer carried `scroll-snap-align: end` for one day. Removed 2026-08-18
+     with `scroll-snap-type` itself — see the `html` rule in global.css. It is a
+     359px block at the end of the document and needs no alignment to sit there. */
 
   /* ⚠ Below 90rem the newsletter is in FLOW, and until 2026-08-18 it was hidden
      entirely, so this gap had never been drawn: the block sat 0px under the link

@@ -377,23 +377,34 @@
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
 
-    /* --- Scroll snap -------------------------------------------------------
-       Requested 2026-08-18 alongside the 100svh sections. `html` is the
-       scroller here and `body` is NOT, despite `overflow-x: hidden` computing
-       `overflow-y: auto` on it — verified with `document.scrollingElement`.
-       Putting this on `body` would silently do nothing.
+    /* --- NO SCROLL SNAP -----------------------------------------------------
+       ⚠ REMOVED 2026-08-18 on Gerald's instruction: “remove the snap scroll for
+       the entire website”. `html` carried `scroll-snap-type: y mandatory` for
+       one day, added alongside the 100svh sections. Do not put it back without
+       asking — the sections are still exactly one viewport tall, so it LOOKS
+       like the missing half of that design, and it is not.
 
-       `mandatory`, not `proximity`, because every fitted section is exactly one
-       snapport tall so there is no in-between position worth resting at. The
-       four oversized sections (`.fx-tall`) are larger than the snapport, and
-       CSS Scroll Snap §5.2 requires the snapport be able to rest anywhere
-       inside such an area — so mandatory does NOT trap them. That is the spec
-       guarantee the choice rests on; it is also verified by scrolling. */
-    scroll-snap-type: y mandatory;
+       What went with it: `scroll-snap-align` on `.fx-frame`/`.fx-fit`, on the
+       footer (`end`), on `.about-story[data-pinned]` (`none`), and the runtime
+       beat markers `story-pin.ts` created purely so mandatory snap had somewhere
+       to rest inside the story track. All of it was scaffolding for this one
+       declaration and is dead weight without it.
 
-    /* Below 90rem the header is sticky, opaque and 64px tall, so a section
-       snapped to `start` would slide its first line under the bar. Same
-       conditional as every other nav offset in this file — see --fx-nav-h. */
+       **The “My Story” pin is NOT affected and was kept** — it is
+       `position: sticky` plus a `scroll()` callback writing one transform, and
+       it never depended on snap. Snap was the thing the beats defended it
+       against, not the thing that drove it.
+
+       `html` is the scroller here and `body` is NOT, despite `overflow-x:
+       hidden` computing `overflow-y: auto` on it — verified with
+       `document.scrollingElement`. Kept on the record because the next person to
+       add a scroll property here needs it. */
+
+    /* ⚠ STAYS. This is not snap scaffolding — it is what stops a deep-linked
+       `/services` section landing under the 64px sticky header below 90rem, and
+       it is now the ONLY offset doing that job. `.svc-detail` used to carry a
+       matching `scroll-margin-top` and the two SUMMED, landing every anchor
+       128px low; that one was removed. Do not reintroduce a second offset. */
     scroll-padding-top: 4rem;
   }
 
@@ -515,7 +526,9 @@
   .fx-frame,
   .fx-fit {
     min-height: 100svh;
-    scroll-snap-align: start;
+    /* No `scroll-snap-align` — removed with `scroll-snap-type`, see the html
+       rule. These are still exactly one viewport tall; that is a layout
+       decision, not a snap one. */
   }
 
   @media (min-width: 90rem) {

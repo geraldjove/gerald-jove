@@ -82,8 +82,7 @@ type Teardown = () => void
 function pin(section: HTMLElement): Teardown | null {
   const stage = section.querySelector<HTMLElement>('[data-story-stage]')
   const column = section.querySelector<HTMLElement>('[data-story-column]')
-  const beats = section.querySelector<HTMLElement>('[data-story-beats]')
-  if (!stage || !column || !beats) return null
+  if (!stage || !column) return null
 
   // Switch the CSS into pinned geometry BEFORE measuring: the stage only has
   // its constrained height once `[data-pinned]` applies, and measuring first
@@ -123,17 +122,13 @@ function pin(section: HTMLElement): Teardown | null {
   )
   section.style.setProperty('--story-screens', String(screens))
 
-  // Snap markers, one per screen. Without these the page's
-  // `scroll-snap-type: y mandatory` has no snap position anywhere inside the
-  // track, so the scroller cannot rest mid-story and flings the reader from the
-  // section's start straight to the next section — the whole effect skipped.
-  beats.replaceChildren()
-  for (let i = 0; i < screens; i += 1) {
-    const beat = document.createElement('div')
-    beat.className = 'about-story__beat'
-    beat.style.setProperty('--i', String(i))
-    beats.append(beat)
-  }
+  // ⚠ Snap markers used to be built here — one 1px x 100svh `.about-story__beat`
+  // per screen. REMOVED 2026-08-18 with the page's `scroll-snap-type`. They were
+  // never part of the pin: mandatory snap had no rest position inside this tall
+  // track, so it flung the reader from the section start to the next section and
+  // skipped the story; the markers gave it somewhere to stop. With no snap there
+  // is nothing to defend against. `--story-screens` above still sets the track
+  // height and is unrelated. Do not reinstate these without reinstating snap.
 
   const stop = scroll(
     (progress: number) => {
@@ -148,7 +143,6 @@ function pin(section: HTMLElement): Teardown | null {
     column.style.paddingBlock = ''
     stage.style.removeProperty('--story-fade')
     section.style.removeProperty('--story-screens')
-    beats.replaceChildren()
     delete section.dataset.pinned
   }
 }

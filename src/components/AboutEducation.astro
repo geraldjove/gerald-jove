@@ -91,15 +91,24 @@ const COLLAGE = [
        other by 4px and read as one white band. At 288 they sit 17px apart and
        read as two cards. x is unchanged — it still bleeds 19px off the mask's
        left edge, as drawn. */
-    // x=31 y=736 w=288 h=288  (Figma: y=715 w=309 h=309)
-    style: 'left:-3.327%;top:71.792%;width:50.438%;height:28.208%',
+    // x=31 y=739 w=288 h=288  (Figma: y=715 w=309 h=309)
+    style: 'left:-3.327%;top:72.086%;width:50.438%;height:28.208%',
     widths: [288, 447],
   },
   {
     node: '33:217',
     src: filipinoInstitute,
-    // x=336 y=736 w=288 h=288
-    style: 'left:50.088%;top:71.792%;width:50.438%;height:28.208%',
+    /* ⚠ AUTHORED 2026-08-18 — `top` only. The Figma puts this at y=736 and CIIT
+       `33:215` ends at y=739, so the design overlaps them by 3px and the white
+       field cut a notch into the photograph. Gerald reported it; both logo cards
+       now start exactly ON that edge instead of over it.
+
+       Kept 288 square rather than shortened to 285 to preserve the bottom: the
+       3px it now runs past the mask is clipped, and what is clipped is white
+       padding. `object-fit: cover` would crop the logo itself if the box went
+       non-square. Both cards moved together — they must stay level. */
+    // x=336 y=739 w=288 h=288  (Figma: y=736)
+    style: 'left:50.088%;top:72.086%;width:50.438%;height:28.208%',
     widths: [288, 447],
   },
 ] as const
@@ -198,9 +207,15 @@ const COLLAGE = [
      until one is re-cropped or fails to load, and then white flashes behind the
      photo half. This paints only the logo row.
 
-     ⚠ `top` MUST track the two cards' own `top`. All three are 71.792% and they
-     move together — change one and the band either shows a dark line above the
-     cards or paints white over the CIIT photo.
+     ⚠ The band top (71.792%) is deliberately 3px ABOVE the cards' own top
+     (72.086%), and the difference is not an oversight. The band must never show
+     white above CIIT's bottom edge, and it does not — CIIT paints over it, since
+     the band is `::before` and therefore earlier in paint order than every image.
+     Sitting it exactly ON the edge instead would risk a 1px dark seam wherever
+     the viewport-fit scale lands on a fraction. Tucking it under is free.
+     If the cards move again, the band may move DOWN to meet them but never past
+     736 — verify with `.scratch/band-edge.mjs`, which reads the gap column across
+     that boundary.
 
      ⚠ Paints BELOW the images without a z-index: it is a positioned box earlier
      in paint order than the element's own children. Do not add `z-index` here. */
