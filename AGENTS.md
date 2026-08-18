@@ -677,9 +677,9 @@ pushed, nothing deployed.** `master` still serves the old Vue site in production
   `HUBSPOT_FORM_GUID=750c1b94-c69a-41ea-9a8f-a5c2fc0a66e5` set in Vercel**, or it answers 503. The
   two Mailchimp variables are set (Gerald, 2026-08-18) but unused while the endpoint is null, and
   unverifiable from here — the Vercel connector cannot read env vars or even see that project.
-- ⚠ **The HubSpot `timeline` property's option values are Title Case** (`Next Quarter`), the site
-  sends the design's casing (`Next quarter`). Fix the internal values in HubSpot; labels can stay.
-  Details in `tasks/2026-08-18-integration-configuration.md`.
+- ✅ The HubSpot `timeline` option values now match the site exactly — read back from the API and
+  compared by string equality on 2026-08-18. Details in
+  `tasks/2026-08-18-integration-configuration.md`.
 - **Nothing has been deployed at all**, including `c33e8c6` on `master`, which only removes
   exposure and fixes audit findings.
 - No blank blocks publication any more — but #1 stopped blocking because its consumers were
