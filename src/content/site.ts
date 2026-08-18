@@ -32,9 +32,18 @@ export const SITE_NAME = 'Gerald Jove'
  * Do not soften this to "available now" and do not wire a live booking
  * scheduler to the CTA. Both are deliberate.
  */
+/* ⚠ REWORDED 2026-08-19 from the audit §4, which supplies both replacement
+   lines verbatim. The previous copy came from docs/website-copy-2026-08-09.md
+   §6 and read "Taking on new client projects from January 2027." — the audit's
+   objection is that it states a date the visitor must wait for while the page
+   asks them to book today, so the two instructions fight each other.
+
+   The scarcity is unchanged and deliberate: the date still leads, and this is
+   NOT "available now". Only the grammatical mood changed, from a restriction
+   the reader waits out to an action they can take. Do not soften it further. */
 export const AVAILABILITY = {
-  long: 'Taking on new client projects from January 2027. Booking conversations now.',
-  short: 'Taking on new client projects from January 2027.',
+  long: 'Booking January 2027 projects now. Limited project capacity available.',
+  short: 'Booking January 2027 projects now.',
 } as const
 
 /** The one primary action on the site. */
@@ -238,7 +247,7 @@ export const META = {
   contact: {
     title: 'Contact Gerald Jove',
     description:
-      'Tell me where your creative production breaks. Twenty minutes, no pitch. Taking new projects from January 2027.',
+      'Tell me where your creative production breaks. Twenty minutes, no pitch. Booking January 2027 projects now.',
   },
   /* `work` was here until 2026-08-18 and went with the route. */
   thankYou: {
