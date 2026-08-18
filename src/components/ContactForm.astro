@@ -19,7 +19,7 @@
  * submit(35.234) reproduces all eleven node positions exactly, and leaves room
  * for the error slots to push content down instead of overlapping it.
  */
-import { FIELDS, CONTACT, FORMSPREE_ENDPOINT } from '@/content/contact'
+import { FIELDS, CONTACT, CONTACT_ENDPOINT } from '@/content/contact'
 import { SITE_URL, AVAILABILITY } from '@/content/site'
 import { blankValue } from '@/content/blanks.js'
 import ContactSelectArrow from '@/components/ContactSelectArrow.astro'
@@ -32,7 +32,7 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
   <form
     data-contact-form
     class="c-card"
-    action={FORMSPREE_ENDPOINT}
+    action={CONTACT_ENDPOINT}
     method="POST"
     novalidate
   >

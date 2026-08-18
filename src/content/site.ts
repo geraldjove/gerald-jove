@@ -8,7 +8,15 @@
  * docs/website-copy-2026-08-09.md §6 unless noted.
  */
 
+import { BOOKING_HREF } from './booking'
 import { SERVICE_DETAILS } from './services'
+
+/* Re-exported so `site.ts` remains the single import for page chrome, while the
+   values live in a leaf module. ⚠ They CANNOT be defined here: this file already
+   imports `services.ts`, and `services.ts` needs the booking href too — defining
+   it here would close a cycle that fails as a temporal-dead-zone error at module
+   init, not as a warning. See the note at the top of booking.ts. */
+export { CALENDLY_URL, BOOKING_HREF } from './booking'
 
 export const SITE_URL = 'https://geraldjove.com'
 
@@ -29,14 +37,14 @@ export const AVAILABILITY = {
   short: 'Taking on new client projects from January 2027.',
 } as const
 
-/** The one primary action on the site. It routes to /contact — there is no scheduler. */
+/** The one primary action on the site. */
 export const PRIMARY_CTA = {
   label: 'Book a 20-minute fit call',
-  href: '/contact',
+  href: BOOKING_HREF,
 } as const
 
 /** Figma capitalisation: "Book a Call" (I33:611;33:608), not "Book a call". */
-export const NAV_CTA = { label: 'Book a Call', href: '/contact' } as const
+export const NAV_CTA = { label: 'Book a Call', href: BOOKING_HREF } as const
 
 /**
  * FOUR items, and this is now the Figma navbar exactly.
@@ -138,16 +146,39 @@ export const FOOTER = {
     blurb: 'For news, updates, and tips on creative ads and ai system automations.',
     placeholder: 'yourname@email.com',
     submit: 'Submit',
+
+    /* ⚠ AUTHORED 2026-08-18, and flagged as a rule-6 deviation. The Figma draws
+       the resting form only — it has no node for either runtime state — and a
+       form that reports nothing on submit is worse than one with borrowed words.
+       Same position `contact.ts` already takes for its own success/error copy.
+
+       ⚠ The success line MUST keep saying to check for a confirmation email.
+       `api/subscribe.ts` subscribes as `pending`, i.e. double opt-in: nobody is
+       actually on the list until they click that link. Wording this as "you are
+       subscribed" would be untrue for every single person who submits. If the
+       backend ever moves to `subscribed`, this line has to change with it. */
+    success: 'Almost there — check your inbox and confirm.',
+    error: 'Try again in a moment.',
   },
 } as const
 
 /**
  * The newsletter form has no provider yet.
  *
- * To turn it on: create the form in Formspree (already permitted by the CSP in
- * both `connect-src` and `form-action`, so no vendor and no header change is
- * needed) and paste its endpoint here. A consent line and a privacy-policy
- * link are required before it collects a single address; neither exists yet.
+ * ⚠ The backend EXISTS as of 2026-08-18 — `api/subscribe.ts`, which forwards to
+ * Mailchimp. This constant is now a one-line switch rather than a URL to find:
+ *
+ *     export const NEWSLETTER_ENDPOINT: string | null = '/api/subscribe'
+ *
+ * ⚠ **Do not flip it until `MAILCHIMP_API_KEY` and `MAILCHIMP_AUDIENCE_ID` are
+ * set in Vercel** (see `.env.example`). The client cannot see whether the server
+ * is configured; flipping this early ships a form that answers 503 to every
+ * visitor, which is the exact failure §3 exists to prevent. A consent line and a
+ * privacy-policy link are still required before it collects a single address,
+ * and the consent wording must be Gerald's — rule 6.
+ *
+ * Formspree is gone from this project; `connect-src` and `form-action` are back
+ * to `'self'` because both forms now post same-origin.
  *
  * This constant is the ONLY thing that decides whether the block can submit.
  * `NEWSLETTER_VISIBLE` below decides whether it is drawn at all — the two are

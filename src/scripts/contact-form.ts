@@ -1,10 +1,16 @@
 /**
  * Progressive enhancement for the qualification form.
  *
- * Without this script the form still posts natively to Formspree and returns
- * the visitor to /thank-you. With it, the submission happens over fetch, the
+ * Without this script the form still posts natively to `/api/contact`, which
+ * answers a 303 to /thank-you. With it, the submission happens over fetch, the
  * visitor never leaves the site, and the success state replaces the form —
  * audit finding H3.
+ *
+ * ⚠ BOTH PATHS HIT THE SAME ROUTE, and that is what keeps the no-JS fallback
+ * alive. `api/contact.ts` reads `request.formData()`, so it does not care that
+ * fetch sends multipart and a native form POST sends urlencoded; it branches on
+ * the `Accept` header to decide between 204 and a redirect. Sending JSON from
+ * here instead would work perfectly with JS on and silently break the fallback.
  */
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
@@ -94,10 +100,11 @@ function init(): void {
     try {
       const response = await fetch(form.action, {
         method: 'POST',
+        // Selects the 204/JSON branch in api/contact.ts rather than the 303.
         headers: { Accept: 'application/json' },
         body: data,
       })
-      if (!response.ok) throw new Error(`Formspree responded ${response.status}`)
+      if (!response.ok) throw new Error(`/api/contact responded ${response.status}`)
 
       form.hidden = true
       success.hidden = false

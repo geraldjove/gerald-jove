@@ -18,6 +18,7 @@
  */
 
 import { blankValue } from './blanks.js'
+import { BOOKING_HREF } from './booking'
 
 /** A run of text inside a line. `accent` = the #00AAFF fill; `bold` = 700. */
 export type Run = {
@@ -81,7 +82,7 @@ export const HERO = {
   },
 
   /** node 21:23 / 5:18 — accent pill, Poppins Bold 16.55px on black. */
-  cta: { label: 'Book a 20-minute call', href: '/contact' },
+  cta: { label: 'Book a 20-minute call', href: BOOKING_HREF },
 } as const
 
 /* -- The Problem, node 7:26 ------------------------------------------------ */
@@ -385,5 +386,5 @@ export const CLOSING = {
   ],
 
   /** node 24:201 / 24:203 — accent pill, Poppins Bold 17.284px. */
-  cta: { label: 'Book a 20-minute call', href: '/contact' },
+  cta: { label: 'Book a 20-minute call', href: BOOKING_HREF },
 } as const

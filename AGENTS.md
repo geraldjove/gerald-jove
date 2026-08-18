@@ -10,7 +10,9 @@ strategy notes to any tracked file. `docs/` and `tasks/` are gitignored for exac
 
 ## Architecture
 
-Static [Astro](https://astro.build) site. No client-side router, no UI framework, no server runtime.
+Static [Astro](https://astro.build) site. No client-side router and no UI framework. ⚠ **It DOES have
+a server runtime since 2026-08-18** — two Vercel Functions in `api/`, for the newsletter and the
+contact form; see the ninth pass in the handoff.
 Every route is a real HTML file in `dist/`.
 
 ```
@@ -971,6 +973,66 @@ the one guard this project is built around for a theme editor.
 is the Space Ape engagement side. Gerald's personal services site must never be deployed there —
 the vault's ownership rule bars code and infrastructure crossing between the two in either
 direction. If Shopify is ever revisited it needs a store of Gerald's own, not that one.
+
+**Ninth pass — the three integrations got a real backend. ⚠ THIS PROJECT NOW HAS A SERVER RUNTIME.**
+
+⚠ **The “no server runtime” line in Architecture is no longer true.** Two Vercel Functions live in
+`api/`, outside `src/`, picked up by Vercel independently of the Astro build (`output: 'static'` is
+unchanged). Web Standard signature, no `@vercel/node`, no config.
+
+| | route | vendor | secret needed |
+|---|---|---|---|
+| Newsletter | `POST /api/subscribe` | Mailchimp | **yes** — API key |
+| Contact | `POST /api/contact` | HubSpot | no (portal id + form guid are public) |
+| Book a call | — none — | Calendly | no |
+
+**⚠ The CSP got TIGHTER, not looser. `formspree.io` is gone from `connect-src` AND `form-action`;**
+**both are back to `'self'`.** Every form now posts same-origin. Nothing third-party was added.
+
+**Why a backend at all — it was forced, not chosen.** **Mailchimp serves no CORS headers**, so a
+browser `fetch` cannot reach it. The two browser-only routes both fail here: a native POST to
+`list-manage.com` navigates the visitor to a Mailchimp-branded page, and `post-json` + JSONP injects
+a third-party `<script>` that `script-src 'self'` blocks (rule 1). HubSpot **does** support CORS and
+could have stayed client-side; it is proxied anyway so the CSP stays clean, the vendor stays out of
+the page source, and — the real reason — **HubSpot only accepts JSON, which would have killed the
+no-JS fallback** (audit H3, already fixed once).
+
+⚠ **Both handlers read `request.formData()`, never `request.json()`.** That is what lets ONE route
+serve the enhanced path (fetch sends multipart) and the native no-JS POST (urlencoded). They branch
+on the `Accept` header: **204 for fetch, 303 to `/thank-you` for a document navigation.** Switching
+either to JSON works perfectly with JS on and silently breaks the fallback.
+
+⚠ **Subscribes as `pending`, i.e. double opt-in.** Nobody is on the list until they click Mailchimp's
+confirmation email. The success copy therefore says to check the inbox and **must keep saying it** —
+“you are subscribed” would be untrue for every person who submits. Changing to `subscribed` means
+changing that line too.
+
+⚠ **An address already on the list answers success, identically to a new one.** Reporting “already
+subscribed” turns the footer into an oracle for whether any given address is on Gerald's list.
+
+**Calendly needs no code.** `src/content/booking.ts` holds `CALENDLY_URL` (null) and `BOOKING_HREF`,
+which every one of the five CTAs now uses; unset, they all fall back to `/contact` exactly as
+before. ⚠ It is a **link, not an embed** — Calendly's widget needs `script-src
+https://assets.calendly.com` (a third-party script) *and* `frame-src https://calendly.com`, since
+`frame-src` is undeclared and falls back to `default-src 'self'`. An iframe without their script
+needs only the `frame-src` line and is the upgrade path.
+
+⚠ **`booking.ts` imports NOTHING and must stay that way.** `site.ts` already imports `services.ts`;
+putting the booking href in `site.ts` closes a cycle that fails as a **temporal-dead-zone error at
+module init**, not a warning. Caught before it shipped.
+
+⚠ **`.env` was NOT gitignored** — `*.local` does not cover it, and this repo is PUBLIC. A live
+`MAILCHIMP_API_KEY` in a local `.env` was one `git add .` from publication. Fixed: `.env` and
+`.env.*` ignored, `!.env.example` negated so the template stays committed.
+
+**Verified without credentials** — `.scratch/api-test.mts` imports both handlers and exercises them:
+**15/15**, covering the 503-when-unconfigured path on both response shapes, GET → 405, valid →
+204/303, bad email → 400, the datacenter derived from the key suffix, the exact HubSpot submit URL,
+and the honeypot short-circuiting with **no outbound call**. Plus `check` 0/0/0, 6 pages, 0 inline
+`<script>`, **0 occurrences of "formspree" anywhere in `dist/`**, 96/96 overflow, anchors, mobile.
+
+⚠ **Nothing is live.** `NEWSLETTER_ENDPOINT` is still null, `CALENDLY_URL` is still null, and no env
+var is set. See “Still open”.
 
 ### Still open — needs Gerald, not an agent
 0. **`NEWSLETTER_ENDPOINT` in `site.ts`, plus a consent line and a privacy-policy link.** ⚠ Since

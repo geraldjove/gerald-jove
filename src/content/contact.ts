@@ -10,7 +10,25 @@
  * `budget` ("Budget range"). The Figma draws no equivalent of either.
  */
 
-export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvoeqbpk'
+/**
+ * ⚠ Same-origin since 2026-08-18. This was `https://formspree.io/f/mvoeqbpk`,
+ * posted to directly from the browser; it now goes to `api/contact.ts`, which
+ * forwards to HubSpot.
+ *
+ * Three things follow, and all three are easy to undo by accident:
+ *   • `connect-src` and `form-action` are back to `'self'` — formspree.io was
+ *     removed from both. Re-pointing this at any third-party host means
+ *     re-widening the CSP in `vercel.json`.
+ *   • The no-JS native POST still works, because the function reads
+ *     `request.formData()` and answers a 303 to /thank-you.
+ *   • Which CRM is behind it is not knowable from here, on purpose. Swapping
+ *     HubSpot for Klaviyo touches `api/contact.ts` and nothing else.
+ *
+ * ⚠ It needs HUBSPOT_PORTAL_ID and HUBSPOT_FORM_GUID set in Vercel. Without
+ * them the route answers 503 and the form reports a neutral failure — see
+ * `.env.example`.
+ */
+export const CONTACT_ENDPOINT = '/api/contact'
 
 export interface Field {
   name: string

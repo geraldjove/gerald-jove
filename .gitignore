@@ -27,6 +27,15 @@ coverage
 *.sln
 *.sw?
 
+# ⚠ SECRETS. Added 2026-08-18 with the api/ functions. `*.local` above does NOT
+# cover a plain `.env`, and this repository is PUBLIC — a live MAILCHIMP_API_KEY
+# in an untracked-but-not-ignored .env is one `git add .` away from being
+# published and having to be rotated. `.env.example` is the committed template
+# and is negated below on purpose.
+.env
+.env.*
+!.env.example
+
 *.tsbuildinfo
 .vercel
 

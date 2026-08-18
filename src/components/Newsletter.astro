@@ -49,7 +49,7 @@ const live = NEWSLETTER_ENDPOINT !== null
 /* Dynamic tag: a `<form>` only exists when there is somewhere for it to go. */
 const Wrapper = live ? 'form' : 'div'
 const wrapperProps = live
-  ? { method: 'post', action: NEWSLETTER_ENDPOINT ?? undefined }
+  ? { method: 'post', action: NEWSLETTER_ENDPOINT ?? undefined, 'data-newsletter-form': '' }
   : { 'data-newsletter': 'ui-only' }
 ---
 
@@ -61,6 +61,19 @@ const wrapperProps = live
         {FOOTER.newsletter.rest}
       </h2>
       <p class="newsletter__blurb">{FOOTER.newsletter.blurb}</p>
+      {/* Honeypot. Off-screen rather than `display: none` — some bots skip
+          hidden fields. Named to match what api/subscribe.ts reads. */}
+      {live && (
+        <input
+          type="text"
+          name="_gotcha"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+          class="newsletter__trap"
+        />
+      )}
+
       <div class="newsletter__row">
         <label class="sr-only" for={id}>
           Email address
@@ -81,9 +94,35 @@ const wrapperProps = live
           {FOOTER.newsletter.submit}
         </button>
       </div>
+
+      {/* Runtime states. Hidden at rest and revealed by newsletter.ts; with no
+          JS they are never shown, because the native POST navigates to
+          /thank-you instead — api/subscribe.ts answers 303 for that path. */}
+      {live && (
+        <p class="newsletter__note" data-newsletter-success hidden role="status">
+          {FOOTER.newsletter.success}
+        </p>
+      )}
+      {live && (
+        <p class="newsletter__note newsletter__note--error" data-newsletter-error hidden role="alert">
+          {FOOTER.newsletter.error}
+        </p>
+      )}
     </Wrapper>
   )
 }
+
+{/* ⚠ Bundled, never inline — rule 1. Astro emits one shared module even though
+    this component renders twice on the homepage (Footer + HomeClosing), and the
+    script binds per-form, so two instances do not fight.
+
+    Imported unconditionally rather than behind `live`: an Astro <script> is
+    hoisted at build time and is not conditional on runtime props anyway, and the
+    script is a no-op when it finds no `[data-newsletter-form]` — which is
+    exactly the UI-only preview case. */}
+<script>
+  import '@/scripts/newsletter.ts'
+</script>
 
 <style>
   /* Every length is a Figma node value, px / 16. Node ids in comments. */
@@ -137,5 +176,25 @@ const wrapperProps = live
 
   .newsletter__submit:disabled:hover {
     background-color: var(--color-accent);
+  }
+
+  /* Off-screen, not `display: none` — a bot that skips hidden inputs still
+     fills this one, which is the entire point of a honeypot. */
+  .newsletter__trap {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .newsletter__note {
+    margin-top: 0.5rem;
+    font-size: var(--text-fx-12);
+    color: var(--color-fg);
+  }
+
+  .newsletter__note--error {
+    color: var(--color-fg-muted);
   }
 </style>

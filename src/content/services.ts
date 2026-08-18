@@ -7,6 +7,7 @@
  * line is omitted entirely rather than guessed — see src/content/blanks.js.
  */
 import { blankValue } from './blanks.js'
+import { BOOKING_HREF } from './booking'
 
 export interface Service {
   slug: string
@@ -203,7 +204,7 @@ export const SERVICES_PAGE = {
 } as const
 
 /** Every CTA on this page is the same button — nodes 33:339, 33:354, 33:405. */
-export const SERVICES_CTA = { label: 'Book a 20-minute call', href: '/contact' } as const
+export const SERVICES_CTA = { label: 'Book a 20-minute call', href: BOOKING_HREF } as const
 
 export const SERVICE_DETAILS: ServiceDetailSection[] = [
   {
