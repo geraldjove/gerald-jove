@@ -19,6 +19,7 @@
 
 import { blankValue } from './blanks.js'
 import { BOOKING_HREF } from './booking'
+import { VISUALS_PROJECT_PRICE } from './services'
 
 /** A run of text inside a line. `accent` = the #00AAFF fill; `bold` = 700. */
 export type Run = {
@@ -37,14 +38,26 @@ export type Run = {
  * files is a value that can disagree with itself, so both read the blank. `null`
  * omits the price line rather than rendering an orphan "From".
  */
-function visualsCardPrice(): { prefix: string; value: string } | null {
+/**
+ * ⚠ TWO TIERS since 2026-08-19 — audit §8/§31, approved by Gerald that day.
+ *
+ * The card previously offered only "From $3,500/month". The audit's objection is
+ * that most 3D buyers arrive for a launch, a set of renders, or one CGI ad, and
+ * a monthly-only price asks them to commit to a retainer for a piece of work
+ * that has an end. The entry tier is now a project price and the retainer sits
+ * under it.
+ *
+ * ⚠ NEITHER figure is written here. The project price is imported from
+ * `services.ts` and the monthly one is derived from blank #3, because both
+ * appear on the Services page too and a figure written in two files is a figure
+ * that can disagree with itself.
+ */
+
+/** "From $3,500/month" (blank #3) -> "Ongoing production from $3,500/month". */
+function visualsOngoingLine(): string | null {
   const stored = blankValue('visualsStartingPrice')
   if (!stored) return null
-  /* Stored as "From $3,500/month"; the card renders the amount in an accent
-     span, so split lead-in from figure. Anything not matching that shape renders
-     whole rather than being silently mangled. */
-  const match = stored.match(/^(\D*)(\$.*)$/)
-  return match ? { prefix: match[1], value: match[2] } : { prefix: '', value: stored }
+  return `Ongoing production ${stored.charAt(0).toLowerCase()}${stored.slice(1)}`
 }
 
 /* -- Hero, node 1:2 -------------------------------------------------------- */
@@ -158,7 +171,13 @@ export const SERVICES_SECTION = {
         'The goal is simple. Give your team enough creative to keep testing.',
       ],
       price: { prefix: 'From ', value: '$4,500/month' }, // 22:54
-      timeline: null,
+      /* ⚠ AUTHORED 2026-08-19 — audit §7, whose wording this is verbatim ("Optional
+         Scope Language"). The audit's finding is that a buyer cannot tell whether
+         $4,500 buys 8 ads or 80, and that the absence reads as unlimited design.
+         This is the anti-scope-abuse line, not a volume claim: the actual volume
+         is blank #2 and is already rendered on the Services detail page.
+         Uses the card's unused `timeline` slot — no new element. */
+      timeline: 'Built around monthly production capacity rather than unlimited requests.',
     },
     {
       node: '22:60',
@@ -170,12 +189,12 @@ export const SERVICES_SECTION = {
         'Once your product is built in 3D, we can create new angles, colors, backgrounds, lighting setups, and animations without shooting the product again. ',
         'This is useful for new launches, new product colors, ads, landing pages, and social media.',
       ],
-      /* 22:64. Read from blanks.js rather than restated here — this figure also
-         appears on the Services detail page, and a value written in two files is
-         a value that can disagree with itself. `null` omits the price line
-         entirely rather than rendering an orphan "From". */
-      price: visualsCardPrice(),
-      timeline: null,
+      /* 22:64 drew a single monthly price. Now two tiers — see
+         VISUALS_PROJECT_PRICE above. The retainer line reuses the card's
+         `timeline` slot, which cards 2 and 3 left unused: it is already styled
+         and already positioned, so no new element enters a fixed-height card. */
+      price: VISUALS_PROJECT_PRICE,
+      timeline: visualsOngoingLine(),
     },
   ],
 

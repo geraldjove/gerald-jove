@@ -191,8 +191,10 @@ const detailHref = (title: string): string => {
   .card__timeline {
     margin: 0.25rem 0 0;
     font-family: var(--font-sans);
-    font-size: var(--home-text-12); /* 22:43 12px */
-    line-height: var(--leading-fx);
+    /* AUTHORED 2026-08-19. These lines now carry buying and scope information,
+       so the old 12px Figma size is below the audit's readable-content floor. */
+    font-size: var(--text-fx-16);
+    line-height: 1.25;
     color: var(--color-fg);
     text-wrap: wrap;
   }
@@ -303,7 +305,9 @@ const detailHref = (title: string): string => {
     }
 
     .card__cta {
-      top: 34.3125rem; /* 816 - 267 */
+      /* AUTHORED 2026-08-19. Five extra pixels preserve separation from the
+         larger two-line scope note while staying inside the fixed card. */
+      top: 34.625rem;
       line-height: var(--leading-fx-11); /* 13px */
       font-size: var(--home-text-11a); /* 22:46 11.033px */
     }
@@ -334,7 +338,7 @@ const detailHref = (title: string): string => {
     .card:nth-child(1) .card__timeline {
       left: 1.625rem;
       top: 31.9228rem; /* 22:43 y=777.765 */
-      line-height: var(--home-leading-12); /* 14px */
+      line-height: 1.0625;
       width: 8.75rem; /* 140 */
     }
 
@@ -358,9 +362,24 @@ const detailHref = (title: string): string => {
       width: 22.6723rem; /* 362.756 */
     }
 
+    /* ⚠ AUTHORED 2026-08-19. The Figma gives card 2 no line under its price, so
+       both rules below are a deviation, added with the audit §7 scope line.
+       They mirror card 1 exactly — price raised 8px to make room, timeline at
+       card 1's y — because the alternative was the bug this replaced: with
+       `.card__timeline` in the shared `position: absolute` group but given a
+       `top` only by card 1's block, the new line resolved to `top: 0` and
+       rendered over the card title. */
     .card:nth-child(2) .card__price {
       left: 1.25rem;
+      top: 28.6875rem; /* raised 8px, as card 1 does for the same reason */
       width: 19.8125rem; /* 317 */
+    }
+
+    .card:nth-child(2) .card__timeline {
+      left: 1.25rem;
+      top: 31.9228rem; /* card 1's 22:43 y=777.765 */
+      line-height: 1.0625;
+      width: 23.476rem; /* 375.616 — the lede's width; the line wraps to two */
     }
 
     .card:nth-child(2) .card__cta {
@@ -385,9 +404,23 @@ const detailHref = (title: string): string => {
       width: 26.25rem; /* 420 */
     }
 
+    /* ⚠ AUTHORED 2026-08-19, with the two-tier 3D price (audit §8/§31).
+       Same mirror of card 1 as card 2 above, plus one extra change: the price
+       box is widened from the Figma's 317px to the card's body width, because
+       "Projects from $2,500" is a longer lead-in than the "From " every other
+       card uses and wrapped to two 46px lines inside 317px — which pushed its
+       bottom past the CTA. Measured, not guessed. */
     .card:nth-child(3) .card__price {
       left: 1.125rem;
-      width: 19.8125rem; /* 317 */
+      top: 28.6875rem; /* raised 8px, as card 1 does */
+      width: 26.25rem; /* 420 — was 317, which wrapped the longer lead-in */
+    }
+
+    .card:nth-child(3) .card__timeline {
+      left: 1.125rem;
+      top: 31.9228rem; /* card 1's 22:43 y=777.765 */
+      line-height: 1.0625;
+      width: 26.25rem; /* 420 */
     }
 
     .card:nth-child(3) .card__cta {

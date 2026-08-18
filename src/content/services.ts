@@ -9,6 +9,25 @@
 import { blankValue } from './blanks.js'
 import { BOOKING_HREF } from './booking'
 
+/**
+ * 3D Product Visuals' project entry price — audit §8/§31, approved by Gerald
+ * 2026-08-19, when the offer went from retainer-only to two tiers.
+ *
+ * ⚠ It lives HERE, not in `home.ts`, and the direction of that dependency is
+ * deliberate. Both pages show this figure, so it needs one home; `site.ts`
+ * already imports this module, and this module imports only the two leaves
+ * (`blanks.js`, `booking.ts`). Putting it here keeps the graph a DAG —
+ * `home.ts` and `site.ts` both depend on `services.ts`, and `services.ts`
+ * depends on neither. Defining it in `home.ts` and importing it back would put
+ * a back edge into a graph that already fails as a temporal-dead-zone error at
+ * module init when it closes; see the note at the top of `booking.ts`.
+ *
+ * ⚠ NOT in `blanks.js`. That file is for values still waiting on Gerald, and
+ * this one was supplied. A filled-in blank and a plain constant are different
+ * states and the build reports on the difference.
+ */
+export const VISUALS_PROJECT_PRICE = { prefix: 'Projects from ', value: '$2,500' } as const
+
 export interface Service {
   slug: string
   name: string
@@ -507,16 +526,30 @@ function monthlyOutputRuns(): ServiceRun[] {
   ]
 }
 
-/** 3D Product Visuals' "Price" label and row — blank #3 (`22:64`, not `33:404`). */
+/**
+ * 3D Product Visuals' "Price" label and rows — blank #3 (`22:64`, not `33:404`).
+ *
+ * ⚠ TWO ROWS since 2026-08-19 (audit §8/§21, approved by Gerald). The homepage
+ * card leads with a project price, and a Services page that still offered only
+ * the retainer would contradict it — a visitor comparing the two pages would
+ * find a $2,500 tier advertised on one and absent on the other. The project
+ * figure is imported from `home.ts` rather than restated, so the two pages
+ * cannot drift apart; the monthly figure still comes from blank #3.
+ */
 function visualsPriceRuns(): ServiceRun[] {
-  const value = blankValue('visualsStartingPrice')
-  if (!value) return []
-  /* The row renders its amount in an accent span, so the stored
-     "From $3,500/month" is split into lead-in and figure. Anything that does not
-     match that shape renders whole rather than being silently mangled. */
-  const match = value.match(/^(\D*)(\$.*)$/)
-  return [
-    { kind: 'label', text: 'Price' },
-    { kind: 'ul', items: [match ? { before: match[1], figure: match[2] } : value] },
+  const monthly = blankValue('visualsStartingPrice')
+  /* The rows render their amount in an accent span, so each string is split into
+     lead-in and figure. Anything not matching that shape renders whole rather
+     than being silently mangled. */
+  const split = (s: string): ServiceListItem => {
+    const m = s.match(/^(\D*)(\$.*)$/)
+    return m ? { before: m[1], figure: m[2] } : s
+  }
+
+  const items: ServiceListItem[] = [
+    split(`${VISUALS_PROJECT_PRICE.prefix}${VISUALS_PROJECT_PRICE.value}`),
   ]
+  if (monthly) items.push(split(`Ongoing production ${monthly.charAt(0).toLowerCase()}${monthly.slice(1)}`))
+
+  return [{ kind: 'label', text: 'Price' }, { kind: 'ul', items }]
 }
