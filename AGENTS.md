@@ -631,95 +631,66 @@ harnesses drive system Chrome at `C:/Program Files/Google/Chrome/Application/chr
 commit `4f39e96` on that branch holds the first Figma attempt. Both superseded; neither is needed.
 Do not drop the stash without asking — it is the only copy.
 
-`master` is in sync with `origin/master`, working tree clean, and **deployed** — it serves the Astro
-site in production. The `redesign/figma-1to1` and `audit/*` work is merged.
+**Branch `docs/contact-form-verified-2026-08-20`, one commit (`a615437`) ahead of `master`, working
+tree clean, nothing pushed.** It is a fast-forward. `master` is deployed and serves the Astro site
+in production; the `redesign/figma-1to1` and `audit/*` work is already merged into it.
 
 ### Completed
-- Home, About, Services and Contact rebuilt 1:1 from Figma at ≥1440; below that authored. Sections
-  are viewport-fitted (100svh), which **supersedes the old absolute-height contract** but keeps the
-  proportions — the canvas scales uniformly.
-- `/work` and `/work/<slug>` removed with their collection, entry, `CaseTeaser` and four images.
-  `/works` re-pointed to `/services` (it is a live URL on the Vue site `master` still serves).
-- Newsletter, contact and booking backends built — `api/subscribe.ts` (Mailchimp),
-  `api/contact.ts` (HubSpot), Calendly as a plain link. **The CSP got tighter**: `formspree.io`
-  removed from `connect-src` and `form-action`, both back to `'self'`.
-- Scroll snap removed site-wide; the My Story sticky pin kept and verified.
-- Shopify evaluated as a host and rejected — see **Hosting** above; Vercel stays.
-- ⚠ `.env` was not gitignored in a public repo. Fixed.
-
-### Completed this session (2026-08-18, after the five commits above)
-- **Contact-form outcome popups, Figma `33:648` / `33:649`.** New `src/components/FormDialog.astro`
-  (native `<dialog>` + `showModal()`, so the blurred `::backdrop`, the focus trap and Escape come
-  from the platform), copy in `DIALOGS` in `contact.ts`, wiring in `contact-form.ts`. The old
-  in-page success/error panels are kept as the no-JS and no-`showModal()` fallback — change both or
-  the two states disagree. The blue X is authored, not a Figma node; Gerald asked for it.
-- **`CALENDLY_URL` set** in `src/content/booking.ts`. 17 CTA hrefs across the six pages now point at
-  `calendly.com/geraldjove/gerald-jove-creative-ai-solutions`, which answers 200. It is a plain
-  link, not an embed, so no CSP change was needed.
-- Two defects found by measuring and fixed in the same pass — the popup body sat 15.7px high
-  because the pill's 22px top margin shrank the box it centres in, and the focused heading drew the
-  global accent focus ring around "Success!". Both are documented at the point of the fix.
-- ⚠ **Two new measurement traps, both hit while verifying the above.** `.d-body` is a flex spacer
-  filling the gap, so its box top is *not* the type position — measure the text with a `Range`. And
-  the open animation ends on `scale(0.97)`, so measuring before it settles reports every box 3%
-  small. Both are in the traps list and in `.scratch/dialog-check.mjs` / `.scratch/dialog-body.mjs`.
-
-### In progress
-- Nothing. Every change is committed and the gates are green.
+- **The contact form works end to end — verified live 2026-08-20, not inferred.** `/api/contact` is
+  deployed and configured (an incomplete POST answers 400, not 503, which only a configured
+  deployment can do), and a real submission was read back off HubSpot contact `537548648132` in
+  portal 247085184 with all five fields present: `firstname`, `email`, `company`, `timeline`,
+  `message`.
+- **The `message` silent-drop is fixed.** The contact property existed but the HubSpot **form** did
+  not define the field, so HubSpot discarded the value and still answered 204. Gerald added it to
+  the form. ⚠ **The trap is permanent and applies to every future field:** it needs BOTH a contact
+  property AND a form field, the status code cannot tell you one is missing, and only reading the
+  contact back can.
+- `a615437` corrects the two documents this made wrong: the `PROPERTY` comment in `api/contact.ts`
+  (it named `timeline` as the dropped field; it was `message`) and this handoff.
+- Earlier and already merged: the 1:1 Figma rebuild of all four pages, `/work` removal, the two
+  Vercel Functions, the contact outcome popups, `CALENDLY_URL`, and the pricing/copy/SEO audit pass.
 
 ### Blockers and risks
-- **The newsletter ships disabled, by decision, and is no longer a blocker.** `NEWSLETTER_ENDPOINT`
-  stays null; the block renders on all six pages as a `<div>` with both controls `disabled`. Gerald,
-  2026-08-18: *"keep the Newsletter but disable it for the time being."* §3's old grep gate is
-  withdrawn and replaced there. It goes live only with the consent line and privacy page, which he
-  is writing.
-- ✅ **`/api/contact` is configured in Vercel and working** (verified 2026-08-20). The Mailchimp
-  variables are set per Gerald (2026-08-18) but remain unverifiable from here and unused while
-  `NEWSLETTER_ENDPOINT` is null — the Vercel connector cannot read env vars or even see the project.
-- ✅ The HubSpot `timeline` option values now match the site exactly — read back from the API and
-  compared by string equality on 2026-08-18. Details in
-  `tasks/2026-08-18-integration-configuration.md`.
-- ✅ **The site IS deployed.** `master` serves the Astro build in production, not the old Vue site:
-  `/contact` answers 200 and `/api/contact` is live. Still unconfirmed on the deployed site, because
-  a working contact form does not establish them: the `/works` → `/services` 301, the real 404
-  status, header delivery, and `robots.txt` / `sitemap-index.xml` as their own files.
+- **The newsletter ships disabled, by decision, and is not a blocker.** `NEWSLETTER_ENDPOINT` stays
+  null. Rule §3 carries the decision, the replacement grep gate, and the two preconditions.
+- `MAILCHIMP_API_KEY` / `MAILCHIMP_AUDIENCE_ID` are set per Gerald (2026-08-18) but that is **his
+  report, not a checked fact** — this connection cannot read Vercel env vars or even see the
+  project. The first proof will be `/api/subscribe` answering something other than 503.
+- Two junk contacts sit in the CRM from testing — `Claude Code Test Two` (id `537548648132`, whose
+  `message` now holds the verification string) and `Claude Code Test Submission`. Gerald was offered
+  their deletion and has not answered.
+- Not verified anywhere: a real touch device, and any browser other than the Chromium the harnesses
+  drive. The viewport fit leans on `calc()` length ÷ length — unconfirmed in Safari and Firefox. Its
+  failure mode was tested and is benign: the section falls back to the 1:1 layout.
 - No blank blocks publication any more — but #1 stopped blocking because its consumers were
   deleted, **not because a number was supplied**. `tasks/PRE-LAUNCH-CHECKLIST.md` predates this.
-- Not verified anywhere: a real touch device, and any browser other than the Chromium the
-  harnesses drive. The viewport fit leans on `calc()` length ÷ length — unconfirmed in Safari and
-  Firefox. Its failure mode was tested and is benign: the section falls back to the 1:1 layout.
 
 ### Next actions
-1. ~~Set `HUBSPOT_PORTAL_ID`, `HUBSPOT_FORM_GUID`~~ — **done and verified live 2026-08-20**: the
-   deployed `/api/contact` answers 400 to an incomplete POST rather than 503, which only a
-   configured deployment can do. `MAILCHIMP_API_KEY` / `MAILCHIMP_AUDIENCE_ID` are still Gerald's
-   report rather than a checked fact — `.env.example` says where each is found.
-2. **Then** flip `NEWSLETTER_ENDPOINT` to `'/api/subscribe'` in `site.ts`. Not before: the client
-   cannot see whether the server is configured, and flipping early ships a form that 503s.
-3. ~~Set `CALENDLY_URL`~~ — **done, uncommitted.** Commit it with the popups.
-4. Get the newsletter consent line **in Gerald's words** (rule 6) and a privacy-policy page; both
-   are recorded in `site.ts` as preconditions and neither exists.
-5. Push, merge to `master`, deploy.
-6. Confirm on the deployed site: `/works` → `/services` 301, real 404 status, security headers
-   present, `robots.txt` and `sitemap-index.xml` served as their own files.
-7. Click one real Calendly CTA on the deployed site. The URL answers 200 to `curl`; that it is the
+1. Merge `docs/contact-form-verified-2026-08-20` into `master` (fast-forward) and push.
+2. Confirm the HubSpot form sends Gerald a submission notification — Marketing → Forms → the form →
+   its options. Unknown either way; this connector has no Forms API, so it cannot be checked here.
+   Without it, a lead sits in the CRM unread.
+3. Delete the two test contacts once Gerald confirms.
+4. Confirm on the deployed site what a working contact form does not establish: `/works` →
+   `/services` 301, real 404 status, header delivery, and `robots.txt` / `sitemap-index.xml` served
+   as their own files.
+5. Click one real Calendly CTA on the deployed site. The URL answers 200 to `curl`; that it is the
    **right** event type is Gerald's to confirm, not something a status code establishes.
+6. Newsletter, in order: consent line **in Gerald's words** (rule 6) and a privacy-policy page, then
+   flip `NEWSLETTER_ENDPOINT` to `'/api/subscribe'`. Never the flip first — the client cannot see
+   whether the server is configured.
 
 ### Verification pending
-- ⚠ **The popups were driven with `window.fetch` stubbed**, at 1440 and 390 in headless Chrome only.
-  What was exercised is the real `contact-form.ts` submit path, the geometry, the focus, and all
-  four dismiss routes — not a real send. `<dialog>.showModal()` and `::backdrop` are unconfirmed in
-  Safari and Firefox; the fallback if `showModal` is missing is the old in-page panel, which is
-  feature-detected rather than assumed, but has not been run with the method removed.
 - ⚠ **`api/subscribe.ts` has still never run against Mailchimp.** `api-test.mts` covers its branches
-  with stubbed outbound calls only. `api/contact.ts` is no longer in this category — it has reached
-  the real HubSpot portal and been verified end to end (2026-08-20).
-- ✅ **The `message` field was silently dropped and is now fixed — verified live 2026-08-20.** The
-  contact property existed, but the HubSpot FORM did not define the field, so HubSpot discarded the
-  value and still answered 204. Gerald added it to the form; a real submission was read back off the
-  contact record and all five fields arrived (`firstname`, `email`, `company`, `timeline`,
-  `message`). ⚠ The trap itself is permanent: a field needs BOTH a contact property AND a form
-  field, the status code cannot tell you it is missing, and only a read-back can.
+  with stubbed outbound calls only. `api/contact.ts` is no longer in this category.
+- ⚠ **The popups were driven with `window.fetch` stubbed**, at 1440 and 390 in headless Chrome only.
+  The real `contact-form.ts` submit path, geometry, focus and all four dismiss routes were
+  exercised — not a real send through the UI. `<dialog>.showModal()` and `::backdrop` are unconfirmed
+  in Safari and Firefox; the no-`showModal` fallback is feature-detected but has never been run with
+  the method removed.
+- The 2026-08-20 verification went **straight to `/api/contact`**, not through the browser form. It
+  proves the server and vendor path; it does not prove the on-page submit flow against a live send.
 - `vercel.json` behaviour is not exercisable by `astro preview`: the redirect and live header
   delivery need the deployed site.
 - Lighthouse was not re-run. The audit's mobile baseline was Accessibility 92, Best Practices 73,

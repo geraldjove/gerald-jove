@@ -65,6 +65,13 @@ one level deep and returns a false zero.
   `connect-src` and `form-action` are `'self'`. Do not point a form at a vendor host without
   widening the CSP, and prefer not to.
 - **"Fixing" the missing SPA rewrite in `vercel.json`.** Its absence is deliberate and load-bearing.
+- **Calling an integration "working" because it returned 2xx.** The inverse of trap 2 above: not a
+  false failure but a false pass. HubSpot answers **204 to a submission whose fields it silently
+  discarded** — that is how the contact form's `message` was thrown away while every local gate
+  stayed green and the visitor saw "Success!". A vendor status code proves the request was accepted,
+  never that the data arrived. Verify by reading the record back out of the vendor; the HubSpot MCP
+  connector can search contacts in portal 247085184. A field needs **both** a contact property and a
+  field on the HubSpot form, and only the read-back distinguishes them.
 
 ## Reference documents
 
