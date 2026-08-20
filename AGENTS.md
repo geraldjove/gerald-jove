@@ -625,14 +625,14 @@ harnesses drive system Chrome at `C:/Program Files/Google/Chrome/Application/chr
 <!-- SESSION-HANDOFF:START -->
 ## Current Session Handoff
 
-**Last updated:** 2026-08-18
+**Last updated:** 2026-08-20
 
 ⚠ `git stash@{0}` on `redesign/figma-2026-08` still holds a discarded pixel-exact pass, and
 commit `4f39e96` on that branch holds the first Figma attempt. Both superseded; neither is needed.
 Do not drop the stash without asking — it is the only copy.
 
-Branch `redesign/figma-1to1`, eight commits ahead of `2863d4a`, **working tree clean, nothing
-pushed, nothing deployed.** `master` still serves the old Vue site in production.
+`master` is in sync with `origin/master`, working tree clean, and **deployed** — it serves the Astro
+site in production. The `redesign/figma-1to1` and `audit/*` work is merged.
 
 ### Completed
 - Home, About, Services and Contact rebuilt 1:1 from Figma at ≥1440; below that authored. Sections
@@ -673,15 +673,16 @@ pushed, nothing deployed.** `master` still serves the old Vue site in production
   2026-08-18: *"keep the Newsletter but disable it for the time being."* §3's old grep gate is
   withdrawn and replaced there. It goes live only with the consent line and privacy page, which he
   is writing.
-- ⚠ **`/api/contact` still needs `HUBSPOT_PORTAL_ID=247085184` and
-  `HUBSPOT_FORM_GUID=750c1b94-c69a-41ea-9a8f-a5c2fc0a66e5` set in Vercel**, or it answers 503. The
-  two Mailchimp variables are set (Gerald, 2026-08-18) but unused while the endpoint is null, and
-  unverifiable from here — the Vercel connector cannot read env vars or even see that project.
+- ✅ **`/api/contact` is configured in Vercel and working** (verified 2026-08-20). The Mailchimp
+  variables are set per Gerald (2026-08-18) but remain unverifiable from here and unused while
+  `NEWSLETTER_ENDPOINT` is null — the Vercel connector cannot read env vars or even see the project.
 - ✅ The HubSpot `timeline` option values now match the site exactly — read back from the API and
   compared by string equality on 2026-08-18. Details in
   `tasks/2026-08-18-integration-configuration.md`.
-- **Nothing has been deployed at all**, including `c33e8c6` on `master`, which only removes
-  exposure and fixes audit findings.
+- ✅ **The site IS deployed.** `master` serves the Astro build in production, not the old Vue site:
+  `/contact` answers 200 and `/api/contact` is live. Still unconfirmed on the deployed site, because
+  a working contact form does not establish them: the `/works` → `/services` 301, the real 404
+  status, header delivery, and `robots.txt` / `sitemap-index.xml` as their own files.
 - No blank blocks publication any more — but #1 stopped blocking because its consumers were
   deleted, **not because a number was supplied**. `tasks/PRE-LAUNCH-CHECKLIST.md` predates this.
 - Not verified anywhere: a real touch device, and any browser other than the Chromium the
@@ -689,8 +690,10 @@ pushed, nothing deployed.** `master` still serves the old Vue site in production
   Firefox. Its failure mode was tested and is benign: the section falls back to the 1:1 layout.
 
 ### Next actions
-1. Set `MAILCHIMP_API_KEY`, `MAILCHIMP_AUDIENCE_ID`, `HUBSPOT_PORTAL_ID`, `HUBSPOT_FORM_GUID` in
-   Vercel — `.env.example` says where each is found.
+1. ~~Set `HUBSPOT_PORTAL_ID`, `HUBSPOT_FORM_GUID`~~ — **done and verified live 2026-08-20**: the
+   deployed `/api/contact` answers 400 to an incomplete POST rather than 503, which only a
+   configured deployment can do. `MAILCHIMP_API_KEY` / `MAILCHIMP_AUDIENCE_ID` are still Gerald's
+   report rather than a checked fact — `.env.example` says where each is found.
 2. **Then** flip `NEWSLETTER_ENDPOINT` to `'/api/subscribe'` in `site.ts`. Not before: the client
    cannot see whether the server is configured, and flipping early ships a form that 503s.
 3. ~~Set `CALENDLY_URL`~~ — **done, uncommitted.** Commit it with the popups.
@@ -708,11 +711,15 @@ pushed, nothing deployed.** `master` still serves the old Vue site in production
   four dismiss routes — not a real send. `<dialog>.showModal()` and `::backdrop` are unconfirmed in
   Safari and Firefox; the fallback if `showModal` is missing is the old in-page panel, which is
   feature-detected rather than assumed, but has not been run with the method removed.
-- ⚠ **Neither function has run against a real vendor.** `api-test.mts` covers 15 branches with
-  stubbed outbound calls; nothing has actually reached Mailchimp or HubSpot.
-- ⚠ **HubSpot silently DROPS values whose property it does not recognise.** The form's internal
-  field names must match the `name` attributes in `contact.ts`. Send one real submission and check
-  **every** field arrived — a submission can succeed with fields missing and nothing reports it.
+- ⚠ **`api/subscribe.ts` has still never run against Mailchimp.** `api-test.mts` covers its branches
+  with stubbed outbound calls only. `api/contact.ts` is no longer in this category — it has reached
+  the real HubSpot portal and been verified end to end (2026-08-20).
+- ✅ **The `message` field was silently dropped and is now fixed — verified live 2026-08-20.** The
+  contact property existed, but the HubSpot FORM did not define the field, so HubSpot discarded the
+  value and still answered 204. Gerald added it to the form; a real submission was read back off the
+  contact record and all five fields arrived (`firstname`, `email`, `company`, `timeline`,
+  `message`). ⚠ The trap itself is permanent: a field needs BOTH a contact property AND a form
+  field, the status code cannot tell you it is missing, and only a read-back can.
 - `vercel.json` behaviour is not exercisable by `astro preview`: the redirect and live header
   delivery need the deployed site.
 - Lighthouse was not re-run. The audit's mobile baseline was Accessibility 92, Best Practices 73,

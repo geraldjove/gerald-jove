@@ -84,10 +84,17 @@ function respond(wantsJson: boolean, ok: boolean, status: number, message?: stri
  * First Name is the better of the two errors. HubSpot still shows the contact
  * under their real name; a custom `name` property would not.
  *
- * `timeline` has no mapping because there is nothing to map it to: it needs ONE
- * custom contact property named `timeline`, a dropdown whose options match
- * FIELDS in src/content/contact.ts exactly — Now / Next quarter / Just
- * exploring. Until that property exists, urgency is the one field still dropped.
+ * `timeline` needs no mapping: a custom contact property of that name now
+ * exists in the portal, and its dropdown values match FIELDS in
+ * src/content/contact.ts by string equality — Now / Next quarter / Just
+ * exploring. Verified live 2026-08-20 by reading a submission back.
+ *
+ * ⚠ THE PROPERTY EXISTING IS ONLY HALF OF IT. A value is also dropped when the
+ * HubSpot FORM does not define the field, even though the contact property
+ * does — the submission still answers 204 and nothing reports the loss. That is
+ * what happened to `message` until 2026-08-20. All five fields are confirmed
+ * arriving as of that date; if a sixth is ever added, add it in BOTH places and
+ * confirm by reading the contact back, not by trusting the status code.
  */
 const PROPERTY: Record<string, string> = { name: 'firstname' }
 
