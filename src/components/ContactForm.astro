@@ -31,7 +31,8 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
 function protectedFormUrl(raw: string | undefined): string | null {
   if (!raw?.trim()) return null
   const url = new URL(raw.trim())
-  if (url.protocol !== 'https:' || !/^share(?:-[a-z]{2}[0-9]+)?\.hsforms\.com$/.test(url.hostname)
+  const shareHost = /^(?:[a-z0-9]+\.)?share(?:-[a-z]{2}[0-9]+)?\.hsforms\.com$/
+  if (url.protocol !== 'https:' || !shareHost.test(url.hostname)
     || url.username || url.password || url.port || url.pathname === '/') {
     throw new Error('PUBLIC_HUBSPOT_PROTECTED_FORM_URL must be an HTTPS HubSpot form share link.')
   }
