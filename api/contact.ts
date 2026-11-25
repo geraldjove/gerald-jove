@@ -23,6 +23,11 @@
  * Vercel Web Standard signature — no `@vercel/node`, no config.
  */
 
+const FIELD_NAMES = ['name', 'email', 'company', 'timeline', 'message'] as const
+const TIMELINES = new Set(['Now', 'Next quarter', 'Just exploring'])
+const BLOCKED_SENDERS = new Set((process.env.CONTACT_BLOCKED_EMAILS ?? '')
+  .split(',').map((email) => email.trim().toLowerCase()).filter(Boolean))
+
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 /** Where a no-JS submission lands. Must stay a real page in the build. */
@@ -103,13 +108,12 @@ async function submitToHubSpot(cfg: Config, fields: FormData, pageUri: string): 
      object; anything mapped to a property the form does not define is ignored
      rather than rejected, so field names here must match the HubSpot form. */
   const payload = {
-    fields: Array.from(fields.entries())
-      .filter(([name, value]) => name !== '_gotcha' && name !== '_next' && String(value).trim())
-      .map(([name, value]) => ({
-        objectTypeId: '0-1',
-        name: PROPERTY[name] ?? name,
-        value: String(value),
-      })),
+    fields: FIELD_NAMES.flatMap((name) => {
+      const value = fields.get(name)
+      return typeof value === 'string' && value.trim()
+        ? [{ objectTypeId: '0-1', name: PROPERTY[name] ?? name, value: value.trim() }]
+        : []
+    }),
     context: { pageUri, pageName: 'Contact — geraldjove.com' },
   }
 
@@ -146,6 +150,13 @@ export async function POST(request: Request): Promise<Response> {
   /* Browser validation is a convenience, never the authority. This also keeps
      native no-JS submissions and direct requests from creating incomplete CRM
      records when the client enhancement is unavailable or bypassed. */
+  if (FIELD_NAMES.some((name) => {
+    const values = form.getAll(name)
+    return values.length > 1 || (values.length === 1 && typeof values[0] !== 'string')
+  })) {
+    return respond(wantsJson, false, 400, 'Malformed request.')
+  }
+
   const requiredFields = ['name', 'email', 'timeline', 'message'] as const
   if (requiredFields.some((name) => !String(form.get(name) ?? '').trim())) {
     return respond(wantsJson, false, 400, 'Complete all required fields.')
@@ -154,6 +165,13 @@ export async function POST(request: Request): Promise<Response> {
   const email = String(form.get('email') ?? '').trim()
   if (!EMAIL.test(email)) {
     return respond(wantsJson, false, 400, 'Enter a valid email address.')
+  }
+
+  if (!TIMELINES.has(String(form.get('timeline')).trim())) {
+    return respond(wantsJson, false, 400, 'Choose a timeline from the list.')
+  }
+  if (BLOCKED_SENDERS.has(email.toLowerCase())) {
+    return respond(wantsJson, false, 400, 'This submission could not be accepted.')
   }
 
   let res: Response
@@ -166,10 +184,8 @@ export async function POST(request: Request): Promise<Response> {
 
   if (res.ok) return respond(wantsJson, true, 204)
 
-  /* HubSpot returns 400 with a per-field breakdown. It is logged for the
-     operator and NOT shown: its wording names HubSpot internals and would leak
-     the vendor and the form guid into visitor-facing copy. */
-  console.error('[contact] hubspot', res.status, await res.text().catch(() => ''))
+  /* Avoid logging vendor response bodies; they can include submission values. */
+  console.error('[contact] hubspot', res.status)
   return respond(wantsJson, false, 502, 'Could not send your message right now. Please try again.')
 }
 
