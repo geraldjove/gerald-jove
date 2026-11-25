@@ -20,15 +20,35 @@
  * for the error slots to push content down instead of overlapping it.
  */
 import { FIELDS, CONTACT, CONTACT_ENDPOINT, DIALOGS } from '@/content/contact'
-import { SITE_URL, AVAILABILITY } from '@/content/site'
+import { SITE_URL, AVAILABILITY, BOOKING_HREF } from '@/content/site'
 import { blankValue } from '@/content/blanks.js'
 import ContactSelectArrow from '@/components/ContactSelectArrow.astro'
 import FormDialog from '@/components/FormDialog.astro'
 
 /** Blank #8. Until Gerald picks a fallback, no contact address is published. */
 const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutralBody
+
+function protectedFormUrl(raw: string | undefined): string | null {
+  if (!raw?.trim()) return null
+  const url = new URL(raw.trim())
+  if (url.protocol !== 'https:' || !/^share(?:-[a-z]{2}[0-9]+)?\.hsforms\.com$/.test(url.hostname)
+    || url.username || url.password || url.port || url.pathname === '/') {
+    throw new Error('PUBLIC_HUBSPOT_PROTECTED_FORM_URL must be an HTTPS HubSpot form share link.')
+  }
+  return url.href
+}
+
+const hostedForm = protectedFormUrl(import.meta.env.PUBLIC_HUBSPOT_PROTECTED_FORM_URL)
 ---
 
+{hostedForm ? (
+  <div class="c-card">
+    <h2 class="c-head">{CONTACT.formHeading}</h2>
+    <p class="c-success-body">Open the secure contact form to send me a message.</p>
+    <a class="c-submit c-hosted-cta" href={hostedForm}>Open Contact Form</a>
+    <p class="c-avail"><a href={BOOKING_HREF}>Book a 20-minute fit call instead</a></p>
+  </div>
+) : (
 <div data-contact-root class="c-root">
   <form
     data-contact-form
@@ -155,6 +175,7 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
     action={DIALOGS.error.action}
   />
 </div>
+)}
 
 <script>
   import '@/scripts/contact-form.ts'
@@ -340,6 +361,11 @@ const errorFallback = blankValue('contactErrorFallback') ?? CONTACT.error.neutra
     transition:
       background-color var(--motion-base) var(--ease-out-soft),
       transform var(--motion-fast) var(--ease-out-soft);
+  }
+
+  .c-hosted-cta {
+    display: grid;
+    place-items: center;
   }
 
   .c-submit:hover {
